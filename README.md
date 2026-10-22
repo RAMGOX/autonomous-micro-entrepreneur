@@ -1,54 +1,181 @@
-# 🚀 Autonomous Micro-Entrepreneur (24/7)
+# 🚀 Autonomous Micro-Entrepreneur (AME)
+### Autonomous 24/7 AI Agent Platform for On-Chain Micro-Services, Intelligence Curation & Bounties on Base L2
 
-Sistema autónomo de generación de micro-ingresos digitales y curación de datos operando de manera independiente en Windows 10 con GPU dedicada NVIDIA GeForce GTX 1660 (6 GB VRAM).
+[![Network](https://img.shields.io/badge/Network-Base%20L2%20(EVM)-0052FF?style=flat&logo=coinbase)](https://base.org)
+[![Smart Contract](https://img.shields.io/badge/Contract-BaseScan%20Verified-34D399?style=flat&logo=ethereum)](https://sepolia.basescan.org/address/0x04f473e39e678d012F1f42cba7649F248253cb56)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python)](https://python.org)
+[![Runtime](https://img.shields.io/badge/Inference-Local%20GPU%20+%20Cloud%20Hybrid-7C3AED)](https://github.com/ollama/ollama)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
----
+**Autonomous Micro-Entrepreneur (AME)** is a self-hosted, 24/7 agentic software system designed to perform automated micro-tasks, Web3 data curation, and code solutions with near-zero marginal operating cost. 
 
-## 🏛️ Arquitectura de los 4 Cerebros
-
-1. **Cerebro 1: El Obrero Local (0,00 €)**
-   * **Motor:** Ollama ejecutando `qwen2.5-coder:7b-instruct-q4_K_S` acelerado por CUDA en la GTX 1660.
-   * **Función:** Monitoreo 24/7, escucha de Discord, extracción con Crawl4AI, organización de memoria en Obsidian.
-2. **Cerebro 2: El Director de Operaciones (0,00 € adicionales)**
-   * **Motor:** Gemini 3.8 Flash (en ventana de Antigravity Pro).
-   * **Función:** Planificación macro, síntesis de datos, redacción y conversación.
-3. **Cerebro 3: El Especialista de Código / CTO (~0,35 €/día máx)**
-   * **Motor:** DeepSeek API con limitador estricto de gasto de tokens (`litellm`).
-   * **Función:** Programación compleja, llamadas a smart contracts, depuración. Si se agota el cupo diario de 0.35€, deriva a Gemini Flash.
-4. **Cerebro 4: El Arquitecto Supremo**
-   * **Motor:** Argon (cupo semanal reservado).
-   * **Función:** Decisiones críticas de alto impacto (dificultad ≥ 8/10) y auditorías.
+Built specifically for the **Base (Coinbase L2)** ecosystem, it settles cryptographic proofs of work on-chain via smart contracts and operates unattended on dedicated hardware (NVIDIA GeForce GTX 1660 / Windows 10).
 
 ---
 
-## 🛡️ Stack de Optimización de Tokens
+## 🏛️ The 4-Brain Hybrid Orchestration Architecture
 
-* **`tokless` (v1.0.3):** Integrado directamente con Antigravity. Emplea `RTK`, `CodeGraph`, `Context-Mode` y reglas deterministas de Karpathy para comprimir logs y reducir context bloat sin gastar tokens.
-* **`LLMLingua`:** Compresión semántica de prompts y textos entre un 50% y 75% antes de enviarlos a modelos de pago.
-* **`LiteLLM`:** Enrutador con circuit breaker y control estricto de presupuesto diario de 0,35 € y semanal de 2,50 €.
-* **`Outlines`:** Máscaras de logits para respuestas estructuradas en JSON/Pydantic sin alucinaciones ni reintentos.
-* **`Crawl4AI`:** Extracción web ultralimpia en Markdown nativo eliminando código HTML y publicidad.
+AME employs an enrouted multi-model hierarchy designed to maximize reasoning power while enforcing strict token budget limits:
+
+```
+                          ┌───────────────────────────┐
+                          │   Brain Router / Router   │
+                          └─────────────┬─────────────┘
+                                        │
+        ┌───────────────────┬───────────┴───────────┬───────────────────┐
+        ▼                   ▼                       ▼                   ▼
+┌───────────────┐   ┌───────────────┐       ┌───────────────┐   ┌───────────────┐
+│    Brain 1    │   │    Brain 2    │       │    Brain 3    │   │    Brain 4    │
+│  Local Worker │   │  Ops Director │       │  Software CTO │   │  Gov Auditor  │
+│(Qwen 2.5 Coder│   │(Gemini Flash) │       │(DeepSeek API) │   │ (Argon / AGY) │
+│   GTX 1660)   │   │  $0.00 Cost   │       │ €0.50/day Cap │   │ High Priority │
+└───────┬───────┘   └───────┬───────┘       └───────┬───────┘   └───────┬───────┘
+        │                   │                       │                   │
+  Headless Crawl      Macro Planning          Code Solutions       Governance &
+  & Scraping 24/7     & Discord Chat          & Smart Contracts    Batch Fallback
+```
+
+1. **Brain 1: The Local Worker ($0.00 Cost)**
+   * **Engine:** Ollama running `qwen2.5-coder:7b-instruct-q4_K_S` accelerated by CUDA on local Nvidia GTX 1660 (6 GB VRAM).
+   * **Responsibilities:** Continuous background monitoring, Discord socket handling, headless web scraping via Crawl4AI, and Obsidian local memory synchronization.
+
+2. **Brain 2: The Operations Director ($0.00 Incremental)**
+   * **Engine:** Google Gemini Flash via Google AI Studio / Antigravity Pro.
+   * **Responsibilities:** Macro task decomposition, real-time natural language synthesis, and fast conversational intelligence.
+
+3. **Brain 3: The Software Engineer / CTO (€0.50/day Hard Cap)**
+   * **Engine:** DeepSeek API managed by LiteLLM with automatic circuit breaker.
+   * **Responsibilities:** Generating production-ready code solutions, EVM smart contracts, automated unit testing, and GitHub Pull Request formatting.
+
+4. **Brain 4: The Supreme Architect & Auditor**
+   * **Engine:** Argon / Antigravity Pro.
+   * **Responsibilities:** High-impact technical verification (difficulty ≥ 8/10), financial safety guardrails, and automated batch fallback to process top pending opportunities when high-level tasks are clear.
 
 ---
 
-## 📁 Estructura del Proyecto
+## ⛓️ Verified On-Chain Footprint on Base
+
+The system operates autonomously with verifiable transactions on Base:
+
+* **Primary Smart Contract:** [`MicroTaskRegistry.sol`](https://sepolia.basescan.org/address/0x04f473e39e678d012F1f42cba7649F248253cb56)
+  * **Network:** Base Sepolia (L2 Testnet) $\rightarrow$ Ready for Base Mainnet.
+  * **Verified Contract Address:** `0x04f473e39e678d012F1f42cba7649F248253cb56`
+  * **On-Chain Commitments:** 23+ verifiable autonomous micro-tasks registered and anchored into the blockchain.
+* **Oracle & Yield Infrastructure:**
+  * [`PreciousMetalsOracleAdapter.sol`](src/contracts/AgentMicroServiceOracle.sol): Dual Pyth/Chainlink oracle adapter deployed on Base.
+  * Yield and staking helper patches with 100% unit test coverage.
+* **Operator Payout Wallet:** `0x02c1F87F514493F359Afc0B3ff6b587434770361` (EVM compatible on Base Mainnet, Ethereum, Arbitrum, and Polygon).
+
+---
+
+## 🛠️ Core Autonomous Engines
+
+### 1. Concurrent 24/7 Autonomous Daemon (`scripts_generados/autonomous_daemon.py`)
+Decoupled multi-threaded pipeline running 5 independent asynchronous workers:
+* **Orders Worker (5s):** Instant execution of user directives from Discord.
+* **DeepSeek Solver (300s):** Strict 5-minute automated code execution targeting medium and low complexity tasks.
+* **Escrow Bounty Hunter (180s):** Multi-query GitHub scanner filtering for verified on-chain escrow deposits.
+* **Web3 On-Chain Pipeline (30s):** Automated state validation, heartbeat emission, and contract task registration.
+* **Grants Curator (1800s):** Continuous intelligence mining of developer grant opportunities.
+
+### 2. Escrow-Shielded Opportunity Queue (`src/opportunity_queue.py`)
+* **Spam & Donation Filter:** Automatically discards donation solicitations and unbacked tokens.
+* **Escrow Priority Sorting:** Prioritizes opportunities backed by on-chain escrow platforms (**Algora**, **Polar.sh**, **poidh.xyz**, **Gitcoin**).
+* **TTL Auto-Pruning:** Removes tasks unexecuted after 2 hours (7,200s) to keep memory lean.
+* **Cerebro 4 Batch Fallback:** Ensures high-tier models never sit idle when high-level queues are empty.
+
+### 3. Web3 Grants & Intelligence Curator (`src/data_curator.py`)
+* Leverages local `Crawl4AI` in headless mode (zero marginal cost) to scrape and structure funding opportunities across Base Ecosystem, Coinbase Developer Platform (CDP), and L2 hackathons into structured JSON and Markdown datasets.
+
+### 4. Live Telemetry Web Dashboard (`src/dashboard_server.py`)
+* Lightweight HTTP service running on `http://127.0.0.1:8080`.
+* Real-time metrics: GPU temperature, VRAM allocation, CPU/RAM usage, gas price history, Web3 balance, and DeepSeek daily budget progress.
+
+### 5. Discord Remote Command & Control (`src/discord_bot.py`)
+* **Dual-Engine Visual Capture:** Attempts native desktop capture; if screen is locked or in power-save mode, automatically launches headless Chromium via Crawl4AI to snapshot the live web dashboard.
+* **Zero-Noise Policy:** Routine task discovery and deliveries are logged silently to disk. Discord only triggers for user replies, system improvements, incoming real payments, urgent human intervention, and scheduled 12-hour reports (09:00 / 21:00).
+* **Single-Instance Mutex Protection:** Native Windows kernel mutex (`Global\AutonomousMicroEntrepreneur_SingleInstance`) prevents duplicate bot processes.
+
+---
+
+## 📁 Repository Structure
 
 ```
 autonomous-micro-entrepreneur/
 ├── config/
-│   ├── .env                 # Claves API y configuración privada
-│   └── .env.example         # Plantilla de configuración
-├── memoria/                 # Memoria persistente a largo plazo (Obsidian)
-│   ├── lecciones/           # Registro de errores y soluciones aprendidas
-│   ├── estrategias/         # Ideas de micro-servicios y airdrops
-│   └── estado/              # Registro diario de balance y métricas
-├── scripts_generados/       # Scripts autónomos generados de forma aislada
-├── src/
-│   ├── brain_router.py      # Enrutador inteligente de los 4 cerebros y presupuestos
-│   ├── discord_bot.py       # Bot privado con comando !screen y dashboard
-│   └── obsidian_memory.py   # Gestor de memoria persistente
-├── tools/
-│   └── tokless/             # Repositorio y herramientas de tokless
-├── SYSTEM_PROMPT.md         # Constitución y reglas maestras operativas
-└── README.md
+│   ├── .env.example              # Public configuration template
+│   └── .env                      # Local keys & credentials (Git-ignored)
+├── memoria/                      # Long-term persistent memory (Obsidian vault)
+│   ├── datasets_curados/         # Structured Web3 grants & intelligence datasets
+│   ├── estrategias/              # Revenue strategies & grant application dossiers
+│   │   ├── dossier_base_builder_grant.md
+│   │   └── soluciones_propuestas/# Generated code solutions & test suites
+│   ├── estado/                   # Telemetry states, budgets, and opportunity queues
+│   └── lecciones/                # Post-mortem logs and learned constraints
+├── scripts_generados/            # Core autonomous background workers
+│   ├── autonomous_daemon.py      # Main decoupled 24/7 concurrent daemon
+│   ├── continuous_worker.py      # On-chain Base Sepolia interaction loop
+│   └── opportunity_scraper.py    # Headless Crawl4AI mining pipeline
+├── src/                          # Modular source code
+│   ├── bounty_hunter.py          # Escrow-shielded GitHub & Web3 task scanner
+│   ├── brain_router.py           # 4-Brain intelligent LLM router & budget manager
+│   ├── dashboard_server.py       # Live telemetry server (Port 8080)
+│   ├── data_curator.py           # Base Ecosystem grants extractor
+│   ├── deepseek_solver.py        # Automated code generator with budget guard
+│   ├── discord_bot.py            # Remote command & control bridge
+│   ├── github_deliverer.py       # Automated Pull Request & comment submission
+│   ├── opportunity_queue.py      # Queue manager with escrow verification & TTL
+│   ├── system_watchdog.py        # Sub-2s process supervisor & auto-recovery
+│   ├── twelve_hour_reporter.py   # Scheduled 09:00 / 21:00 executive reports
+│   └── contracts/                # Solidity contracts (MicroTaskRegistry, Oracle)
+├── Arrancar_Bot.bat              # One-click Windows launch script
+├── SYSTEM_PROMPT.md              # Central operating constitution
+└── README.md                     # Project documentation
 ```
+
+---
+
+## ⚡ Quickstart
+
+### Prerequisites
+* Windows 10/11 or Linux with Python 3.11+
+* Local Ollama instance with `qwen2.5-coder:7b-instruct-q4_K_S`
+* Dedicated or integrated GPU (CUDA supported)
+
+### Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/RAMGOX/autonomous-micro-entrepreneur.git
+   cd autonomous-micro-entrepreneur
+   ```
+
+2. Create virtual environment and install dependencies:
+   ```bash
+   python -m venv .venv
+   .venv\Scripts\activate   # On Linux: source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. Configure environment:
+   ```bash
+   cp config/.env.example config/.env
+   # Edit config/.env with your API keys and Base wallet details
+   ```
+
+4. Launch the system:
+   ```bash
+   # Starts Watchdog, Dashboard, Discord Bot, and 24/7 Daemon
+   python src/system_watchdog.py
+   ```
+
+---
+
+## 📜 Grant Application & Ecosystem Alignment
+
+This project is submitted for consideration under the **Base Builder Grants (Retroactive Funding)** and **Coinbase Developer Platform (CDP) for Agents** initiatives. 
+
+Review the complete grant dossier in [`memoria/estrategias/dossier_base_builder_grant.md`](memoria/estrategias/dossier_base_builder_grant.md).
+
+* **Operator / Recipient Address:** `0x02c1F87F514493F359Afc0B3ff6b587434770361`
+* **Maintainer:** [RAMGOX](https://github.com/RAMGOX)
+* **License:** MIT

@@ -7,7 +7,7 @@ Operador / Cartera: `0x02c1F87F514493F359Afc0B3ff6b587434770361` (Base Mainnet /
 ## 1. MISIÓN Y OPERATIVA ACTUAL
 El sistema funciona 24/7 de forma 100% desatendida en un PC local (Ryzen 5 3600, GTX 1660 6GB VRAM, Windows 10 Pro):
 - **Objetivo económico:** Capturar y resolver bounties y micro-recompensas de código y smart contracts en GitHub/Web3, cobrando en USDC / ETH / USDT / tokens directamente a la billetera del operador.
-- **Entregas realizadas:** 72 soluciones entregadas directamente vía GitHub Issues/PRs por valor de **,603.00 USD** acumulados. Últimas entregas: [fulldecent/erc721#303](https://github.com/fulldecent/erc721/issues/303#issuecomment-6348396396), [fulldecent/erc721#300](https://github.com/fulldecent/erc721/issues/300#issuecomment-6348397559), [sourcey#182](https://github.com/sourcey/agent-ready-services/issues/182#issuecomment-6348346231).
+- **Entregas realizadas:** 73 soluciones entregadas directamente vía GitHub Issues/PRs por valor de **,653.00 USD** acumulados. Última entrega: [fulldecent/erc721#304](https://github.com/fulldecent/erc721/issues/304#issuecomment-6348433151) ( USD).
 ---
 
 ## 2. ARQUITECTURA DE CEREBROS Y DIVISIÓN DE TRABAJO
@@ -24,8 +24,8 @@ El sistema funciona 24/7 de forma 100% desatendida en un PC local (Ryzen 5 3600,
    - Bloquea atómicamente la tarea para no pisarse con Antigravity.
    - Guarda la solución en `memoria/estrategias/soluciones_propuestas/` y notifica a Discord.
 
-3. **Cerebro 4: Antigravity (Tú en chat principal / cron cada 7 min):**
-   - Cron de ejecución: **cada 7 minutos** (`*/7 * * * *`).
+3. **Cerebro 4: Antigravity (Tú en chat principal / cron cada 8 min):**
+   - Cron de ejecución: **cada 8 minutos** (`*/7 * * * *`).
    - Examina la **lista COMPLETA** (`alta`, `media`, `baja`).
    - Selecciona las 2-3 tareas más rentables en $ USD bloqueándolas atómicamente (`in_progress`).
    - Resuelve directamente o lanza 2-3 subagentes en paralelo.
