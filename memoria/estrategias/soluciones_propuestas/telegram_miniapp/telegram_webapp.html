@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Robinhood EVM Mini-App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg-color: #0b0e14;
+      --card-bg: #161b22;
+      --accent-color: #00c805;
+      --text-color: #f0f6fc;
+      --muted-text: #8b949e;
+      --border: #30363d;
+    }
+    body {
+      margin: 0;
+      padding: 16px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .header {
+      text-align: center;
+      padding: 12px 0;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--accent-color);
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 15px;
+      color: var(--muted-text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .metric {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--text-color);
+      margin: 8px 0;
+    }
+    .btn {
+      width: 100%;
+      background: var(--accent-color);
+      color: #000;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .input {
+      width: 100%;
+      box-sizing: border-box;
+      background: #0d1117;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🏦 Robinhood EVM Mini-App</h1>
+  </div>
+
+  <div class="card">
+    <h2>🏦 Precious Metals Reserves (Oracle)</h2>
+    <div style="display: flex; justify-content: space-between;">
+      <div>
+        <div style="color: var(--muted-text); font-size: 12px;">Gold (XAU/USD)</div>
+        <div class="metric" id="gold-price">$2,735.50</div>
+      </div>
+      <div>
+        <div style="color: var(--muted-text); font-size: 12px;">Silver (XAG/USD)</div>
+        <div class="metric" id="silver-price">$32.40</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🚀 Instant Token Launchpad</h2>
+    <input type="text" class="input" id="token-name" placeholder="Token Name (e.g. RobinDoge)">
+    <input type="text" class="input" id="token-symbol" placeholder="Symbol (e.g. RDOGE)">
+    <button class="btn" onclick="launchToken()">Deploy Token to EVM</button>
+  </div>
+
+  <div class="card">
+    <h2>📊 Staking & Community Yield</h2>
+    <div style="color: var(--muted-text); font-size: 13px;">Pool APY: <span style="color: var(--accent-color); font-weight: bold;">18.4%</span></div>
+    <button class="btn" style="background: #238636; color: #fff;" onclick="stakeTokens()">Stake $ROBIN_MCP</button>
+  </div>
+
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.expand();
+      tg.ready();
+    }
+
+    function launchToken() {
+      const name = document.getElementById("token-name").value;
+      const symbol = document.getElementById("token-symbol").value;
+      if (!name || !symbol) {
+        alert("Please enter both name and symbol.");
+        return;
+      }
+      alert(`Token deploy submitted: ${name} (${symbol})`);
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.sendData(JSON.stringify({ action: "launch", name, symbol }));
+      }
+    }
+
+    function stakeTokens() {
+      alert("Staking interface opened.");
+      if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.sendData(JSON.stringify({ action: "stake" }));
+      }
+    }
+  </script>
+</body>
+</html>

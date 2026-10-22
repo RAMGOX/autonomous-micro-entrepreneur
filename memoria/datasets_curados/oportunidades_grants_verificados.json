@@ -1,0 +1,252 @@
+[
+  {
+    "iniciativa": "Trade, lend, and borrow stocks 24/7 on Base",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/stocks",
+    "descripcion_resumida": "Plataforma para comerciar, prestar y prestar acciones 24/7 en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "Trade stocks 24/7 on Base",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/stocks",
+    "descripcion_resumida": "Plataforma para comerciar acciones 24/7 en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "AllaiwalletdeficonsumeronrampinfraBoost Campaigns",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "No especificado",
+    "enlace": "https://www.base.org/ecosystem",
+    "descripcion_resumida": "Campaña de Boost para iniciativas en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "0x",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://0x.org/",
+    "descripcion_resumida": "Plataforma de infraestructura para el comercio de criptomonedas.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "0xPPL",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://0xppl.com",
+    "descripcion_resumida": "Plataforma de marketing y análisis para redes sociales.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "0xSplits",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://0xsplits.xyz/",
+    "descripcion_resumida": "Plataforma para dividir ganancias en múltiples cuentas.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "1rpc",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://1rpc.io",
+    "descripcion_resumida": "Plataforma de proveedores de nodo para la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "20lab",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://20lab.app/generate/erc20-token/base/",
+    "descripcion_resumida": "Herramienta para generar tokens ERC20 en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "3DNS",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://3dns.box",
+    "descripcion_resumida": "Plataforma de DNS para la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "8lends",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.8lends.io/",
+    "descripcion_resumida": "Plataforma de préstamos y préstamos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "A0x",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://a0x.co",
+    "descripcion_resumida": "Plataforma de infraestructura para el comercio de criptomonedas.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "Aave",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://app.aave.com",
+    "descripcion_resumida": "Plataforma de préstamos y préstamos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "Across Protocol",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://across.to/",
+    "descripcion_resumida": "Plataforma de puente para la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "Add3",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://add3.io",
+    "descripcion_resumida": "Plataforma de infraestructura para la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "Aerodrome Finance",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "http://aerodrome.finance",
+    "descripcion_resumida": "Plataforma de intercambio de criptomonedas en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "AIBased",
+    "tipo": "Herramienta",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://aibased.app",
+    "descripcion_resumida": "Plataforma de inteligencia artificial para la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 18:31:40"
+  },
+  {
+    "iniciativa": "Coinbase for Agents",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/coinbase-for-agents",
+    "descripcion_resumida": "Herramienta para agentes que permite interactuar con la red de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 18:32:30"
+  },
+  {
+    "iniciativa": "CDP for Agents",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/cdp-for-agents",
+    "descripcion_resumida": "Herramienta para agentes que facilita el acceso a la plataforma de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 18:32:30"
+  },
+  {
+    "iniciativa": "USDC Rewards",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/wallets/usdc-rewards",
+    "descripcion_resumida": "Programa de recompensas para usuarios que utilizan USDC en Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 18:32:30"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondos para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 19:25:10"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 19:26:18"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar proyectos y iniciativas en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 19:56:38"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 19:56:47"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondos para apoyar proyectos y iniciativas en el ecosistema Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 20:26:56"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 20:27:52"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "ord_1792628814",
+    "timestamp": "2026-10-22 02:26:54",
+    "source": "command_orden",
+    "text": "está funcionando bien la comunicación?",
+    "status": "completed"
+  },
+  {
+    "id": "ord_1792629006",
+    "timestamp": "2026-10-22 02:30:06",
+    "source": "command_orden",
+    "text": "porque se cuela ? entre muchas letras?",
+    "status": "completed"
+  },
+  {
+    "id": "ord_1792631981",
+    "timestamp": "2026-10-22 03:19:41",
+    "source": "discord_chat",
+    "text": "si va todo bien",
+    "status": "completed"
+  },
+  {
+    "id": "ord_1792632394",
+    "timestamp": "2026-10-22 03:26:34",
+    "source": "command_orden",
+    "text": "porque no me está respondiendo el cerebro a los mensajes?, revisa los últimos mensajes y contestame porfa",
+    "status": "completed"
+  },
+  {
+    "id": "ord_1792632458",
+    "timestamp": "2026-10-22 03:27:38",
+    "source": "command_orden",
+    "text": "este es el mensaje que habia mandado: Pregunta a cerebro: en las fotos sale que me has mandado un mensaje y dices que estás trabajando, es realmente así, o te has quedado colgado esperando un mensaje?",
+    "status": "completed"
+  },
+  {
+    "id": "ord_1792632562",
+    "timestamp": "2026-10-22 03:29:22",
+    "source": "command_orden",
+    "text": "estás trabajando ahora mismo o estás esperando una respuesta? Me puedes responder el cerebro de gemini flash?",
+    "status": "completed"
+  },
+  {
+    "id": "ord_1792649566",
+    "timestamp": "2026-10-22 08:12:46",
+    "source": "command_orden",
+    "text": "quiero que me expliques que has hecho está noche de forma clara para enterarme bien y que vas a hacer hoy",
+    "status": "completed"
+  },
+  {
+    "id": "ord_1792649731",
+    "timestamp": "2026-10-22 08:15:31",
+    "source": "command_orden",
+    "text": "puedes abrir obsidian en la pantalla para ver cómo va la bóveda?",
+    "status": "completed"
+  }
+]

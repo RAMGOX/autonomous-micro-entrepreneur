@@ -1,0 +1,37 @@
+# Environment variables and secrets (STRICT SECURITY)
+config/.env
+.env
+.env.*
+*.env
+*.key
+*.pem
+private_key*
+*wallet*.json
+doomsday_quickstart_wallet.json
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Logs and runtime databases
+logs/
+*.log
+*.sqlite
+*.sqlite3
+screen.png
+
+# OS / Editor specific
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.cursor/

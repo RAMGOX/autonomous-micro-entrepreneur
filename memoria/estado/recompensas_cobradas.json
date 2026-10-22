@@ -1,0 +1,27 @@
+{
+  "last_check": "2026-10-22 16:50:00",
+  "auto_claim_active": true,
+  "oracle_withdrawn_eth": 0.0,
+  "bounties_won": [
+    {
+      "bounty": "Robinhood EVM MCP Issue #4 (Gold/Silver Oracle Adapter)",
+      "reward": "50,000 $ROBIN_MCP",
+      "wallet": "0x02c1F87F514493F359Afc0B3ff6b587434770361",
+      "status": "Solucion Lista / En cola de cobro"
+    },
+    {
+      "bounty": "Robinhood EVM MCP Issue #2 (Staking & Yield Helper)",
+      "reward": "50,000 $ROBIN_MCP",
+      "wallet": "0x02c1F87F514493F359Afc0B3ff6b587434770361",
+      "status": "Solucion Lista / En cola de cobro"
+    },
+    {
+      "bounty": "Robinhood EVM MCP Issue #6 (Telegram Mini-App & Bot)",
+      "reward": "50,000 $ROBIN_MCP",
+      "wallet": "0x02c1F87F514493F359Afc0B3ff6b587434770361",
+      "status": "Solucion Lista / En cola de cobro"
+    }
+  ],
+  "total_tokens_pending": 150000,
+  "token_symbol": "$ROBIN_MCP"
+}
