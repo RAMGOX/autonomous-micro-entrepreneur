@@ -28,6 +28,7 @@ from eas_indexer import get_address_attestations, get_address_reputation, get_re
 from erc8021_builder import encode_erc8021_suffix, attach_erc8021_attribution, decode_erc8021_attribution, DEFAULT_BUILDER_CODE
 from defillama_engine import get_base_top_yields, get_base_token_prices, get_base_defi_overview
 from dex_scanner import get_base_trending_pools, get_base_new_pools, get_base_token_market_data
+from treasury_yield_manager import get_treasury_status, get_recommended_allocations, simulate_yield_cashflow
 
 PORT = 8080
 WALLET_ADDRESS = os.getenv("PUBLIC_ADDRESS_TESTNET", "0x02c1F87F514493F359Afc0B3ff6b587434770361")
@@ -1141,6 +1142,35 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(json.dumps({"status": "success" if data else "not_found", "token": data}).encode("utf-8"))
+        elif self.path == "/api/v1/treasury/status":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            st = get_treasury_status()
+            self.wfile.write(json.dumps(st).encode("utf-8"))
+        elif self.path.startswith("/api/v1/treasury/recommendations"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            min_tvl = float(qs.get("min_tvl", [1000000])[0])
+            recs = get_recommended_allocations(min_tvl=min_tvl)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"count": len(recs), "recommendations": recs}).encode("utf-8"))
+        elif self.path.startswith("/api/v1/treasury/simulate"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            amt = float(qs.get("amount", [100.0])[0])
+            sim = simulate_yield_cashflow(amt)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(sim).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()

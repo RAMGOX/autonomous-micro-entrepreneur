@@ -85,6 +85,10 @@ def launch_daemon():
     script = str(BASE_DIR / "scripts_generados" / "autonomous_daemon.py")
     subprocess.Popen([PYTHON_EXE, script], cwd=str(BASE_DIR), creationflags=subprocess.CREATE_NO_WINDOW)
 
+def launch_tunnel():
+    script = str(BASE_DIR / "src" / "tunnel_manager.py")
+    subprocess.Popen([PYTHON_EXE, script], cwd=str(BASE_DIR), creationflags=subprocess.CREATE_NO_WINDOW)
+
 def get_base_gas_eth(wallet: str) -> float:
     try:
         data = json.dumps({"jsonrpc": "2.0", "method": "eth_getBalance", "params": [wallet, "latest"], "id": 1}).encode("utf-8")
@@ -179,6 +183,12 @@ def main():
         status_report["autonomous_daemon"] = check_process_running("autonomous_daemon.py")
         if not status_report["autonomous_daemon"]:
             restart_service("Autonomous Daemon", launch_daemon)
+            time.sleep(2)
+            
+        # 5. Comprobar Cloudflare Public Tunnel
+        status_report["public_tunnel"] = check_process_running("tunnel_manager.py")
+        if not status_report["public_tunnel"]:
+            restart_service("Cloudflare Tunnel (x402 Public)", launch_tunnel)
             time.sleep(2)
             
         # Guardar telemetria de salud
