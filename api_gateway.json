@@ -1,0 +1,30 @@
+{
+  "status": "online",
+  "name": "Autonomous Micro-Entrepreneur (AME)",
+  "version": "2.0.0",
+  "network": "base",
+  "chainId": 8453,
+  "payee": "0xdCEa1CDdA6E23Be9670Eda3073691FA6E4e140bf",
+  "public_url": "https://enforcement-valid-carrying-slip.trycloudflare.com",
+  "endpoints": {
+    "pricing": "https://enforcement-valid-carrying-slip.trycloudflare.com/api/v1/x402/pricing",
+    "intel": "https://enforcement-valid-carrying-slip.trycloudflare.com/api/v1/x402/intel",
+    "solve": "https://enforcement-valid-carrying-slip.trycloudflare.com/api/v1/x402/solve",
+    "agent_manifest": "https://enforcement-valid-carrying-slip.trycloudflare.com/.well-known/agent.json",
+    "openapi": "https://enforcement-valid-carrying-slip.trycloudflare.com/openapi.json"
+  },
+  "pricing": {
+    "intel": {
+      "amount_eth": 0.00005,
+      "amount_usd_est": 0.13,
+      "description": "Curated Base L2 & POIDH live telemetry and market intelligence"
+    },
+    "solve": {
+      "amount_eth": 0.0001,
+      "amount_usd_est": 0.26,
+      "description": "Autonomous smart contract audit, technical bug fix or code solution"
+    }
+  },
+  "standards": ["x402", "ERC-8021", "AIP-1"],
+  "updated_at": "2026-10-23T16:00:00Z"
+}
