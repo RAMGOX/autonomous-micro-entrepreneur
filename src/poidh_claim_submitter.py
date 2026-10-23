@@ -160,10 +160,19 @@ def check_and_notify_pending_claims():
                 continue
                 
             clean_title = re.sub(r"^\[[^\]]+\]\s*", "", title)
-            # Acortar descripción para evitar URLs gigantescas o caracteres rotos
-            raw_desc = it.get("description", "")
-            clean_desc = (re.sub(r"[\r\n\t]+", " ", raw_desc)[:100].strip() + f" | Payout: {USER_PAYOUT_WALLET}")[:250]
-            proof_uri = "https://github.com/RAMGOX/autonomous-micro-entrepreneur"
+            
+            # 1. Determinar el comprobante visual (proof_uri): Debe ser imagen directa para que poidh.xyz lo renderice sin error
+            proof_uri = "https://raw.githubusercontent.com/RAMGOX/autonomous-micro-entrepreneur/main/docs/dashboard_preview.png"
+            sol_img = BASE_DIR / "memoria" / "estrategias" / "soluciones_propuestas" / f"solucion_{it.get('id')}.png"
+            if sol_img.exists():
+                proof_uri = f"https://raw.githubusercontent.com/RAMGOX/autonomous-micro-entrepreneur/main/memoria/estrategias/soluciones_propuestas/{sol_img.name}"
+
+            # 2. Descripción completa con enlace en vivo y código abierto
+            clean_desc = (
+                f"Live: https://ramgox.github.io/autonomous-micro-entrepreneur/ | "
+                f"Code: https://github.com/RAMGOX/autonomous-micro-entrepreneur | "
+                f"Payout: {USER_PAYOUT_WALLET}"
+            )[:250]
             
             claim_res = prepare_claim_for_bounty(
                 chain=chain,
