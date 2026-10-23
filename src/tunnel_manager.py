@@ -64,19 +64,31 @@ def run_tunnel():
             
             # Guardar en memoria
             PUBLIC_URL_FILE.parent.mkdir(parents=True, exist_ok=True)
-            PUBLIC_URL_FILE.write_text(
-                json.dumps({
-                    "public_url": public_url,
-                    "target": LOCAL_TARGET,
-                    "updated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
-                    "x402_endpoints": {
-                        "pricing": f"{public_url}/api/v1/x402/pricing",
-                        "intel": f"{public_url}/api/v1/x402/intel",
-                        "solve": f"{public_url}/api/v1/x402/solve"
-                    }
-                }, indent=2),
-                encoding="utf-8"
-            )
+            DOCS_GATEWAY_FILE = BASE_DIR / "docs" / "api_gateway.json"
+            gateway_data = {
+                "status": "online",
+                "name": "Autonomous Micro-Entrepreneur (AME)",
+                "version": "2.0.0",
+                "network": "base",
+                "chainId": 8453,
+                "payee": "0xdCEa1CDdA6E23Be9670Eda3073691FA6E4e140bf",
+                "public_url": public_url,
+                "endpoints": {
+                    "pricing": f"{public_url}/api/v1/x402/pricing",
+                    "intel": f"{public_url}/api/v1/x402/intel",
+                    "solve": f"{public_url}/api/v1/x402/solve",
+                    "agent_manifest": f"{public_url}/.well-known/agent.json",
+                    "openapi": f"{public_url}/openapi.json"
+                },
+                "pricing": {
+                    "intel": {"amount_eth": 0.00005, "amount_usd_est": 0.13, "description": "Curated Base L2 & POIDH live telemetry and market intelligence"},
+                    "solve": {"amount_eth": 0.0001, "amount_usd_est": 0.26, "description": "Autonomous smart contract audit, technical bug fix or code solution"}
+                },
+                "standards": ["x402", "ERC-8021", "AIP-1"],
+                "updated_at": time.strftime("%Y-%m-%d %H:%M:%S")
+            }
+            PUBLIC_URL_FILE.write_text(json.dumps(gateway_data, indent=2), encoding="utf-8")
+            DOCS_GATEWAY_FILE.write_text(json.dumps(gateway_data, indent=2), encoding="utf-8")
 
             # Notificar al dashboard
             if notify_user_discord:
