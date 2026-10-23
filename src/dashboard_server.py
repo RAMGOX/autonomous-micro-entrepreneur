@@ -25,6 +25,7 @@ from x402_gateway import get_gateway, PRICING_TABLE, USER_PAYOUT_WALLET
 from brain_router import route_task
 from agentkit_actions import get_agentkit_provider
 from eas_indexer import get_address_attestations, get_address_reputation, get_recent_attestations
+from erc8021_builder import encode_erc8021_suffix, attach_erc8021_attribution, decode_erc8021_attribution, DEFAULT_BUILDER_CODE
 
 PORT = 8080
 WALLET_ADDRESS = os.getenv("PUBLIC_ADDRESS_TESTNET", "0x02c1F87F514493F359Afc0B3ff6b587434770361")
@@ -1054,6 +1055,22 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(json.dumps({"network": "base", "count": len(recent), "attestations": recent}).encode("utf-8"))
+        elif self.path == "/api/v1/erc8021/info":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            suffix = encode_erc8021_suffix()
+            resp = {
+                "standard": "ERC-8021",
+                "network": "base",
+                "chainId": 8453,
+                "builder_code": DEFAULT_BUILDER_CODE,
+                "suffix_hex": suffix.hex(),
+                "marker": "80218021802180218021802180218021",
+                "docs": "https://erc8021.com"
+            }
+            self.wfile.write(json.dumps(resp).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
@@ -1128,40 +1145,41 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(json.dumps(res).encode("utf-8"))
-        elif self.path.startswith("/api/v1/eas/attestations"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            addr = qs.get("address", [WALLET_ADDRESS])[0]
-            limit = int(qs.get("limit", [10])[0])
-            items = get_address_attestations(addr, limit=limit)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"address": addr, "count": len(items), "attestations": items}).encode("utf-8"))
-        elif self.path.startswith("/api/v1/eas/reputation"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            addr = qs.get("address", [WALLET_ADDRESS])[0]
-            rep = get_address_reputation(addr)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps(rep).encode("utf-8"))
-        elif self.path.startswith("/api/v1/eas/latest"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            limit = int(qs.get("limit", [10])[0])
-            recent = get_recent_attestations(limit=limit)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"network": "base", "count": len(recent), "attestations": recent}).encode("utf-8"))
+        elif self.path == "/api/v1/erc8021/attach":
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length).decode('utf-8')
+            try:
+                data = json.loads(body)
+                raw_data = data.get("data", "")
+                code = data.get("builder_code", DEFAULT_BUILDER_CODE)
+                attributed = attach_erc8021_attribution(raw_data, code)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "success", "attributed_data": attributed, "builder_code": code}).encode("utf-8"))
+            except Exception as e:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
+        elif self.path == "/api/v1/erc8021/decode":
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length).decode('utf-8')
+            try:
+                data = json.loads(body)
+                raw_data = data.get("data", "")
+                decoded = decode_erc8021_attribution(raw_data)
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status": "success", "result": decoded}).encode("utf-8"))
+            except Exception as e:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()

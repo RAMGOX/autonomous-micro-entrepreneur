@@ -96,3 +96,19 @@
   - 6 reclamos oficiales activos monitoreados en Base Mainnet (primer puesto en #1503).
   - Saldo gas bot en Base: `0.000452 ETH` (~125 transacciones restantes).
   - Necesidad de ayuda del usuario: **Ninguna** (100% autónomo).
+
+## Ciclo 7: 2026-10-23 08:00 CET
+- **Tema Investigado:** Estándar oficial de atribución on-chain ERC-8021 en Base L2 (`erc8021.com`), Builder Codes (`base/skills/build-on-base`), monetización por volumen de secuenciador e indexación en Coinbase CDP SQL (`base.transaction_attributions`).
+- **Hallazgo:**
+  1. Base premia a los agentes y desarrolladores que generan volumen on-chain mediante el estándar ERC-8021 (Schema 0).
+  2. Añadir un sufijo de calldata con el marcador canónico `0x80218021802180218021802180218021` y el código de builder (`ame_agent`) atribuye el 100% de la actividad en Base Mainnet sin interferir con la ejecución de contratos inteligentes (la EVM ignora los bytes extra).
+- **Implementación Realizada:**
+  1. Desarrollado el módulo [`src/erc8021_builder.py`](file:///C:/Users/Antonio%20Ramos/autonomous-micro-entrepreneur/src/erc8021_builder.py) con codificación, anexado y decodificación estricta de sufijos ERC-8021 Schema 0.
+  2. Integrado en [`src/poidh_claim_submitter.py`](file:///C:/Users/Antonio%20Ramos/autonomous-micro-entrepreneur/src/poidh_claim_submitter.py): ahora todas las transacciones de reclamo on-chain y los barridos de fondos hacia la cartera del usuario (`sweep_rewards_to_user`) llevan incrustado el sufijo de atribución de `ame_agent`.
+  3. Creada la Skill de Antigravity: [`.agents/skills/erc8021-attribution/SKILL.md`](file:///C:/Users/Antonio%20Ramos/autonomous-micro-entrepreneur/.agents/skills/erc8021-attribution/SKILL.md).
+  4. Desplegados los endpoints REST en [`src/dashboard_server.py`](file:///C:/Users/Antonio%20Ramos/autonomous-micro-entrepreneur/src/dashboard_server.py) (puerto 8080): `/api/v1/erc8021/info`, `POST /api/v1/erc8021/attach` y `POST /api/v1/erc8021/decode`.
+- **Estado del Sistema:**
+  - 100% operativo en verde (Dashboard 8080, Daemon 24/7, Ollama GPU, Watchdog).
+  - 6 reclamos oficiales activos monitoreados en Base Mainnet (reclamante #1 en #1503).
+  - Saldo gas bot en Base: `0.000452 ETH` (~125 transacciones restantes).
+  - Necesidad de ayuda del usuario: **Ninguna** (100% autónomo).

@@ -15,6 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(BASE_DIR / "src"))
 
 from discord_bridge import notify_user_discord
+from erc8021_builder import attach_erc8021_attribution, encode_erc8021_suffix
 
 USER_PAYOUT_WALLET = os.getenv("USER_PAYOUT_WALLET", "0xdCEa1CDdA6E23Be9670Eda3073691FA6E4e140bf")
 BASE_MAINNET_RPC = "https://mainnet.base.org"
@@ -88,15 +89,17 @@ def sweep_rewards_to_user():
         min_threshold = w3.to_wei(0.0008, "ether")
         if bal_wei > min_threshold:
             gas_price = w3.eth.gas_price
-            estimated_gas = 21000
+            estimated_gas = 25000
             tx_cost = gas_price * estimated_gas
             reserve = w3.to_wei(0.0001, "ether") # reserva para futuros reclamos
             send_amount = bal_wei - tx_cost - reserve
             if send_amount > 0:
+                attr_suffix = encode_erc8021_suffix()
                 tx = {
                     "nonce": w3.eth.get_transaction_count(acct.address),
                     "to": Web3.to_checksum_address(USER_PAYOUT_WALLET),
                     "value": send_amount,
+                    "data": f"0x{attr_suffix.hex()}",
                     "gas": estimated_gas,
                     "gasPrice": gas_price,
                     "chainId": 8453
@@ -192,7 +195,7 @@ def check_and_notify_pending_claims():
                         if bal >= min_gas:
                             tx_info = claim_res["transaction"]
                             to_addr = Web3.to_checksum_address(tx_info["to"])
-                            tx_data = tx_info["data"]
+                            tx_data = attach_erc8021_attribution(tx_info["data"])
                             gas_est = w3.eth.estimate_gas({'from': bot.address, 'to': to_addr, 'data': tx_data})
                             gas_price = w3.eth.gas_price
                             nonce = w3.eth.get_transaction_count(bot.address)
