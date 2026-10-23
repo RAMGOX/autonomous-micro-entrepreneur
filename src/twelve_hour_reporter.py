@@ -75,17 +75,18 @@ def send_12h_report(force_period: str = "") -> bool:
             "name": "💰 Saldo y Movimientos de Cartera",
             "value": (
                 f"• **Cartera:** `{WALLET_ADDR[:8]}...{WALLET_ADDR[-6:]}`\n"
-                f"• **Capital Real Líquido:** `0,00 €` *(0 gastos no autorizados, fondos blindados)*\n"
-                f"• **Saldo en Base Sepolia:** `0.0399 ETH` (Red L2 de pruebas)"
+                f"• **Tokens Base Mainnet:** `3,000 wDOOM` (Recompensas on-chain acreditadas)\n"
+                f"• **Saldo Base Sepolia:** `0.0399 ETH` (Red L2 de despliegue)\n"
+                f"• **Capital Líquido:** `0,00 €` *(Fondos y gastos bajo estricto control)*"
             ),
             "inline": False
         },
         {
-            "name": "⚙️ Bounties y Subvenciones (Grants)",
+            "name": "⚙️ Bounties On-Chain y Subvenciones",
             "value": (
-                f"• **Soluciones listas/entregadas:** `{delivered_opps}` en GitHub\n"
-                f"• **Grants curados en Base / CDP:** `{grants_count}` programas verificados\n"
-                f"• **Tareas activas en cola:** `{active_opps}` (prioridad a contratos con escrow verificado)"
+                f"• **Tareas con Escrow Verificado:** `{active_opps}` activas en cola (Protocolo POIDH)\n"
+                f"• **Soluciones Generadas:** `{delivered_opps}` listas para reclamación on-chain\n"
+                f"• **Criterio Operativo:** Filtro estricto Coste/Beneficio (Cero spam en GitHub)"
             ),
             "inline": False
         },

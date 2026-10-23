@@ -248,5 +248,655 @@
     "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
     "fuente": "Coinbase Developer Platform Docs",
     "actualizado_el": "2026-10-22 20:27:52"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar y fomentar el desarrollo y crecimiento del ecosistema de Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 20:58:01"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 20:58:45"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 21:17:21"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 21:17:47"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en el ecosistema Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 21:30:24"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 21:30:36"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar proyectos y empresas en el ecosistema Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 21:50:21"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 21:50:30"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 22:00:28"
+  },
+  {
+    "iniciativa": "Coinbase for Agents",
+    "tipo": "Grant",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/coinbase-for-agents",
+    "descripcion_resumida": "Programa para desarrolladores de agentes que proporciona herramientas y recursos para crear soluciones basadas en la red de agentes de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 22:00:43"
+  },
+  {
+    "iniciativa": "USDC Rewards",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/wallets/usdc-rewards",
+    "descripcion_resumida": "Programa de recompensas para usuarios de USDC que utilizan su moneda estables en Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 22:00:43"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo de apoyo para proyectos y iniciativas en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 22:31:25"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 22:31:38"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 22:45:24"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 22:45:47"
+  },
+  {
+    "iniciativa": "Coinbase for Agents",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/overview",
+    "descripcion_resumida": "Herramienta para desarrolladores de agentes que permite crear y gestionar agentes de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 22:45:47"
+  },
+  {
+    "iniciativa": "USDC Rewards",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/wallets/usdc-rewards",
+    "descripcion_resumida": "Programa de recompensas para usuarios que utilizan USDC en Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 22:45:47"
+  },
+  {
+    "iniciativa": "Changelogs",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/get-started/changelog",
+    "descripcion_resumida": "Registro de cambios y actualizaciones para la plataforma de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 22:45:47"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo de apoyo para proyectos y iniciativas en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 23:04:50"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación para desarrolladores de Coinbase, incluyendo API Reference, SDKs y Recipes.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 23:05:50"
+  },
+  {
+    "iniciativa": "Coinbase for Agents",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/overview",
+    "descripcion_resumida": "Herramienta para agentes que permite interactuar con Coinbase en nombre de sus clientes.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 23:05:50"
+  },
+  {
+    "iniciativa": "USDC Rewards",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/wallets/usdc-rewards",
+    "descripcion_resumida": "Programa de recompensas para usuarios que utilizan USDC en Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 23:05:50"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar proyectos y empresas en el ecosistema Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-22 23:35:59"
+  },
+  {
+    "iniciativa": "Coinbase for Agents",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/coinbase-for-agents",
+    "descripcion_resumida": "Herramienta para facilitar las transacciones financieras para agentes.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 23:36:17"
+  },
+  {
+    "iniciativa": "USDC Rewards",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/wallets/usdc-rewards",
+    "descripcion_resumida": "Programa de recompensas para usuarios de USDC.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-22 23:36:17"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar proyectos y empresas en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 00:07:07"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 00:07:19"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 00:21:22"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 00:21:44"
+  },
+  {
+    "iniciativa": "Coinbase for Agents",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/overview",
+    "descripcion_resumida": "Herramienta para agentes que permite interactuar con Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 00:21:44"
+  },
+  {
+    "iniciativa": "CDP for Agents",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/overview",
+    "descripcion_resumida": "Herramienta para agentes que permite interactuar con Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 00:21:44"
+  },
+  {
+    "iniciativa": "USDC Rewards",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/wallets/usdc-rewards",
+    "descripcion_resumida": "Programa de recompensas para usuarios de USDC.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 00:21:44"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 01:00:41"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 01:01:58"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar proyectos y empresas en el ecosistema Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 01:32:42"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 01:33:08"
+  },
+  {
+    "iniciativa": "Dev Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://portal.cdp.coinbase.com/",
+    "descripcion_resumida": "Plataforma para desarrolladores de Coinbase donde pueden gestionar sus aplicaciones y obtener acceso a recursos.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 01:33:08"
+  },
+  {
+    "iniciativa": "Sandbox",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/get-started/sandbox",
+    "descripcion_resumida": "Entorno de prueba para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 01:33:08"
+  },
+  {
+    "iniciativa": "USDC Rewards",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/wallets/usdc-rewards",
+    "descripcion_resumida": "Programa de recompensas para usuarios de USDC.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 01:33:08"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 02:05:58"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 02:06:11"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar proyectos y iniciativas en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 02:36:20"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 02:36:29"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar proyectos y iniciativas en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 03:08:13"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 03:08:26"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar proyectos y iniciativas dentro del ecosistema Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 03:39:15"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 03:39:24"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 04:09:44"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 04:09:53"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 04:40:11"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 04:40:21"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 05:11:23"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 05:11:36"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos dentro del ecosistema Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 05:41:51"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 05:42:11"
+  },
+  {
+    "iniciativa": "Coinbase for Agents",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/overview",
+    "descripcion_resumida": "Herramienta para desarrolladores de agentes que permite la integración de Coinbase en aplicaciones de terceros.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 05:42:11"
+  },
+  {
+    "iniciativa": "USDC Rewards",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/wallets/usdc-rewards",
+    "descripcion_resumida": "Programa de recompensas para usuarios que utilizan USDC en Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 05:42:11"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en el ecosistema Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 06:20:08"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 06:21:00"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar iniciativas y proyectos en la red Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 06:51:09"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación para desarrolladores de Coinbase, incluyendo API Reference, SDKs y Recipes.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 06:51:19"
+  },
+  {
+    "iniciativa": "Base Ecosystem Fund",
+    "tipo": "Grant",
+    "red": "Base",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://www.base.org/ecosystem-fund",
+    "descripcion_resumida": "Fondo para apoyar proyectos y empresas en el ecosistema Base.",
+    "fuente": "Base Ecosystem & Grants",
+    "actualizado_el": "2026-10-23 07:07:14"
+  },
+  {
+    "iniciativa": "Coinbase Developer Portal",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com",
+    "descripcion_resumida": "Plataforma de documentación y recursos para desarrolladores de Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 07:07:33"
+  },
+  {
+    "iniciativa": "Coinbase for Agents",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/ai-agents/overview",
+    "descripcion_resumida": "Herramienta para agentes que permite la integración de Coinbase en sus procesos de negocio.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 07:07:33"
+  },
+  {
+    "iniciativa": "USDC Rewards",
+    "tipo": "Herramienta",
+    "red": "Base / Ethereum",
+    "valor_estimado": "Gratuito",
+    "enlace": "https://docs.cdp.coinbase.com/wallets/usdc-rewards",
+    "descripcion_resumida": "Programa de recompensas para usuarios que utilizan USDC en Coinbase.",
+    "fuente": "Coinbase Developer Platform Docs",
+    "actualizado_el": "2026-10-23 07:07:33"
   }
 ]

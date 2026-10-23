@@ -115,6 +115,77 @@ def get_best_pending_opportunity(difficulty_levels: Optional[List[str]] = None) 
     top = get_top_pending_opportunities(difficulty_levels=difficulty_levels, limit=1)
     return top[0] if top else None
 
+def score_opportunity_cost_benefit(opp: Dict[str, Any]) -> float:
+    """Calcula una puntuación estricta de coste-beneficio para la oportunidad"""
+    title = (opp.get("title") or "").lower()
+    desc = (opp.get("description") or "").lower()
+    text = title + " " + desc
+    val_usd = float(opp.get("estimated_value_usd", 0.0))
+    
+    # 1. Descarte inmediato de tareas no viables por IA o que requieran gastos/acciones físicas/sociales
+    unfeasible = [
+        "wedgie", "selfie", "sticker", "irl", "ticket", "entry is", "human body", 
+        "desert", "in person", "recruit", "musemaxxing", "muse agent", "concert", 
+        "art show", "street music", "referral", "invite"
+    ]
+    if any(k in text for k in unfeasible):
+        return -1000.0
+        
+    score = 0.0
+    
+    # 2. Bonificación por requerimientos técnicos directos de datos/código
+    tech_keywords = ["csv", "data", "contract", "python", "script", "analysis", "basescan", "arbiscan", "query", "schema"]
+    tech_matches = sum(1 for k in tech_keywords if k in text)
+    score += tech_matches * 15.0
+    
+    # 3. Factor de recompensa y escrow
+    if opp.get("is_escrow_verified"):
+        score += 20.0
+        
+    # Recompensa razonable
+    if 5.0 <= val_usd <= 200.0:
+        score += min(val_usd, 50.0) * 1.2
+    else:
+        score += val_usd * 0.05
+        
+    return score
+
+def get_best_cost_benefit_opportunity(difficulty_levels: Optional[List[str]] = None, lock: bool = False, solver: str = "") -> Optional[Dict[str, Any]]:
+    """Selecciona la mejor oportunidad según su relación coste/beneficio y viabilidad técnica"""
+    prune_expired_opportunities()
+    items = load_queue()
+
+    if difficulty_levels:
+        levels = [d.lower() for d in difficulty_levels]
+    else:
+        levels = ["alta", "media", "baja"]
+
+    candidates = [
+        it for it in items
+        if it.get("status") == "pending" and it.get("difficulty") in levels
+    ]
+    if not candidates:
+        return None
+
+    scored = [(it, score_opportunity_cost_benefit(it)) for it in candidates]
+    viable = [pair for pair in scored if pair[1] > 0]
+    if not viable:
+        return None
+
+    viable.sort(key=lambda pair: pair[1], reverse=True)
+    best_opp = viable[0][0]
+
+    if lock and solver:
+        best_id = best_opp["id"]
+        for it in items:
+            if it.get("id") == best_id:
+                it["status"] = "in_progress"
+                it["solver"] = solver
+                it["started_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+        save_queue(items)
+
+    return best_opp
+
 def get_cerebro4_opportunities(limit: int = 3, lock: bool = False, solver: str = "Cerebro 4 (Argon)") -> List[Dict[str, Any]]:
     """
     Estrategia Cerebro 4:

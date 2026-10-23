@@ -5,32 +5,55 @@ Discord Bridge: Canal bidireccional entre el Cerebro Central y el Usuario en Dis
 import os
 import json
 import time
-import requests
+import urllib.request
 from pathlib import Path
 from typing import Optional, Dict, Any, List
-from dotenv import load_dotenv
+
+try:
+    import requests
+except ImportError:
+    requests = None
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv_avail = True
+except ImportError:
+    load_dotenv_avail = False
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_PATH = BASE_DIR / "config" / ".env"
 MEMORIA_DIR = BASE_DIR / "memoria" / "estado"
 MEMORIA_DIR.mkdir(parents=True, exist_ok=True)
 
-load_dotenv(dotenv_path=ENV_PATH)
+if load_dotenv_avail:
+    load_dotenv(dotenv_path=ENV_PATH)
+elif ENV_PATH.exists():
+    with open(ENV_PATH, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
 GENERAL_CHANNEL_ID = os.getenv("DISCORD_CHANNEL_ID_GENERAL", "1562602374298599476")
+DASHBOARD_CHANNEL_ID = os.getenv("DISCORD_CHANNEL_ID_DASHBOARD", "1562602493148405830")
 AUTHORIZED_USER_ID = os.getenv("DISCORD_AUTHORIZED_USER_ID", "637624631960010782")
 
 PENDING_QUESTION_FILE = MEMORIA_DIR / "esperando_usuario.json"
 ORDERS_QUEUE_FILE = MEMORIA_DIR / "cola_ordenes.json"
 ORDERS_HISTORY_FILE = MEMORIA_DIR / "historial_ordenes.md"
 
-def notify_user_discord(content: str, title: Optional[str] = None, color: int = 0x3498db) -> bool:
-    """Envia un mensaje directo al canal general de Discord"""
-    if not BOT_TOKEN or not GENERAL_CHANNEL_ID:
+def notify_user_discord(content: str, title: Optional[str] = None, color: int = 0x3498db, channel: str = "dashboard") -> bool:
+    """Envia un mensaje a Discord (por defecto al canal de operaciones #dashboard-24-7)"""
+    if not BOT_TOKEN:
         return False
+        
+    target_channel_id = DASHBOARD_CHANNEL_ID if channel == "dashboard" else GENERAL_CHANNEL_ID
+    if not target_channel_id:
+        target_channel_id = GENERAL_CHANNEL_ID
     
-    url = f"https://discord.com/api/v10/channels/{GENERAL_CHANNEL_ID}/messages"
+    url = f"https://discord.com/api/v10/channels/{target_channel_id}/messages"
     headers = {
         "Authorization": f"Bot {BOT_TOKEN}",
         "Content-Type": "application/json; charset=utf-8"
@@ -48,8 +71,13 @@ def notify_user_discord(content: str, title: Optional[str] = None, color: int = 
         payload["content"] = content
         
     try:
-        res = requests.post(url, headers=headers, json=payload, timeout=10)
-        return res.status_code in (200, 201)
+        if requests is not None:
+            res = requests.post(url, headers=headers, json=payload, timeout=10)
+            return res.status_code in (200, 201)
+        else:
+            req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return resp.status in (200, 201)
     except Exception as e:
         print(f"[Bridge Error] Fallo al notificar a Discord: {e}")
         return False
@@ -72,7 +100,7 @@ def ask_user_discord(question: str) -> bool:
     msg = (
         f"{mention}\U0001F9E0 **CONSULTA DEL CEREBRO CENTRAL:**\n\n"
         f"{question}\n\n"
-        f"*Responde directamente a este mensaje en Discord para que el Cerebro contin?e.*"
+        f"*Responde directamente a este mensaje en Discord para que el Cerebro continúe.*"
     )
     return notify_user_discord(msg)
 
@@ -108,7 +136,7 @@ def resolve_active_question(answer: str) -> bool:
     return True
 
 def push_order(order_text: str, source: str = "discord") -> Dict[str, Any]:
-    """A?ade una orden a la cola de trabajo del Cerebro Central"""
+    """Añade una orden a la cola de trabajo del Cerebro Central"""
     orders = []
     if ORDERS_QUEUE_FILE.exists():
         try:
@@ -131,13 +159,13 @@ def push_order(order_text: str, source: str = "discord") -> Dict[str, Any]:
         
     with open(ORDERS_HISTORY_FILE, "a", encoding="utf-8") as f:
         f.write(f"\n### [{order['timestamp']}] Nueva orden recibida ({source})\n")
-        f.write(f"- **Instrucci?n:** {order_text}\n")
+        f.write(f"- **Instrucción:** {order_text}\n")
         f.write(f"- **Estado:** Pendiente\n")
         
     return order
 
 def pop_pending_orders() -> List[Dict[str, Any]]:
-    """Lee todas las ?rdenes pendientes y las marca como en proceso"""
+    """Lee todas las órdenes pendientes y las marca como en proceso"""
     if not ORDERS_QUEUE_FILE.exists():
         return []
     try:
@@ -154,7 +182,6 @@ def pop_pending_orders() -> List[Dict[str, Any]]:
         json.dump(orders, f, ensure_ascii=False, indent=2)
         
     return pending
-
 
 def complete_order(order_id: str, result_text: str = "") -> bool:
     """Marca una orden como completada y guarda su resultado en el historial"""

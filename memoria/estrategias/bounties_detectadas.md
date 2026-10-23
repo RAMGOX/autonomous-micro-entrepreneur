@@ -3791,3 +3791,94 @@ En resumen:
   - Sin embargo, son problemas que pueden ser resueltos con el código actual, lo que las hace viables para alguien con experiencia en el campo.
 
 ---
+
+### [2026-10-22 21:09:59] 🎯 Bounty Alert: 8 New Opportunityies found
+- **Enlace:** [https://github.com/dev-kp-eloper/BountyScout/issues/1641](https://github.com/dev-kp-eloper/BountyScout/issues/1641)
+- **Dictamen de Valor y Viabilidad:**
+1. **VALOR MONETARIO REAL**: Los bounties en GitHub generalmente no pagan con monedas/tokens de valor financiero real. Son principalmente tokens de prueba, puntos o créditos que pueden ser convertidos en monedas/tokens de valor financiero a través de programas de intercambio o por parte de la comunidad del proyecto. En este caso, no se especifica qué tipo de token se está utilizando, pero es probable que sean tokens de prueba o créditos que no tienen valor de mercado real en exchanges.
+
+2. **REQUERIMIENTO TÉCNICO**: Los bounties en GitHub suelen requerir programación o entrega de algún tipo de trabajo técnico. En este caso, los bounties incluyen tareas como:
+   - Crear un plan de construcción para un proyecto llamado "Blacksite".
+   - Organizar una sesión de diseño para un juego de civilización.
+   - Solucionar un problema de autenticación en una interfaz de usuario.
+   - Corregir un error en una herramienta de transferencias.
+   - Proporcionar una propuesta de financiamiento cuadrático para investigaciones.
+   - Crear una herramienta de ayuda para construir contratos en Solidity.
+
+3. **VIABILIDAD (1-10)**: La viabilidad de resolver estos bounties depende del conocimiento técnico del solicitante y del tiempo disponible. Algunas tareas pueden ser más fáciles de resolver que otras, pero en general, todos los bounties requieren un nivel de habilidad técnica significativo. La viabilidad puede variar desde 5 hasta 8, dependiendo del nivel de experiencia del solicitante y la complejidad de la tarea.
+
+---
+
+### [2026-10-22 21:10:18] [BOUNTY] 🏆 2,500 DOOM ($wDOOM on Base) — Connect Worker to Live Doomsday Pool & Claim Rank #5–#10 on Leaderboard
+- **Enlace:** [https://github.com/doomsday-network/bounty-guard/issues/4](https://github.com/doomsday-network/bounty-guard/issues/4)
+- **Dictamen de Valor y Viabilidad:**
+1. **VALOR MONETARIO REAL**: El pago es en DOOM y wDOOM, ambos tokens de la plataforma Doomsday Network. DOOM es un token de prueba y no tiene valor de mercado real en exchanges. wDOOM es un token de la red Base Mainnet, pero aún no tiene valor de mercado real en exchanges. Por lo tanto, el pago es considerado ficticio.
+
+2. **REQUERIMIENTO TÉCNICO**: El requerimiento técnico es conectar un trabajador GPU o CPU a la pool de Doomsday Network y enviar shares. Esto implica configurar y ejecutar un script de minería.
+
+3. **VIABILIDAD (1-10)**: Es una tarea viable para resolver con código ahora mismo, pero requiere conocimientos técnicos en minería de criptomonedas y la plataforma Doomsday Network. La configuración y ejecución del script son tareas que pueden ser realizadas por alguien con experiencia en programación y minería de criptomonedas.
+
+---
+
+### [2026-10-22 21:11:10] Design session: barbarians + goodie huts — early-game bounty, a reason to keep soldiers home and to explore
+- **Enlace:** [https://github.com/Apelsinmack/Civulator/issues/129](https://github.com/Apelsinmack/Civulator/issues/129)
+- **Dictamen de Valor y Viabilidad:**
+1. **VALOR MONETARIO REAL**: No se menciona ningún pago monetario real o token que tenga valor de mercado real. La recompensa se centra en la creación y gestión de "outposts" (posesiones) que generan una "bounty" (recompensa) en forma de oro en el juego.
+
+2. **REQUERIMIENTO TÉCNICO**: El requerimiento técnico es crear una funcionalidad en el motor del juego que permita la aparición de "barbarians" (bárbaros) en el juego, la creación de "outposts" (posesiones) que generen una recompensa en oro, y la implementación de reglas para la captura de trabajadores/settlers (trabajadores/settlers) y el daño a las ciudades.
+
+3. **VIABILIDAD (1-10)**: La tarea es viable para resolver con código ahora mismo, pero depende de la complejidad de la implementación. La creación de "barbarians" y "outposts" y la implementación de las reglas de juego son tareas técnicas complejas, pero no son insalubres. La implementación de la recompensa en oro también es posible, aunque puede requerir ajustes en el sistema de economía del juego. La complejidad de la tarea dependerá de la experiencia del programador y de la complejidad del motor del juego.
+
+---
+
+### [2026-10-22 21:17:39] [radar] SN open bounty 2026-10-22T19:11
+- **Enlace:** [https://github.com/relayhop/sn-monetization-runtime/issues/1326](https://github.com/relayhop/sn-monetization-runtime/issues/1326)
+- **Dictamen de Valor y Viabilidad:**
+1. **VALOR MONETARIO REAL**: La recompensa menciona un pago de 1000 tokens, pero no especifica qué tipo de token es. Sin información adicional sobre el token, no puedo determinar si tiene valor de mercado real en exchanges o si es un token de prueba/puntos sin valor financiero.
+
+2. **REQUERIMIENTO TÉCNICO**: La recompensa pide resolver un "Math Puzzle" relacionado con una secuencia de pares de cuadrados. Esto implica que se requiere programación o desarrollo de código para resolver el problema matemático.
+
+3. **VIABILIDAD (1-10)**: La tarea es técnicamente viable, pero depende de la experiencia del programador. Resolver un puzzle matemático y programarlo puede ser un desafío, pero no es imposible. La dificultad puede variar según la complejidad del puzzle y la experiencia del programador.
+
+---
+
+### [2026-10-22 21:17:57] 🎯 Bounty Alert: 8 New Opportunityies found
+- **Enlace:** [https://github.com/dev-kp-eloper/BountyScout/issues/1641](https://github.com/dev-kp-eloper/BountyScout/issues/1641)
+- **Dictamen de Valor y Viabilidad:**
+1. **VALOR MONETARIO REAL**: No se especifica qué moneda o token se utilizará para pagar la recompensa. La descripción no indica ningún valor financiero real convertible a dinero. Es probable que sea un token de prueba o puntos ficticios.
+
+2. **REQUERIMIENTO TÉCNICO**: La descripción no proporciona detalles específicos sobre lo que se requiere programar o entregar. Solo indica que se necesita un "Solidity build helper".
+
+3. **VIABILIDAD (1-10)**: No se puede determinar con certeza la viabilidad de la tarea sin más información sobre el contexto y los requisitos específicos. Sin embargo, si se refiere a la creación de un "Solidity build helper", esto es una tarea técnica que podría ser viable para alguien con experiencia en desarrollo de contratos inteligentes y herramientas de construcción de software.
+
+---
+
+### [2026-10-22 21:19:06] [BOUNTY] 🏆 2,500 DOOM ($wDOOM on Base) — Connect Worker to Live Doomsday Pool & Claim Rank #5–#10 on Leaderboard
+- **Enlace:** [https://github.com/doomsday-network/bounty-guard/issues/4](https://github.com/doomsday-network/bounty-guard/issues/4)
+- **Dictamen de Valor y Viabilidad:**
+1. **VALOR MONETARIO REAL**: 
+   - **Moneda/token pagado**: DOOM y wDOOM
+   - **Valor de mercado real**: DOOM es un token de prueba y no tiene valor de mercado real en exchanges. wDOOM es un token de la red Base Mainnet y puede tener valor de mercado real si la red y el token son exitosos.
+
+2. **REQUERIMIENTO TÉCNICO**:
+   - **Piden programar o entregar**: El contribuyente debe conectar un trabajador de GPU o CPU a la piscina de 0% de comisión en vivo y enviar shares. Además, deben generar una billetera y reclamar 15 Free DOOM desde el faucet.
+
+3. **VIABILIDAD (1-10)**:
+   - **Viabilidad**: 8/10. La tarea es técnicamente viable para alguien con conocimientos básicos de programación y acceso a hardware de minería (GPU o CPU). La configuración inicial y el seguimiento de las shares son pasos que pueden ser realizados con código, pero requerirán un entendimiento de cómo interactuar con APIs y ejecutar scripts en un entorno de desarrollo.
+
+---
+
+### [2026-10-22 21:19:29] Design session: barbarians + goodie huts — early-game bounty, a reason to keep soldiers home and to explore
+- **Enlace:** [https://github.com/Apelsinmack/Civulator/issues/129](https://github.com/Apelsinmack/Civulator/issues/129)
+- **Dictamen de Valor y Viabilidad:**
+1. **VALOR MONETARIO REAL**: No se menciona ningún pago monetario real o token que tenga valor de mercado real en exchanges. La recompensa se basa en la captura de trabajadores/settlers, daño a ciudades y la conquista de estructuras, pero no se especifica ningún tipo de pago monetario.
+
+2. **REQUERIMIENTO TÉCNICO**: El requerimiento técnico es el diseño y implementación de un sistema de barbaros en el juego, incluyendo:
+   - Definir qué es un barbaro en el motor del juego.
+   - Implementar la aparición y comportamiento de los pueblos de barbaros.
+   - Crear un sistema de recompensa (bounty) por la captura de trabajadores/settlers, daño a ciudades y conquista de estructuras.
+   - Integrar este sistema con el resto del juego, excluyendo los barbaros de la victoria, presión de lealtad, comercio, religión y cualquier otro mecanismo que los considere.
+
+3. **VIABILIDAD (1-10)**: 8/10. La tarea es viable para resolver con código, pero requiere un buen conocimiento del motor del juego y la capacidad de implementar sistemas complejos. La integración con el resto del juego puede ser desafiante, pero es factible con un equipo de desarrolladores experimentados.
+
+---

@@ -30,6 +30,7 @@ load_dotenv(dotenv_path=ENV_PATH)
 from opportunity_queue import (
     get_best_pending_opportunity,
     get_top_pending_opportunities,
+    get_best_cost_benefit_opportunity,
     mark_opportunity_in_progress,
     mark_opportunity_executed,
     prune_expired_opportunities
@@ -78,13 +79,11 @@ def run_deepseek_cycle():
         safe_print("[DeepSeek Worker] No hay DEEPSEEK_API_KEY configurada.")
         return False
 
-    # 1. Obtener y bloquear atomicamente la mejor tarea pendiente de nivel 'baja' o 'media'
-    opps = get_top_pending_opportunities(["baja", "media"], limit=1, lock=True, solver="DeepSeek API")
-    if not opps:
-        safe_print("[DeepSeek Worker] No hay tareas pendientes de nivel baja o media.")
+    # 1. Obtener y bloquear atomicamente la mejor tarea pendiente según relación COSTE/BENEFICIO
+    opp = get_best_cost_benefit_opportunity(["media", "baja"], lock=True, solver="DeepSeek API")
+    if not opp:
+        safe_print("[DeepSeek Worker] No hay tareas viables con coste/beneficio positivo en nivel baja/media.")
         return False
-
-    opp = opps[0]
     opp_id = opp["id"]
     title = opp["title"]
     url = opp["url"]
@@ -94,17 +93,18 @@ def run_deepseek_cycle():
 
     safe_print(f"\n[DeepSeek Worker] Bloqueada y tomando tarea [{diff.upper()} | ${est_val}]: {title}")
 
-    prompt = f"""Eres un Ingeniero de Software Senior Autónomo resolviendo una recompensa en GitHub.
+    prompt = f"""Eres un Ingeniero de Software y Científico de Datos Senior resolviendo una recompensa ON-CHAIN verificada.
 Título: {title}
 Enlace: {url}
 Requerimientos:
 {desc}
 
-Genera la solución técnica completa:
-1. Código de implementación listo para producción, limpio y autocontenido.
-2. Suite mínima de tests unitarios verificando la funcionalidad.
-3. Mensaje formal de Pull Request listo para enviar al repositorio.
-Incluye la cartera del operador: 0x02c1F87F514493F359Afc0B3ff6b587434770361.
+Genera la solución técnica completa y ejecutable:
+1. Análisis directo y solución exacta a los requerimientos pedidos.
+2. Si pide código o scripts de extracción/análisis (Python / Web3), genera código completo, limpio y autocontenido.
+3. Si pide un dataset o estructura CSV, genera el esquema y las filas o el script que lo genera directamente.
+4. Resumen ejecutivo de la prueba técnica para enviar como reclamación al smart contract del protocolo.
+Cartera del operador: 0x02c1F87F514493F359Afc0B3ff6b587434770361.
 """
 
     try:
@@ -135,7 +135,15 @@ Incluye la cartera del operador: 0x02c1F87F514493F359Afc0B3ff6b587434770361.
             f.write(f"- **Cartera Operador:** `0x02c1F87F514493F359Afc0B3ff6b587434770361`\n\n---\n\n")
             f.write(content)
 
-        mark_opportunity_executed(opp_id, "DeepSeek API", str(sol_path))
+        # Si el análisis determina que no es resoluble por software, descartar
+        content_lower = content.lower()
+        if any(unsolvable in content_lower for unsolvable in ["no es resoluble por código", "no es resoluble por software", "prueba física en el mundo real", "no se puede cumplir con código"]):
+            safe_print(f"[DeepSeek Worker] Tarea {opp_id} clasificada como NO resoluble por software. Descartando.")
+            from opportunity_queue import update_opportunity_status
+            update_opportunity_status(opp_id, "discarded_unsolvable")
+            return False
+
+        mark_opportunity_executed(opp_id, "Cerebro 3 (DeepSeek API)", str(sol_path))
         safe_print(f"[DeepSeek Worker] [OK] Solucion generada en: {sol_path} (Coste: {cost:.4f} EUR) - Discord silenciado")
         return True
     except Exception as e:

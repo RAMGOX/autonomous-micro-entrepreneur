@@ -49,9 +49,10 @@ def log_event(msg: str):
 from continuous_worker import run_continuous_cycle
 from discord_bridge import pop_pending_orders, complete_order, notify_user_discord
 from brain_router import route_task
-from bounty_hunter import scan_github_bounties
+from bounty_hunter import scan_onchain_bounties
 from deepseek_solver import run_deepseek_cycle
-from github_deliverer import deliver_all_pending
+from poidh_claim_submitter import check_and_notify_pending_claims
+from poidh_claim_tracker import check_active_claims_status
 from data_curator import process_and_save_intel
 
 async def loop_orders():
@@ -79,31 +80,29 @@ async def loop_orders():
         await asyncio.sleep(5)
 
 async def loop_deepseek():
-    """Ejecutor estricto cada 5 minutos (300s) de Cerebro 3 (DeepSeek API)"""
-    # Pequeña pausa inicial de 10s al arrancar
-    await asyncio.sleep(10)
-    while True:
-        try:
-            log_event("[DeepSeek Loop] Verificando y ejecutando tarea pendiente (media/baja)...")
-            res = await asyncio.to_thread(run_deepseek_cycle)
-            if res:
-                log_event("[DeepSeek Loop] Tarea resuelta con éxito. Enviando a entrega GitHub...")
-                await asyncio.to_thread(deliver_all_pending)
-            else:
-                log_event("[DeepSeek Loop] No se requirió ejecución o límite de presupuesto alcanzado.")
-        except Exception as e:
-            log_event(f"[DeepSeek Loop Error]: {e}")
-        await asyncio.sleep(300)
-
-async def loop_bounties():
-    """Rastreador de recompensas cada 3 minutos (180s)"""
+    """Ejecutor autónomo cada 6 minutos (360s) de Cerebro 3 (DeepSeek API) para tareas on-chain"""
     await asyncio.sleep(15)
     while True:
         try:
-            log_event("[Bounty Loop] Escaneando GitHub y Web3...")
-            await asyncio.to_thread(scan_github_bounties)
+            log_event("[DeepSeek Loop] Verificando tareas on-chain pendientes (media/baja)...")
+            res = await asyncio.to_thread(run_deepseek_cycle)
+            if res:
+                log_event("[DeepSeek Loop] Tarea on-chain resuelta con éxito. Solución lista para reclamación.")
+            else:
+                log_event("[DeepSeek Loop] Sin tareas pendientes o límite de presupuesto diario alcanzado.")
         except Exception as e:
-            log_event(f"[Bounty Loop Error]: {e}")
+            log_event(f"[DeepSeek Loop Error]: {e}")
+        await asyncio.sleep(360)
+
+async def loop_bounties():
+    """Rastreador de recompensas on-chain verificadas (POIDH / Base / Arbitrum) cada 3 minutos"""
+    await asyncio.sleep(10)
+    while True:
+        try:
+            log_event("[On-Chain Scanner] Rastreador de Smart Contracts escaneando...")
+            await asyncio.to_thread(scan_onchain_bounties)
+        except Exception as e:
+            log_event(f"[On-Chain Scanner Error]: {e}")
         await asyncio.sleep(180)
 
 async def loop_continuous_web3():
@@ -128,10 +127,25 @@ async def loop_data_curator():
             log_event(f"[Data Curator Loop Error]: {e}")
         await asyncio.sleep(1800)
 
+async def loop_claim_notifier():
+    """Vigila la cola, emite reclamos automáticos on-chain y rastrea pagos aprobados"""
+    await asyncio.sleep(5)
+    cycle = 0
+    while True:
+        try:
+            await asyncio.to_thread(check_and_notify_pending_claims)
+            cycle += 1
+            # Cada 4 ciclos (~60s), auditar si algun reclamo fue aprobado on-chain
+            if cycle % 4 == 0:
+                await asyncio.to_thread(check_active_claims_status)
+        except Exception as e:
+            log_event(f"[Claim Notifier Error]: {e}")
+        await asyncio.sleep(15)
+
 async def main():
     log_event("=" * 65)
-    log_event("  AUTONOMOUS MICRO-ENTREPRENEUR - MOTOR CONCURRENTE 24/7")
-    log_event("  DeepSeek: Cada 5 min | Bounties: Cada 3 min | Grants: Cada 30 min")
+    log_event("  AUTONOMOUS MICRO-ENTREPRENEUR - MOTOR ON-CHAIN 24/7")
+    log_event("  DeepSeek: Cada 6 min | Scanner: Cada 3 min | Notificador Claims: Cada 15s")
     log_event("=" * 65)
     
     await asyncio.gather(
@@ -139,7 +153,8 @@ async def main():
         loop_deepseek(),
         loop_bounties(),
         loop_continuous_web3(),
-        loop_data_curator()
+        loop_data_curator(),
+        loop_claim_notifier()
     )
 
 if __name__ == "__main__":
