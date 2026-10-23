@@ -1,0 +1,4339 @@
+{
+  "updated_at": "2026-10-23 03:06:37 UTC",
+  "contracts": {
+    "ethereum": "0xe731dfadbff20542e10d09d26fc71445c70d4232",
+    "arbitrum": "0x5555fa783936c260f77385b4e153b9725fef1719",
+    "base": "0x5555fa783936c260f77385b4e153b9725fef1719"
+  },
+  "summary": {
+    "total_transactions": 6039,
+    "ethereum_total": 536,
+    "arbitrum_total": 2003,
+    "base_total": 3500,
+    "days_tracked": 720,
+    "start_date": "2024-05-24",
+    "end_date": "2026-10-23"
+  },
+  "daily": {
+    "2024-05-24": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-05-27": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-05-28": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 11,
+      "total": 12
+    },
+    "2024-05-30": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2024-06-02": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 13,
+      "total": 13
+    },
+    "2024-06-03": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 1,
+      "total": 2
+    },
+    "2024-06-06": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-06-08": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2024-06-09": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 1,
+      "total": 6
+    },
+    "2024-06-10": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-06-11": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2024-06-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 40,
+      "total": 40
+    },
+    "2024-06-13": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 17,
+      "total": 24
+    },
+    "2024-06-14": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 11,
+      "total": 21
+    },
+    "2024-06-15": {
+      "ethereum": 0,
+      "arbitrum": 18,
+      "base": 23,
+      "total": 41
+    },
+    "2024-06-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 10,
+      "total": 10
+    },
+    "2024-06-17": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 10,
+      "total": 18
+    },
+    "2024-06-18": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 10,
+      "total": 14
+    },
+    "2024-06-19": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 42,
+      "total": 52
+    },
+    "2024-06-20": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 16,
+      "total": 17
+    },
+    "2024-06-21": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2024-06-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-06-23": {
+      "ethereum": 0,
+      "arbitrum": 30,
+      "base": 7,
+      "total": 37
+    },
+    "2024-06-24": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2024-06-25": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 7,
+      "total": 17
+    },
+    "2024-06-26": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 59,
+      "total": 64
+    },
+    "2024-06-27": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 13,
+      "total": 18
+    },
+    "2024-06-28": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 7,
+      "total": 11
+    },
+    "2024-06-29": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 6,
+      "total": 7
+    },
+    "2024-06-30": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 12,
+      "total": 13
+    },
+    "2024-07-01": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 8,
+      "total": 10
+    },
+    "2024-07-02": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 10,
+      "total": 12
+    },
+    "2024-07-03": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2024-07-04": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-07-05": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 4,
+      "total": 5
+    },
+    "2024-07-06": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-07-08": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 6,
+      "total": 7
+    },
+    "2024-07-09": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 10,
+      "total": 11
+    },
+    "2024-07-10": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 6,
+      "total": 8
+    },
+    "2024-07-11": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 1,
+      "total": 3
+    },
+    "2024-07-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-07-13": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-07-14": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 2,
+      "total": 3
+    },
+    "2024-07-15": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2024-07-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 11,
+      "total": 11
+    },
+    "2024-07-17": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-07-18": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 13,
+      "total": 20
+    },
+    "2024-07-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-07-20": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 6,
+      "total": 8
+    },
+    "2024-07-21": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 15,
+      "total": 17
+    },
+    "2024-07-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2024-07-23": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 8,
+      "total": 13
+    },
+    "2024-07-25": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-07-27": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 11,
+      "total": 13
+    },
+    "2024-07-28": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 1,
+      "total": 2
+    },
+    "2024-07-29": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2024-07-30": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2024-07-31": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2024-08-01": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-08-02": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2024-08-03": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 1,
+      "total": 2
+    },
+    "2024-08-04": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-08-05": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-08-06": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 6,
+      "total": 7
+    },
+    "2024-08-07": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 4,
+      "total": 6
+    },
+    "2024-08-08": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-08-09": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 11,
+      "total": 20
+    },
+    "2024-08-10": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 14,
+      "total": 14
+    },
+    "2024-08-11": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-08-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 6,
+      "total": 6
+    },
+    "2024-08-13": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2024-08-15": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-08-16": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2024-08-17": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 2,
+      "total": 5
+    },
+    "2024-08-18": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 2,
+      "total": 5
+    },
+    "2024-08-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-08-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-08-21": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2024-08-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-08-23": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-08-24": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-08-26": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-08-27": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 31,
+      "total": 31
+    },
+    "2024-08-28": {
+      "ethereum": 0,
+      "arbitrum": 13,
+      "base": 34,
+      "total": 47
+    },
+    "2024-08-29": {
+      "ethereum": 0,
+      "arbitrum": 11,
+      "base": 25,
+      "total": 36
+    },
+    "2024-08-30": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 16,
+      "total": 24
+    },
+    "2024-08-31": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 7,
+      "total": 8
+    },
+    "2024-09-01": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 3,
+      "total": 4
+    },
+    "2024-09-02": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 11,
+      "total": 14
+    },
+    "2024-09-03": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 3,
+      "total": 8
+    },
+    "2024-09-04": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-09-05": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2024-09-06": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-09-07": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 7,
+      "total": 10
+    },
+    "2024-09-08": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 2,
+      "total": 5
+    },
+    "2024-09-09": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-09-10": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 19,
+      "total": 23
+    },
+    "2024-09-11": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 10,
+      "total": 10
+    },
+    "2024-09-12": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 7,
+      "total": 8
+    },
+    "2024-09-13": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 6,
+      "total": 7
+    },
+    "2024-09-14": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-09-15": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2024-09-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-09-18": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-09-19": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 6,
+      "total": 8
+    },
+    "2024-09-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 50,
+      "total": 50
+    },
+    "2024-09-21": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 16,
+      "total": 16
+    },
+    "2024-09-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2024-09-23": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 41,
+      "total": 47
+    },
+    "2024-09-24": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 62,
+      "total": 62
+    },
+    "2024-09-25": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 15,
+      "total": 17
+    },
+    "2024-09-26": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2024-09-27": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 3,
+      "total": 5
+    },
+    "2024-09-28": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-09-30": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 5,
+      "total": 6
+    },
+    "2024-10-01": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-10-03": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 12,
+      "total": 12
+    },
+    "2024-10-04": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-10-05": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2024-10-06": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-10-07": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-10-08": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2024-10-09": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-10-10": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-10-11": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2024-10-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2024-10-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-10-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-10-21": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 3,
+      "total": 8
+    },
+    "2024-10-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2024-10-23": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 11,
+      "total": 11
+    },
+    "2024-10-24": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 4,
+      "total": 8
+    },
+    "2024-10-25": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 2,
+      "total": 3
+    },
+    "2024-10-26": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 28,
+      "total": 29
+    },
+    "2024-10-27": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2024-10-28": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-10-29": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-10-30": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-10-31": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 12,
+      "total": 12
+    },
+    "2024-11-01": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2024-11-02": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 3,
+      "total": 7
+    },
+    "2024-11-03": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 11,
+      "total": 13
+    },
+    "2024-11-04": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 7,
+      "total": 8
+    },
+    "2024-11-05": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 2,
+      "total": 4
+    },
+    "2024-11-06": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-11-07": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 3,
+      "total": 6
+    },
+    "2024-11-08": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-11-09": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 4,
+      "total": 5
+    },
+    "2024-11-10": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-11-11": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2024-11-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-11-13": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-11-14": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2024-11-15": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 20,
+      "total": 27
+    },
+    "2024-11-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2024-11-17": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-11-18": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 21,
+      "total": 21
+    },
+    "2024-11-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 20,
+      "total": 20
+    },
+    "2024-11-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-11-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-11-24": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-11-25": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-11-26": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2024-11-27": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 20,
+      "total": 20
+    },
+    "2024-11-28": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 24,
+      "total": 24
+    },
+    "2024-11-29": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-11-30": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2024-12-01": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-12-03": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-12-04": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 10,
+      "total": 10
+    },
+    "2024-12-05": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 2,
+      "total": 3
+    },
+    "2024-12-06": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-12-07": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 8,
+      "total": 10
+    },
+    "2024-12-08": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-12-09": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 4,
+      "total": 5
+    },
+    "2024-12-10": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 15,
+      "total": 18
+    },
+    "2024-12-11": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2024-12-13": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 1,
+      "total": 2
+    },
+    "2024-12-14": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 1,
+      "total": 4
+    },
+    "2024-12-15": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-12-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-12-17": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2024-12-18": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-12-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-12-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-12-21": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2024-12-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2024-12-25": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-12-28": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2024-12-29": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2024-12-30": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2024-12-31": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-01-02": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-01-03": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-01-04": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-01-05": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2025-01-06": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 14,
+      "total": 14
+    },
+    "2025-01-07": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 4,
+      "total": 8
+    },
+    "2025-01-08": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-01-09": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 7,
+      "total": 8
+    },
+    "2025-01-10": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 10,
+      "total": 10
+    },
+    "2025-01-11": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-01-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2025-01-13": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-01-14": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-01-15": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-01-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-01-17": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-01-18": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-01-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-01-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 29,
+      "total": 29
+    },
+    "2025-01-21": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-01-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-01-23": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-01-25": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2025-01-26": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 10,
+      "total": 10
+    },
+    "2025-01-27": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-01-28": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-01-30": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 17,
+      "total": 17
+    },
+    "2025-01-31": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2025-02-01": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 18,
+      "total": 18
+    },
+    "2025-02-02": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-02-03": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-02-05": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2025-02-06": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 15,
+      "total": 15
+    },
+    "2025-02-07": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 19,
+      "total": 19
+    },
+    "2025-02-08": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2025-02-09": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2025-02-11": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-02-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 30,
+      "total": 30
+    },
+    "2025-02-13": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 5,
+      "total": 6
+    },
+    "2025-02-14": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-02-17": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-02-18": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 3,
+      "total": 12
+    },
+    "2025-02-19": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 2,
+      "total": 3
+    },
+    "2025-02-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 31,
+      "total": 31
+    },
+    "2025-02-21": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-02-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2025-02-23": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 22,
+      "total": 22
+    },
+    "2025-02-24": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 40,
+      "total": 40
+    },
+    "2025-02-25": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 14,
+      "total": 14
+    },
+    "2025-02-26": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-02-27": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2025-02-28": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 25,
+      "total": 25
+    },
+    "2025-03-01": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-03-02": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2025-03-03": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-03-04": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-03-05": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 23,
+      "total": 23
+    },
+    "2025-03-06": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-03-07": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 19,
+      "total": 19
+    },
+    "2025-03-08": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2025-03-09": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2025-03-10": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-03-11": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2025-03-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-03-13": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-03-14": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-03-15": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-03-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 11,
+      "total": 11
+    },
+    "2025-03-17": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 6,
+      "total": 6
+    },
+    "2025-03-18": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2025-03-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-03-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 36,
+      "total": 36
+    },
+    "2025-03-21": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 22,
+      "total": 22
+    },
+    "2025-03-22": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 11,
+      "total": 13
+    },
+    "2025-03-23": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 4,
+      "total": 6
+    },
+    "2025-03-24": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 26,
+      "total": 26
+    },
+    "2025-03-25": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 15,
+      "total": 15
+    },
+    "2025-03-26": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2025-03-27": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 24,
+      "total": 24
+    },
+    "2025-03-28": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 8,
+      "total": 8
+    },
+    "2025-03-29": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 6,
+      "total": 6
+    },
+    "2025-03-30": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-03-31": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 13,
+      "total": 13
+    },
+    "2025-04-01": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 25,
+      "total": 25
+    },
+    "2025-04-02": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 16,
+      "total": 16
+    },
+    "2025-04-03": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 12,
+      "total": 12
+    },
+    "2025-04-04": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 20,
+      "total": 20
+    },
+    "2025-04-05": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 6,
+      "total": 8
+    },
+    "2025-04-06": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 11,
+      "total": 13
+    },
+    "2025-04-07": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 15,
+      "total": 16
+    },
+    "2025-04-08": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 4,
+      "total": 6
+    },
+    "2025-04-09": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 13,
+      "total": 13
+    },
+    "2025-04-10": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 14,
+      "total": 15
+    },
+    "2025-04-11": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 5,
+      "total": 6
+    },
+    "2025-04-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-04-13": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 26,
+      "total": 26
+    },
+    "2025-04-14": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-04-15": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 11,
+      "total": 11
+    },
+    "2025-04-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 19,
+      "total": 19
+    },
+    "2025-04-17": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 24,
+      "total": 24
+    },
+    "2025-04-18": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-04-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-04-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-04-21": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 3,
+      "total": 4
+    },
+    "2025-04-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-04-23": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-04-24": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-04-25": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 10,
+      "total": 10
+    },
+    "2025-04-26": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 3,
+      "total": 5
+    },
+    "2025-04-27": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 1,
+      "total": 2
+    },
+    "2025-04-28": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-04-29": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 4,
+      "total": 7
+    },
+    "2025-04-30": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-05-01": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-05-02": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 19,
+      "total": 19
+    },
+    "2025-05-03": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-05-04": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-05-05": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 7,
+      "total": 8
+    },
+    "2025-05-06": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 9,
+      "total": 13
+    },
+    "2025-05-07": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-05-08": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-05-09": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 13,
+      "total": 13
+    },
+    "2025-05-10": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2025-05-11": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-05-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 16,
+      "total": 16
+    },
+    "2025-05-13": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2025-05-14": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-05-15": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 29,
+      "total": 29
+    },
+    "2025-05-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 34,
+      "total": 34
+    },
+    "2025-05-17": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-05-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-05-20": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2025-05-21": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-05-23": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 5,
+      "total": 5
+    },
+    "2025-05-24": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2025-05-25": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-05-27": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 19,
+      "total": 19
+    },
+    "2025-05-28": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 67,
+      "total": 76
+    },
+    "2025-05-29": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 32,
+      "total": 33
+    },
+    "2025-05-30": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 10,
+      "total": 10
+    },
+    "2025-05-31": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 49,
+      "total": 49
+    },
+    "2025-06-01": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 20,
+      "total": 21
+    },
+    "2025-06-02": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 45,
+      "total": 46
+    },
+    "2025-06-03": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 19,
+      "total": 23
+    },
+    "2025-06-04": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 4,
+      "total": 6
+    },
+    "2025-06-05": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 3,
+      "total": 5
+    },
+    "2025-06-06": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 10,
+      "total": 13
+    },
+    "2025-06-07": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 3,
+      "total": 4
+    },
+    "2025-06-08": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 12,
+      "total": 13
+    },
+    "2025-06-09": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 20,
+      "total": 20
+    },
+    "2025-06-10": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 29,
+      "total": 32
+    },
+    "2025-06-11": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 9,
+      "total": 9
+    },
+    "2025-06-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 11,
+      "total": 11
+    },
+    "2025-06-13": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 5,
+      "total": 6
+    },
+    "2025-06-14": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-06-15": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 11,
+      "total": 11
+    },
+    "2025-06-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-06-17": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 7,
+      "total": 7
+    },
+    "2025-06-18": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 15,
+      "total": 16
+    },
+    "2025-06-19": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 10,
+      "total": 10
+    },
+    "2025-06-20": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 3,
+      "total": 4
+    },
+    "2025-06-21": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 4,
+      "total": 4
+    },
+    "2025-06-22": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-06-23": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 19,
+      "total": 23
+    },
+    "2025-06-24": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 17,
+      "total": 18
+    },
+    "2025-06-25": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 6,
+      "total": 6
+    },
+    "2025-06-26": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 13,
+      "total": 13
+    },
+    "2025-06-27": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 8,
+      "total": 13
+    },
+    "2025-06-28": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 19,
+      "total": 19
+    },
+    "2025-06-29": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 21,
+      "total": 21
+    },
+    "2025-06-30": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 25,
+      "total": 25
+    },
+    "2025-07-01": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-07-02": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 2,
+      "total": 2
+    },
+    "2025-07-03": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 1,
+      "total": 1
+    },
+    "2025-07-04": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 4,
+      "total": 5
+    },
+    "2025-07-05": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-07-06": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 13,
+      "total": 16
+    },
+    "2025-07-07": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 12,
+      "total": 16
+    },
+    "2025-07-08": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 5,
+      "total": 8
+    },
+    "2025-07-09": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 1,
+      "total": 2
+    },
+    "2025-07-10": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 1,
+      "total": 2
+    },
+    "2025-07-11": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 10,
+      "total": 13
+    },
+    "2025-07-12": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 3,
+      "total": 3
+    },
+    "2025-07-13": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 11,
+      "total": 11
+    },
+    "2025-07-14": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 21,
+      "total": 25
+    },
+    "2025-07-15": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 82,
+      "total": 83
+    },
+    "2025-07-16": {
+      "ethereum": 0,
+      "arbitrum": 0,
+      "base": 37,
+      "total": 37
+    },
+    "2025-07-17": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 57,
+      "total": 58
+    },
+    "2025-07-18": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 18,
+      "total": 19
+    },
+    "2025-07-19": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-07-22": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-07-23": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-07-24": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-07-27": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-07-30": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-08-01": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-08-04": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2025-08-05": {
+      "ethereum": 0,
+      "arbitrum": 11,
+      "base": 0,
+      "total": 11
+    },
+    "2025-08-06": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-08-10": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-08-13": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2025-08-14": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-08-19": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2025-08-20": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-08-21": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2025-08-23": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-08-26": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2025-08-27": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2025-08-28": {
+      "ethereum": 0,
+      "arbitrum": 11,
+      "base": 0,
+      "total": 11
+    },
+    "2025-08-29": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2025-08-30": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2025-08-31": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-09-03": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-09-04": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-09-05": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-09-06": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-09-10": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-09-11": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-09-12": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2025-09-13": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-09-14": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-09-15": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2025-09-16": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2025-09-17": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2025-09-19": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-09-20": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-09-21": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-09-24": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2025-09-27": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-09-28": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-09-30": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-10-01": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2025-10-02": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-10-03": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-10-04": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-10-05": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2025-10-06": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-10-07": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-10-09": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2025-10-10": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2025-10-11": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-10-12": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-10-13": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-10-14": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-10-15": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-10-17": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-10-18": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-10-25": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2025-10-26": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2025-10-28": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2025-10-29": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2025-10-30": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-10-31": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 0,
+      "total": 10
+    },
+    "2025-11-01": {
+      "ethereum": 0,
+      "arbitrum": 22,
+      "base": 0,
+      "total": 22
+    },
+    "2025-11-02": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2025-11-03": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2025-11-05": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2025-11-06": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-11-07": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-11-10": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-11-11": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-11-15": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-11-16": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-11-17": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-11-18": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2025-11-20": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-11-21": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2025-11-22": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-11-24": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-11-26": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2025-11-27": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2025-11-28": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-11-29": {
+      "ethereum": 0,
+      "arbitrum": 13,
+      "base": 0,
+      "total": 13
+    },
+    "2025-12-01": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 0,
+      "total": 10
+    },
+    "2025-12-02": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2025-12-03": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2025-12-04": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2025-12-05": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 0,
+      "total": 10
+    },
+    "2025-12-06": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2025-12-07": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2025-12-08": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2025-12-09": {
+      "ethereum": 0,
+      "arbitrum": 16,
+      "base": 0,
+      "total": 16
+    },
+    "2025-12-12": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-01-20": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-01-21": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-01-22": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-01-23": {
+      "ethereum": 0,
+      "arbitrum": 12,
+      "base": 0,
+      "total": 12
+    },
+    "2026-01-24": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-01-25": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-01-26": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-01-27": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-01-28": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2026-01-29": {
+      "ethereum": 0,
+      "arbitrum": 11,
+      "base": 0,
+      "total": 11
+    },
+    "2026-01-30": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2026-01-31": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-02-01": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-02-02": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-02-03": {
+      "ethereum": 0,
+      "arbitrum": 18,
+      "base": 0,
+      "total": 18
+    },
+    "2026-02-04": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-02-06": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-02-07": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-02-08": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-02-09": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-02-11": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-02-12": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-02-14": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-02-15": {
+      "ethereum": 0,
+      "arbitrum": 14,
+      "base": 0,
+      "total": 14
+    },
+    "2026-02-16": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-02-17": {
+      "ethereum": 0,
+      "arbitrum": 13,
+      "base": 0,
+      "total": 13
+    },
+    "2026-02-18": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2026-02-19": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2026-02-20": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-02-21": {
+      "ethereum": 0,
+      "arbitrum": 11,
+      "base": 0,
+      "total": 11
+    },
+    "2026-02-22": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2026-02-24": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2026-02-25": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2026-02-26": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-02-27": {
+      "ethereum": 0,
+      "arbitrum": 11,
+      "base": 0,
+      "total": 11
+    },
+    "2026-02-28": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-03-02": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-03-03": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 0,
+      "total": 10
+    },
+    "2026-03-04": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-03-05": {
+      "ethereum": 0,
+      "arbitrum": 12,
+      "base": 0,
+      "total": 12
+    },
+    "2026-03-06": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-03-07": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-03-08": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-03-09": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-03-10": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-03-11": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-03-12": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2026-03-13": {
+      "ethereum": 0,
+      "arbitrum": 18,
+      "base": 0,
+      "total": 18
+    },
+    "2026-03-14": {
+      "ethereum": 0,
+      "arbitrum": 18,
+      "base": 0,
+      "total": 18
+    },
+    "2026-03-15": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-03-16": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-03-17": {
+      "ethereum": 0,
+      "arbitrum": 24,
+      "base": 0,
+      "total": 24
+    },
+    "2026-03-18": {
+      "ethereum": 0,
+      "arbitrum": 15,
+      "base": 0,
+      "total": 15
+    },
+    "2026-03-19": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-03-20": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-03-21": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-03-22": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-03-23": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2026-03-24": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-03-25": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-03-26": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-03-27": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 0,
+      "total": 10
+    },
+    "2026-03-28": {
+      "ethereum": 0,
+      "arbitrum": 21,
+      "base": 0,
+      "total": 21
+    },
+    "2026-03-29": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 0,
+      "total": 10
+    },
+    "2026-03-30": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2026-03-31": {
+      "ethereum": 0,
+      "arbitrum": 24,
+      "base": 0,
+      "total": 24
+    },
+    "2026-04-01": {
+      "ethereum": 0,
+      "arbitrum": 16,
+      "base": 0,
+      "total": 16
+    },
+    "2026-04-02": {
+      "ethereum": 0,
+      "arbitrum": 16,
+      "base": 0,
+      "total": 16
+    },
+    "2026-04-03": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2026-04-04": {
+      "ethereum": 0,
+      "arbitrum": 32,
+      "base": 0,
+      "total": 32
+    },
+    "2026-04-05": {
+      "ethereum": 0,
+      "arbitrum": 36,
+      "base": 0,
+      "total": 36
+    },
+    "2026-04-06": {
+      "ethereum": 0,
+      "arbitrum": 41,
+      "base": 0,
+      "total": 41
+    },
+    "2026-04-07": {
+      "ethereum": 0,
+      "arbitrum": 16,
+      "base": 0,
+      "total": 16
+    },
+    "2026-04-08": {
+      "ethereum": 0,
+      "arbitrum": 16,
+      "base": 0,
+      "total": 16
+    },
+    "2026-04-09": {
+      "ethereum": 0,
+      "arbitrum": 19,
+      "base": 0,
+      "total": 19
+    },
+    "2026-04-10": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2026-04-11": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-04-13": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2026-04-14": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-04-15": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2026-04-16": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-04-17": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-04-18": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2026-04-19": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-04-20": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2026-04-21": {
+      "ethereum": 0,
+      "arbitrum": 22,
+      "base": 0,
+      "total": 22
+    },
+    "2026-04-22": {
+      "ethereum": 0,
+      "arbitrum": 10,
+      "base": 0,
+      "total": 10
+    },
+    "2026-04-23": {
+      "ethereum": 0,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 6
+    },
+    "2026-04-24": {
+      "ethereum": 0,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 8
+    },
+    "2026-04-25": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-04-26": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-04-28": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-04-29": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-04-30": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-05-01": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-05-02": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-05-03": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-05-04": {
+      "ethereum": 0,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 9
+    },
+    "2026-05-06": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-05-07": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-05-08": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-05-09": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-05-10": {
+      "ethereum": 0,
+      "arbitrum": 7,
+      "base": 0,
+      "total": 7
+    },
+    "2026-05-11": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-05-12": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-05-13": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-05-14": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-05-16": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-05-17": {
+      "ethereum": 8,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 8
+    },
+    "2026-05-18": {
+      "ethereum": 2,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 7
+    },
+    "2026-05-19": {
+      "ethereum": 2,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 10
+    },
+    "2026-05-20": {
+      "ethereum": 0,
+      "arbitrum": 12,
+      "base": 0,
+      "total": 12
+    },
+    "2026-05-21": {
+      "ethereum": 2,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 4
+    },
+    "2026-05-22": {
+      "ethereum": 13,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 19
+    },
+    "2026-05-23": {
+      "ethereum": 6,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 12
+    },
+    "2026-05-24": {
+      "ethereum": 1,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 4
+    },
+    "2026-05-25": {
+      "ethereum": 2,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 7
+    },
+    "2026-05-26": {
+      "ethereum": 1,
+      "arbitrum": 19,
+      "base": 0,
+      "total": 20
+    },
+    "2026-05-27": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-05-28": {
+      "ethereum": 2,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 4
+    },
+    "2026-05-29": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-05-31": {
+      "ethereum": 1,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 3
+    },
+    "2026-06-01": {
+      "ethereum": 2,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 7
+    },
+    "2026-06-02": {
+      "ethereum": 1,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 2
+    },
+    "2026-06-03": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-06-04": {
+      "ethereum": 1,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 6
+    },
+    "2026-06-05": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-06-06": {
+      "ethereum": 2,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 4
+    },
+    "2026-06-07": {
+      "ethereum": 1,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 4
+    },
+    "2026-06-08": {
+      "ethereum": 2,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 3
+    },
+    "2026-06-09": {
+      "ethereum": 1,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 2
+    },
+    "2026-06-10": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-06-11": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-06-13": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-06-15": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-06-16": {
+      "ethereum": 10,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 10
+    },
+    "2026-06-17": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-06-18": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-06-19": {
+      "ethereum": 6,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 6
+    },
+    "2026-06-20": {
+      "ethereum": 6,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 6
+    },
+    "2026-06-21": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-06-22": {
+      "ethereum": 3,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 4
+    },
+    "2026-06-23": {
+      "ethereum": 1,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 1
+    },
+    "2026-06-24": {
+      "ethereum": 1,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 1
+    },
+    "2026-06-26": {
+      "ethereum": 2,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 3
+    },
+    "2026-06-28": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-06-29": {
+      "ethereum": 3,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 3
+    },
+    "2026-06-30": {
+      "ethereum": 4,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 4
+    },
+    "2026-07-01": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-07-02": {
+      "ethereum": 2,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 3
+    },
+    "2026-07-04": {
+      "ethereum": 6,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 6
+    },
+    "2026-07-06": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-07-08": {
+      "ethereum": 1,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 1
+    },
+    "2026-07-09": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-07-11": {
+      "ethereum": 1,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 1
+    },
+    "2026-07-13": {
+      "ethereum": 3,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 3
+    },
+    "2026-07-19": {
+      "ethereum": 1,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 1
+    },
+    "2026-07-21": {
+      "ethereum": 8,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 8
+    },
+    "2026-07-22": {
+      "ethereum": 4,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 5
+    },
+    "2026-07-24": {
+      "ethereum": 7,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 8
+    },
+    "2026-07-26": {
+      "ethereum": 4,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 4
+    },
+    "2026-07-27": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-07-28": {
+      "ethereum": 1,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 1
+    },
+    "2026-07-30": {
+      "ethereum": 8,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 9
+    },
+    "2026-07-31": {
+      "ethereum": 9,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 12
+    },
+    "2026-08-01": {
+      "ethereum": 5,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 7
+    },
+    "2026-08-02": {
+      "ethereum": 2,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 3
+    },
+    "2026-08-03": {
+      "ethereum": 1,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 2
+    },
+    "2026-08-04": {
+      "ethereum": 5,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 6
+    },
+    "2026-08-05": {
+      "ethereum": 1,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 4
+    },
+    "2026-08-06": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-08-07": {
+      "ethereum": 6,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 10
+    },
+    "2026-08-08": {
+      "ethereum": 2,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 4
+    },
+    "2026-08-09": {
+      "ethereum": 2,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 4
+    },
+    "2026-08-10": {
+      "ethereum": 1,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 3
+    },
+    "2026-08-11": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-08-12": {
+      "ethereum": 1,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 4
+    },
+    "2026-08-13": {
+      "ethereum": 1,
+      "arbitrum": 18,
+      "base": 0,
+      "total": 19
+    },
+    "2026-08-14": {
+      "ethereum": 3,
+      "arbitrum": 13,
+      "base": 0,
+      "total": 16
+    },
+    "2026-08-15": {
+      "ethereum": 0,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 3
+    },
+    "2026-08-16": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-08-17": {
+      "ethereum": 2,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 11
+    },
+    "2026-08-18": {
+      "ethereum": 0,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 2
+    },
+    "2026-08-19": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-08-20": {
+      "ethereum": 0,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 4
+    },
+    "2026-08-21": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-08-22": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-08-23": {
+      "ethereum": 7,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 10
+    },
+    "2026-08-24": {
+      "ethereum": 3,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 11
+    },
+    "2026-08-25": {
+      "ethereum": 12,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 12
+    },
+    "2026-08-26": {
+      "ethereum": 5,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 8
+    },
+    "2026-08-27": {
+      "ethereum": 2,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 3
+    },
+    "2026-08-28": {
+      "ethereum": 2,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 3
+    },
+    "2026-08-29": {
+      "ethereum": 3,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 4
+    },
+    "2026-08-30": {
+      "ethereum": 3,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 5
+    },
+    "2026-08-31": {
+      "ethereum": 1,
+      "arbitrum": 6,
+      "base": 0,
+      "total": 7
+    },
+    "2026-09-01": {
+      "ethereum": 8,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 10
+    },
+    "2026-09-02": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-09-03": {
+      "ethereum": 3,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 8
+    },
+    "2026-09-04": {
+      "ethereum": 3,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 3
+    },
+    "2026-09-06": {
+      "ethereum": 5,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 6
+    },
+    "2026-09-07": {
+      "ethereum": 2,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 4
+    },
+    "2026-09-08": {
+      "ethereum": 5,
+      "arbitrum": 9,
+      "base": 0,
+      "total": 14
+    },
+    "2026-09-09": {
+      "ethereum": 13,
+      "arbitrum": 11,
+      "base": 0,
+      "total": 24
+    },
+    "2026-09-10": {
+      "ethereum": 5,
+      "arbitrum": 20,
+      "base": 0,
+      "total": 25
+    },
+    "2026-09-11": {
+      "ethereum": 3,
+      "arbitrum": 11,
+      "base": 0,
+      "total": 14
+    },
+    "2026-09-12": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-09-13": {
+      "ethereum": 0,
+      "arbitrum": 5,
+      "base": 0,
+      "total": 5
+    },
+    "2026-09-15": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-09-16": {
+      "ethereum": 1,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 2
+    },
+    "2026-09-17": {
+      "ethereum": 0,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 1
+    },
+    "2026-09-18": {
+      "ethereum": 1,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 1
+    },
+    "2026-09-19": {
+      "ethereum": 5,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 5
+    },
+    "2026-09-20": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-09-22": {
+      "ethereum": 1,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 3
+    },
+    "2026-09-23": {
+      "ethereum": 3,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 3
+    },
+    "2026-09-24": {
+      "ethereum": 3,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 5
+    },
+    "2026-09-25": {
+      "ethereum": 8,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 9
+    },
+    "2026-09-26": {
+      "ethereum": 11,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 11
+    },
+    "2026-09-27": {
+      "ethereum": 1,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 1
+    },
+    "2026-09-28": {
+      "ethereum": 2,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 3
+    },
+    "2026-09-29": {
+      "ethereum": 1,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 2
+    },
+    "2026-09-30": {
+      "ethereum": 5,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 5
+    },
+    "2026-10-01": {
+      "ethereum": 7,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 9
+    },
+    "2026-10-02": {
+      "ethereum": 8,
+      "arbitrum": 8,
+      "base": 0,
+      "total": 16
+    },
+    "2026-10-03": {
+      "ethereum": 1,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 4
+    },
+    "2026-10-04": {
+      "ethereum": 3,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 5
+    },
+    "2026-10-05": {
+      "ethereum": 5,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 6
+    },
+    "2026-10-06": {
+      "ethereum": 1,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 2
+    },
+    "2026-10-07": {
+      "ethereum": 1,
+      "arbitrum": 3,
+      "base": 0,
+      "total": 4
+    },
+    "2026-10-08": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-10-09": {
+      "ethereum": 1,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 1
+    },
+    "2026-10-10": {
+      "ethereum": 2,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 2
+    },
+    "2026-10-11": {
+      "ethereum": 4,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 4
+    },
+    "2026-10-13": {
+      "ethereum": 3,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 3
+    },
+    "2026-10-14": {
+      "ethereum": 4,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 5
+    },
+    "2026-10-15": {
+      "ethereum": 6,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 7
+    },
+    "2026-10-16": {
+      "ethereum": 8,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 8
+    },
+    "2026-10-17": {
+      "ethereum": 23,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 23
+    },
+    "2026-10-18": {
+      "ethereum": 27,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 27
+    },
+    "2026-10-19": {
+      "ethereum": 17,
+      "arbitrum": 0,
+      "base": 0,
+      "total": 17
+    },
+    "2026-10-20": {
+      "ethereum": 24,
+      "arbitrum": 2,
+      "base": 0,
+      "total": 26
+    },
+    "2026-10-21": {
+      "ethereum": 44,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 48
+    },
+    "2026-10-22": {
+      "ethereum": 20,
+      "arbitrum": 4,
+      "base": 0,
+      "total": 24
+    },
+    "2026-10-23": {
+      "ethereum": 7,
+      "arbitrum": 1,
+      "base": 0,
+      "total": 8
+    }
+  }
+}
