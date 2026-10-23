@@ -24,6 +24,7 @@ from discord_bridge import notify_user_discord
 from x402_gateway import get_gateway, PRICING_TABLE, USER_PAYOUT_WALLET
 from brain_router import route_task
 from agentkit_actions import get_agentkit_provider
+from eas_indexer import get_address_attestations, get_address_reputation, get_recent_attestations
 
 PORT = 8080
 WALLET_ADDRESS = os.getenv("PUBLIC_ADDRESS_TESTNET", "0x02c1F87F514493F359Afc0B3ff6b587434770361")
@@ -1019,6 +1020,40 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(json.dumps(res).encode("utf-8"))
+        elif self.path.startswith("/api/v1/eas/attestations"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            addr = qs.get("address", [WALLET_ADDRESS])[0]
+            limit = int(qs.get("limit", [10])[0])
+            items = get_address_attestations(addr, limit=limit)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"address": addr, "count": len(items), "attestations": items}).encode("utf-8"))
+        elif self.path.startswith("/api/v1/eas/reputation"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            addr = qs.get("address", [WALLET_ADDRESS])[0]
+            rep = get_address_reputation(addr)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(rep).encode("utf-8"))
+        elif self.path.startswith("/api/v1/eas/latest"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            limit = int(qs.get("limit", [10])[0])
+            recent = get_recent_attestations(limit=limit)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"network": "base", "count": len(recent), "attestations": recent}).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
@@ -1093,6 +1128,40 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(json.dumps(res).encode("utf-8"))
+        elif self.path.startswith("/api/v1/eas/attestations"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            addr = qs.get("address", [WALLET_ADDRESS])[0]
+            limit = int(qs.get("limit", [10])[0])
+            items = get_address_attestations(addr, limit=limit)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"address": addr, "count": len(items), "attestations": items}).encode("utf-8"))
+        elif self.path.startswith("/api/v1/eas/reputation"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            addr = qs.get("address", [WALLET_ADDRESS])[0]
+            rep = get_address_reputation(addr)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(rep).encode("utf-8"))
+        elif self.path.startswith("/api/v1/eas/latest"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            limit = int(qs.get("limit", [10])[0])
+            recent = get_recent_attestations(limit=limit)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"network": "base", "count": len(recent), "attestations": recent}).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
