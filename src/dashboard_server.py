@@ -23,6 +23,7 @@ from deepseek_solver import get_today_spent, DAILY_BUDGET_EUR
 from discord_bridge import notify_user_discord
 from x402_gateway import get_gateway, PRICING_TABLE, USER_PAYOUT_WALLET
 from brain_router import route_task
+from agentkit_actions import get_agentkit_provider
 
 PORT = 8080
 WALLET_ADDRESS = os.getenv("PUBLIC_ADDRESS_TESTNET", "0x02c1F87F514493F359Afc0B3ff6b587434770361")
@@ -1005,6 +1006,19 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 "bounties_count": len(opps),
                 "data": opps[:20]
             }).encode("utf-8"))
+        elif self.path.startswith("/api/v1/agentkit/action"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            action = qs.get("action", [""])[0]
+            params = {k: v[0] for k, v in qs.items() if k != "action"}
+            provider = get_agentkit_provider()
+            res = provider.dispatch_action(action, params)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(res).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
@@ -1062,6 +1076,23 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 "payment": meta,
                 "solution": res
             }).encode("utf-8"))
+        elif self.path == "/api/v1/agentkit/action":
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length).decode('utf-8')
+            try:
+                data = json.loads(body)
+                action = data.get("action", "")
+                params = data.get("params", {})
+            except Exception:
+                action = ""
+                params = {}
+            provider = get_agentkit_provider()
+            res = provider.dispatch_action(action, params)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(res).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
