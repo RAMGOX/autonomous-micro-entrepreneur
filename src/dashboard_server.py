@@ -27,6 +27,7 @@ from agentkit_actions import get_agentkit_provider
 from eas_indexer import get_address_attestations, get_address_reputation, get_recent_attestations
 from erc8021_builder import encode_erc8021_suffix, attach_erc8021_attribution, decode_erc8021_attribution, DEFAULT_BUILDER_CODE
 from defillama_engine import get_base_top_yields, get_base_token_prices, get_base_defi_overview
+from dex_scanner import get_base_trending_pools, get_base_new_pools, get_base_token_market_data
 
 PORT = 8080
 WALLET_ADDRESS = os.getenv("PUBLIC_ADDRESS_TESTNET", "0x02c1F87F514493F359Afc0B3ff6b587434770361")
@@ -1105,6 +1106,41 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
             self.wfile.write(json.dumps({"prices": prices}).encode("utf-8"))
+        elif self.path.startswith("/api/v1/dex/trending"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            limit = int(qs.get("limit", [10])[0])
+            min_liq = float(qs.get("min_liquidity", [50000])[0])
+            trending = get_base_trending_pools(min_liquidity_usd=min_liq, limit=limit)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"count": len(trending), "trending_pools": trending}).encode("utf-8"))
+        elif self.path.startswith("/api/v1/dex/new_pools"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            limit = int(qs.get("limit", [10])[0])
+            min_liq = float(qs.get("min_liquidity", [1000])[0])
+            new_pools = get_base_new_pools(min_liquidity_usd=min_liq, limit=limit)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"count": len(new_pools), "new_pools": new_pools}).encode("utf-8"))
+        elif self.path.startswith("/api/v1/dex/token"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            addr = qs.get("address", [""])[0]
+            data = get_base_token_market_data(addr) if addr else None
+            self.send_response(200 if data else 404)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"status": "success" if data else "not_found", "token": data}).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
