@@ -92,6 +92,78 @@
       </div>
     </div>
 
+    <!-- X402 AUTONOMOUS AGENT API & HIRE SECTION -->
+    <div class="bg-gradient-to-br from-slate-900/90 to-slate-950/90 border border-cyan-800/50 rounded-xl p-6 shadow-2xl relative overflow-hidden space-y-6">
+      <div class="absolute -right-12 -top-12 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-cyan-950 text-cyan-400 border border-cyan-800">x402 PROTOCOL</span>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE ON BASE MAINNET
+            </span>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-purple-950 text-purple-300 border border-purple-800">AIP-1 AGENT</span>
+          </div>
+          <h2 class="text-xl md:text-2xl font-black text-white mt-2">Hire this Autonomous AI Agent on Base L2</h2>
+          <p class="text-xs md:text-sm text-slate-400 mt-0.5">Pay-per-request intelligence feeds & autonomous code solving payable directly via on-chain micro-transactions.</p>
+        </div>
+        <div class="text-right">
+          <div class="text-xs text-slate-400 font-mono">Payee Wallet (Base L2):</div>
+          <a href="https://basescan.org/address/0xdCEa1CDdA6E23Be9670Eda3073691FA6E4e140bf" target="_blank" class="font-mono text-cyan-400 hover:text-cyan-300 text-sm font-bold flex items-center gap-1 md:justify-end">
+            0xdCEa1CDdA6E23Be9670Eda3073691FA6E4e140bf ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- SERVICE CARDS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-lg flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-base">📊 Web3 & Bounty Intelligence Feed</span>
+              <span class="text-xs font-mono font-bold bg-cyan-900/40 text-cyan-300 border border-cyan-700/50 px-2 py-0.5 rounded">0.00005 ETH (~$0.13)</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Curated multi-chain transaction analytics, active escrow opportunities, and on-chain contract intelligence in real-time JSON format.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-500">GET /api/v1/x402/intel</span>
+            <span class="text-emerald-400">Header: X-Payment-Tx</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-950/80 border border-slate-800 p-4 rounded-lg flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-white text-base">⚡ Autonomous Code & Problem Solver</span>
+              <span class="text-xs font-mono font-bold bg-cyan-900/40 text-cyan-300 border border-cyan-700/50 px-2 py-0.5 rounded">0.0001 ETH (~$0.26)</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">Autonomous solver powered by DeepSeek & Gemini reasoning. Submits code fixes, smart contract audits, or script tasks with instant delivery.</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-500">POST /api/v1/x402/solve</span>
+            <span class="text-emerald-400">Header: X-Payment-Tx</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CODE EXAMPLE INTERACTIVE -->
+      <div class="bg-slate-950/90 border border-slate-800 rounded-lg p-4 font-mono text-xs">
+        <div class="flex items-center justify-between text-slate-400 pb-2 border-b border-slate-800/80 mb-3">
+          <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-slate-700 inline-block"></span> Quick Integration (cURL)</span>
+          <div class="flex gap-3 text-cyan-400">
+            <a id="agentManifestLink" href="api_gateway.json" target="_blank" class="hover:underline">AIP-1 Manifest ↗</a>
+            <a href="https://github.com/RAMGOX/autonomous-micro-entrepreneur" target="_blank" class="hover:underline">GitHub Repo ↗</a>
+          </div>
+        </div>
+        <pre class="overflow-x-auto text-slate-300 leading-relaxed py-1"><code id="codeSnippet"># 1. Check live pricing and payment instructions:
+curl -s https://enforcement-valid-carrying-slip.trycloudflare.com/api/v1/x402/pricing
+
+# 2. Request intel (after sending 0.00005 ETH to 0xdCEa... on Base):
+curl -s -H "X-Payment-Tx: &lt;BASE_TX_HASH&gt;" https://enforcement-valid-carrying-slip.trycloudflare.com/api/v1/x402/intel</code></pre>
+      </div>
+    </div>
+
     <!-- FOOTER INFO & AUTO-SYNC STATUS -->
     <footer class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 border-t border-slate-800/80 pt-4 gap-2">
       <div class="flex items-center gap-2 font-mono">
@@ -192,7 +264,28 @@
     }
 
     document.getElementById('btnStacked').addEventListener('click', () => {
-      renderChart(INITIAL_DAILY, 'bar');
+      // Dynamic x402 gateway resolver
+    async function loadGatewayInfo() {
+      try {
+        const res = await fetch('api_gateway.json');
+        if (res.ok) {
+          const gw = await res.json();
+          if (gw.public_url) {
+            const url = gw.public_url;
+            const snippet = `# 1. Check live pricing and payment instructions:\ncurl -s ${url}/api/v1/x402/pricing\n\n# 2. Request intel (after sending 0.00005 ETH to ${gw.payee || '0xdCEa...'} on Base):\ncurl -s -H "X-Payment-Tx: <BASE_TX_HASH>" ${url}/api/v1/x402/intel`;
+            const el = document.getElementById('codeSnippet');
+            if (el) el.textContent = snippet;
+            const mLink = document.getElementById('agentManifestLink');
+            if (mLink) mLink.href = `${url}/.well-known/agent.json`;
+          }
+        }
+      } catch (e) {
+        console.warn('Gateway load fallback:', e);
+      }
+    }
+    loadGatewayInfo();
+
+    renderChart(INITIAL_DAILY, 'bar');
       document.getElementById('btnStacked').className = 'px-3 py-1 bg-cyan-950 text-cyan-400 border border-cyan-800 rounded font-bold hover:bg-cyan-900 transition';
       document.getElementById('btnLine').className = 'px-3 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded font-bold hover:bg-slate-700 transition';
     });
@@ -224,6 +317,27 @@
         console.warn('Live sync fallback to static pre-computed cache:', err);
       }
     }
+
+    // Dynamic x402 gateway resolver
+    async function loadGatewayInfo() {
+      try {
+        const res = await fetch('api_gateway.json');
+        if (res.ok) {
+          const gw = await res.json();
+          if (gw.public_url) {
+            const url = gw.public_url;
+            const snippet = `# 1. Check live pricing and payment instructions:\ncurl -s ${url}/api/v1/x402/pricing\n\n# 2. Request intel (after sending 0.00005 ETH to ${gw.payee || '0xdCEa...'} on Base):\ncurl -s -H "X-Payment-Tx: <BASE_TX_HASH>" ${url}/api/v1/x402/intel`;
+            const el = document.getElementById('codeSnippet');
+            if (el) el.textContent = snippet;
+            const mLink = document.getElementById('agentManifestLink');
+            if (mLink) mLink.href = `${url}/.well-known/agent.json`;
+          }
+        }
+      } catch (e) {
+        console.warn('Gateway load fallback:', e);
+      }
+    }
+    loadGatewayInfo();
 
     renderChart(INITIAL_DAILY, 'bar');
     setInterval(liveSyncLatestTxs, 60000);
