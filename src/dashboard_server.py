@@ -21,6 +21,8 @@ load_dotenv(dotenv_path=ENV_PATH)
 from opportunity_queue import get_queue_summary, prune_expired_opportunities
 from deepseek_solver import get_today_spent, DAILY_BUDGET_EUR
 from discord_bridge import notify_user_discord
+from x402_gateway import get_gateway, PRICING_TABLE, USER_PAYOUT_WALLET
+from brain_router import route_task
 
 PORT = 8080
 WALLET_ADDRESS = os.getenv("PUBLIC_ADDRESS_TESTNET", "0x02c1F87F514493F359Afc0B3ff6b587434770361")
@@ -29,6 +31,7 @@ BASE_MAINNET_RPC = "https://mainnet.base.org"
 ETH_SEPOLIA_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
 
 USDC_MAINNET_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+WDOOM_MAINNET_ADDRESS = "0x623c84A5E04bF715018203334b0eFE41696eBC3E"
 ERC20_BALANCE_ABI = [{"constant": True, "inputs": [{"name": "_owner", "type": "address"}], "name": "balanceOf", "outputs": [{"name": "balance", "type": "uint256"}], "type": "function"}]
 
 # State & history cache for real-time graphs
@@ -230,6 +233,14 @@ def background_collector():
                         except Exception:
                             pass
 
+                        real_wdoom = 3000.0
+                        try:
+                            wdoom_ctr = w3_mainnet.eth.contract(address=w3_mainnet.to_checksum_address(WDOOM_MAINNET_ADDRESS), abi=ERC20_BALANCE_ABI)
+                            raw_wdoom = wdoom_ctr.functions.balanceOf(w3_mainnet.to_checksum_address(WALLET_ADDRESS)).call()
+                            real_wdoom = float(raw_wdoom) / 1e18
+                        except Exception:
+                            pass
+
                         # Conversión total a Euros (~0.92 € por 1 USDC/USD)
                         usd_eur_rate = 0.92
                         real_eur = round((real_eth * cached_eth_price) + (real_usdc * usd_eur_rate), 2)
@@ -268,6 +279,7 @@ def background_collector():
                             "l1_balance_eth": l1_bal_eth,
                             "real_balance_eth": real_eth,
                             "real_balance_usdc": real_usdc,
+                            "real_balance_wdoom": real_wdoom,
                             "real_balance_eur": real_eur,
                             "eth_price_eur": cached_eth_price,
                             "tokens_earned": rewards.get("total_tokens_pending", 150000),
@@ -505,7 +517,7 @@ HTML_PAGE = """<!DOCTYPE html>
             <div class="mt-2 flex items-baseline gap-2">
               <span id="realEurBalance" class="text-3xl font-black text-white">0,00</span>
               <span class="text-lg font-bold text-emerald-400">€</span>
-              <span class="text-xs text-slate-400 font-mono ml-2">(<span id="realEthBalance">0.0000</span> ETH + <span id="realUsdcBalance">0.00</span> USDC)</span>
+              <span class="text-xs text-slate-400 font-mono ml-2">(<span id="realEthBalance">0.0000</span> ETH + <span id="realUsdcBalance">0.00</span> USDC + <span id="realWdoomBalance" class="text-cyan-400 font-bold">3.000</span> wDOOM)</span>
             </div>
             <div class="mt-2 pt-2 border-t border-emerald-900/40 flex justify-between text-[11px] font-mono text-slate-400">
               <span>Cotización actual:</span>
@@ -789,6 +801,7 @@ HTML_PAGE = """<!DOCTYPE html>
         document.getElementById('realEurBalance').textContent = realEur;
         document.getElementById('realEthBalance').textContent = realEth;
         document.getElementById('realUsdcBalance').textContent = Number(web3.real_balance_usdc || 0).toFixed(2);
+        document.getElementById('realWdoomBalance').textContent = Number(web3.real_balance_wdoom || 3000).toLocaleString('es-ES');
         document.getElementById('ethPriceTag').textContent = ethPrice;
         document.getElementById('topEthPrice').textContent = ethPrice;
 
@@ -878,12 +891,38 @@ HTML_PAGE = """<!DOCTYPE html>
 """
 
 class DashboardHandler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Payment-Tx, Authorization")
+        self.end_headers()
+
     def do_GET(self):
         if self.path == "/" or self.path == "/index.html":
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
             self.wfile.write(HTML_PAGE.encode("utf-8"))
+        elif self.path == "/poidh-tx-dashboard" or self.path == "/poidh-tx-dashboard.html":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            html_p = BASE_DIR / "docs" / "poidh_txs_dashboard.html"
+            if html_p.exists():
+                self.wfile.write(html_p.read_bytes())
+            else:
+                self.wfile.write(b"Dashboard file not found")
+        elif self.path == "/poidh_daily_txs.json":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            json_p = BASE_DIR / "docs" / "poidh_daily_txs.json"
+            if json_p.exists():
+                self.wfile.write(json_p.read_bytes())
+            else:
+                self.wfile.write(b"{}")
         elif self.path == "/api/status":
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -913,6 +952,116 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     "server_time": time.strftime("%Y-%m-%d %H:%M:%S")
                 }
             self.wfile.write(json.dumps(status).encode("utf-8"))
+        elif self.path == "/api/v1/x402/pricing":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            resp = {
+                "protocol": "x402",
+                "version": "1.0",
+                "network": "base",
+                "chainId": 8453,
+                "payee": USER_PAYOUT_WALLET,
+                "pricing": PRICING_TABLE,
+                "docs": "https://x402.org"
+            }
+            self.wfile.write(json.dumps(resp).encode("utf-8"))
+        elif self.path.startswith("/api/v1/x402/intel"):
+            gw = get_gateway()
+            tx_hash = self.headers.get("X-Payment-Tx")
+            if not tx_hash:
+                ch = gw.get_payment_challenge("intel")
+                self.send_response(402)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("WWW-Authenticate", 'x402-v1 network="base"')
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps(ch).encode("utf-8"))
+                return
+            ok, msg, meta = gw.verify_payment_tx(tx_hash, "intel")
+            if not ok:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": msg}).encode("utf-8"))
+                return
+            opp_file = BASE_DIR / "memoria" / "estado" / "cola_oportunidades.json"
+            opps = []
+            if opp_file.exists():
+                try:
+                    opps = json.loads(opp_file.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "status": "success",
+                "service": "intel",
+                "payment": meta,
+                "bounties_count": len(opps),
+                "data": opps[:20]
+            }).encode("utf-8"))
+        else:
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write(b"Not Found")
+
+    def do_POST(self):
+        if self.path == "/api/v1/x402/solve":
+            gw = get_gateway()
+            tx_hash = self.headers.get("X-Payment-Tx")
+            if not tx_hash:
+                ch = gw.get_payment_challenge("solve")
+                self.send_response(402)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("WWW-Authenticate", 'x402-v1 network="base"')
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps(ch).encode("utf-8"))
+                return
+
+            ok, msg, meta = gw.verify_payment_tx(tx_hash, "solve")
+            if not ok:
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": msg}).encode("utf-8"))
+                return
+
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length).decode('utf-8')
+            prompt = ""
+            try:
+                data = json.loads(body)
+                prompt = data.get("prompt", "")
+            except Exception:
+                prompt = body
+
+            if not prompt:
+                prompt = "Verificar estado y generar resumen de inteligencia"
+
+            res = route_task(
+                task_type="general",
+                prompt=prompt,
+                difficulty=3,
+                system_prompt="Eres un agente de IA autonomo en Base L2 resolviendo una peticion comercial via micropago x402."
+            )
+
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                "status": "success",
+                "service": "solve",
+                "payment": meta,
+                "solution": res
+            }).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
