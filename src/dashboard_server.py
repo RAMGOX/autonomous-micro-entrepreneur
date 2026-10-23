@@ -26,6 +26,7 @@ from brain_router import route_task
 from agentkit_actions import get_agentkit_provider
 from eas_indexer import get_address_attestations, get_address_reputation, get_recent_attestations
 from erc8021_builder import encode_erc8021_suffix, attach_erc8021_attribution, decode_erc8021_attribution, DEFAULT_BUILDER_CODE
+from defillama_engine import get_base_top_yields, get_base_token_prices, get_base_defi_overview
 
 PORT = 8080
 WALLET_ADDRESS = os.getenv("PUBLIC_ADDRESS_TESTNET", "0x02c1F87F514493F359Afc0B3ff6b587434770361")
@@ -1071,6 +1072,39 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 "docs": "https://erc8021.com"
             }
             self.wfile.write(json.dumps(resp).encode("utf-8"))
+        elif self.path == "/api/v1/defi/overview":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            data = get_base_defi_overview()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+        elif self.path.startswith("/api/v1/defi/yields"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            limit = int(qs.get("limit", [10])[0])
+            min_tvl = float(qs.get("min_tvl", [500000])[0])
+            sym = qs.get("symbol", [None])[0]
+            stable = qs.get("stable", ["false"])[0].lower() in ("true", "1")
+            yields = get_base_top_yields(min_tvl=min_tvl, symbol_filter=sym, stable_only=stable, limit=limit)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"count": len(yields), "yields": yields}).encode("utf-8"))
+        elif self.path.startswith("/api/v1/defi/prices"):
+            from urllib.parse import urlparse, parse_qs
+            parsed = urlparse(self.path)
+            qs = parse_qs(parsed.query)
+            tokens_str = qs.get("tokens", ["WETH,USDC,AERO"])[0]
+            tokens_list = [t.strip() for t in tokens_str.split(",") if t.strip()]
+            prices = get_base_token_prices(tokens_list)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps({"prices": prices}).encode("utf-8"))
         else:
             self.send_response(404)
             self.end_headers()
