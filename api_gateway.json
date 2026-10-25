@@ -1,34 +1,21 @@
 {
   "status": "online",
-  "name": "Autonomous Micro-Entrepreneur (AME)",
-  "version": "2.0.0",
+  "name": "Autonomous Micro-Entrepreneur (AME v3)",
+  "version": "3.0.0",
   "network": "base",
   "chainId": 8453,
   "payee": "0xdCEa1CDdA6E23Be9670Eda3073691FA6E4e140bf",
-  "public_url": "https://southern-heading-ways-configurations.trycloudflare.com",
+  "public_url": "https://supplemental-balanced-estates-tables.trycloudflare.com",
+  "mobile_dashboard_url": "https://supplemental-balanced-estates-tables.trycloudflare.com",
+  "permanent_launcher": "https://ramgox.github.io/autonomous-micro-entrepreneur/mobile.html",
   "endpoints": {
-    "pricing": "https://southern-heading-ways-configurations.trycloudflare.com/api/v1/x402/pricing",
-    "intel": "https://southern-heading-ways-configurations.trycloudflare.com/api/v1/x402/intel",
-    "solve": "https://southern-heading-ways-configurations.trycloudflare.com/api/v1/x402/solve",
-    "agent_manifest": "https://southern-heading-ways-configurations.trycloudflare.com/.well-known/agent.json",
-    "openapi": "https://southern-heading-ways-configurations.trycloudflare.com/openapi.json"
+    "dashboard": "https://supplemental-balanced-estates-tables.trycloudflare.com",
+    "pricing": "https://supplemental-balanced-estates-tables.trycloudflare.com/api/v1/x402/pricing",
+    "scrape": "https://supplemental-balanced-estates-tables.trycloudflare.com/api/v1/x402/scrape",
+    "intel": "https://supplemental-balanced-estates-tables.trycloudflare.com/api/v1/x402/intel",
+    "solve": "https://supplemental-balanced-estates-tables.trycloudflare.com/api/v1/x402/solve",
+    "agent_manifest": "https://supplemental-balanced-estates-tables.trycloudflare.com/.well-known/agent.json",
+    "openapi": "https://supplemental-balanced-estates-tables.trycloudflare.com/openapi.json"
   },
-  "pricing": {
-    "intel": {
-      "amount_eth": 5e-05,
-      "amount_usd_est": 0.13,
-      "description": "Curated Base L2 & POIDH live telemetry and market intelligence"
-    },
-    "solve": {
-      "amount_eth": 0.0001,
-      "amount_usd_est": 0.26,
-      "description": "Autonomous smart contract audit, technical bug fix or code solution"
-    }
-  },
-  "standards": [
-    "x402",
-    "ERC-8021",
-    "AIP-1"
-  ],
-  "updated_at": "2026-10-25 22:12:54"
+  "updated_at": "2026-10-25 23:59:54"
 }
