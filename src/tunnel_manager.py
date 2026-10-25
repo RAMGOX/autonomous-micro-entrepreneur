@@ -142,9 +142,17 @@ def run_tunnel():
             _sync_gateway_to_github(public_url)
 
             if notify_user_discord:
+                try:
+                    from dashboard_server import get_mobile_access_token
+                    mob_tok = get_mobile_access_token()
+                    auth_live = f"{public_url}/?auth={mob_tok}"
+                    auth_perm = f"{PERMANENT_MOBILE_LINK}?auth={mob_tok}"
+                except Exception:
+                    auth_live = public_url
+                    auth_perm = PERMANENT_MOBILE_LINK
                 msg = (
-                    f"📱 **Acceso Móvil Directo:** [Abrir Dashboard en el Móvil]({public_url})\n"
-                    f"🔖 **Marcador Permanente (nunca caduca):** [Guardar en Inicio del Móvil]({PERMANENT_MOBILE_LINK})\n"
+                    f"📱 **Acceso Móvil Directo:** [Abrir Dashboard en el Móvil]({auth_live})\n"
+                    f"🔖 **Marcador Permanente (nunca caduca):** [Guardar en Inicio del Móvil]({auth_perm})\n"
                     f"⚡ **Endpoint x402 Scrape:** `{public_url}/api/v1/x402/scrape`"
                 )
                 notify_user_discord(msg, title="🌐 Túnel Móvil y Pasarela x402 Sincronizados", color=0x06b6d4, channel="dashboard")

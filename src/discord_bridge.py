@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Discord Bridge: Canal bidireccional entre el Cerebro Central y el Usuario en Discord
+Discord Bridge: Canal bidireccional UTF-8 puro entre el Cerebro Central y el Usuario en Discord.
 """
 import os
 import json
@@ -44,21 +44,22 @@ PENDING_QUESTION_FILE = MEMORIA_DIR / "esperando_usuario.json"
 ORDERS_QUEUE_FILE = MEMORIA_DIR / "cola_ordenes.json"
 ORDERS_HISTORY_FILE = MEMORIA_DIR / "historial_ordenes.md"
 
+
 def notify_user_discord(content: str, title: Optional[str] = None, color: int = 0x3498db, channel: str = "dashboard") -> bool:
-    """Envia un mensaje a Discord (por defecto al canal de operaciones #dashboard-24-7)"""
+    """Envía un mensaje en UTF-8 puro garantizado a Discord."""
     if not BOT_TOKEN:
         return False
-        
+
     target_channel_id = DASHBOARD_CHANNEL_ID if channel == "dashboard" else GENERAL_CHANNEL_ID
     if not target_channel_id:
         target_channel_id = GENERAL_CHANNEL_ID
-    
+
     url = f"https://discord.com/api/v10/channels/{target_channel_id}/messages"
     headers = {
         "Authorization": f"Bot {BOT_TOKEN}",
         "Content-Type": "application/json; charset=utf-8"
     }
-    
+
     payload: Dict[str, Any] = {}
     if title:
         payload["embeds"] = [{
@@ -69,23 +70,22 @@ def notify_user_discord(content: str, title: Optional[str] = None, color: int = 
         }]
     else:
         payload["content"] = content
-        
+
     try:
+        raw_bytes = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         if requests is not None:
-            res = requests.post(url, headers=headers, json=payload, timeout=10)
+            res = requests.post(url, headers=headers, data=raw_bytes, timeout=10)
             return res.status_code in (200, 201)
         else:
-            req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+            req = urllib.request.Request(url, data=raw_bytes, headers=headers)
             with urllib.request.urlopen(req, timeout=10) as resp:
                 return resp.status in (200, 201)
     except Exception as e:
         print(f"[Bridge Error] Fallo al notificar a Discord: {e}")
         return False
 
+
 def ask_user_discord(question: str) -> bool:
-    """
-    Envia una pregunta formal al usuario en Discord y la registra en esperando_usuario.json
-    """
     data = {
         "id": f"q_{int(time.time())}",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -95,17 +95,17 @@ def ask_user_discord(question: str) -> bool:
     }
     with open(PENDING_QUESTION_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-        
+
     mention = f"<@{AUTHORIZED_USER_ID}> " if AUTHORIZED_USER_ID else ""
     msg = (
-        f"{mention}\U0001F9E0 **CONSULTA DEL CEREBRO CENTRAL:**\n\n"
+        f"{mention}🧠 **CONSULTA DEL CEREBRO CENTRAL:**\n\n"
         f"{question}\n\n"
         f"*Responde directamente a este mensaje en Discord para que el Cerebro continúe.*"
     )
     return notify_user_discord(msg)
 
+
 def check_active_question() -> Optional[Dict[str, Any]]:
-    """Consulta si hay una pregunta pendiente de respuesta"""
     if not PENDING_QUESTION_FILE.exists():
         return None
     try:
@@ -114,29 +114,28 @@ def check_active_question() -> Optional[Dict[str, Any]]:
     except Exception:
         return None
 
+
 def resolve_active_question(answer: str) -> bool:
-    """Registra la respuesta recibida desde Discord"""
     q = check_active_question()
     if not q or q.get("status") != "pending":
         return False
-        
+
     q["status"] = "answered"
     q["answer"] = answer
     q["answered_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
-    
+
     with open(PENDING_QUESTION_FILE, "w", encoding="utf-8") as f:
         json.dump(q, f, ensure_ascii=False, indent=2)
-        
-    # Anotar en el historial de Obsidian
+
     with open(ORDERS_HISTORY_FILE, "a", encoding="utf-8") as f:
         f.write(f"\n### [{q['answered_at']}] Respuesta a consulta\n")
         f.write(f"- **Pregunta:** {q['question']}\n")
         f.write(f"- **Respuesta de Usuario:** {answer}\n")
-        
+
     return True
 
+
 def push_order(order_text: str, source: str = "discord") -> Dict[str, Any]:
-    """Añade una orden a la cola de trabajo del Cerebro Central"""
     orders = []
     if ORDERS_QUEUE_FILE.exists():
         try:
@@ -144,7 +143,7 @@ def push_order(order_text: str, source: str = "discord") -> Dict[str, Any]:
                 orders = json.load(f)
         except Exception:
             orders = []
-            
+
     order = {
         "id": f"ord_{int(time.time())}",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
@@ -153,19 +152,19 @@ def push_order(order_text: str, source: str = "discord") -> Dict[str, Any]:
         "status": "pending"
     }
     orders.append(order)
-    
+
     with open(ORDERS_QUEUE_FILE, "w", encoding="utf-8") as f:
         json.dump(orders, f, ensure_ascii=False, indent=2)
-        
+
     with open(ORDERS_HISTORY_FILE, "a", encoding="utf-8") as f:
         f.write(f"\n### [{order['timestamp']}] Nueva orden recibida ({source})\n")
         f.write(f"- **Instrucción:** {order_text}\n")
         f.write(f"- **Estado:** Pendiente\n")
-        
+
     return order
 
+
 def pop_pending_orders() -> List[Dict[str, Any]]:
-    """Lee todas las órdenes pendientes y las marca como en proceso"""
     if not ORDERS_QUEUE_FILE.exists():
         return []
     try:
@@ -173,18 +172,18 @@ def pop_pending_orders() -> List[Dict[str, Any]]:
             orders = json.load(f)
     except Exception:
         return []
-        
+
     pending = [o for o in orders if o.get("status") == "pending"]
     for o in pending:
         o["status"] = "in_progress"
-        
+
     with open(ORDERS_QUEUE_FILE, "w", encoding="utf-8") as f:
         json.dump(orders, f, ensure_ascii=False, indent=2)
-        
+
     return pending
 
+
 def complete_order(order_id: str, result_text: str = "") -> bool:
-    """Marca una orden como completada y guarda su resultado en el historial"""
     if not ORDERS_QUEUE_FILE.exists():
         return False
     try:
@@ -192,7 +191,7 @@ def complete_order(order_id: str, result_text: str = "") -> bool:
             orders = json.load(f)
     except Exception:
         return False
-        
+
     found = False
     for o in orders:
         if o.get("id") == order_id:
@@ -201,11 +200,11 @@ def complete_order(order_id: str, result_text: str = "") -> bool:
             o["result"] = result_text
             found = True
             break
-            
+
     if found:
         with open(ORDERS_QUEUE_FILE, "w", encoding="utf-8") as f:
             json.dump(orders, f, ensure_ascii=False, indent=2)
-            
+
         with open(ORDERS_HISTORY_FILE, "a", encoding="utf-8") as f:
             f.write(f"\n### [{time.strftime('%Y-%m-%d %H:%M:%S')}] Orden completada ({order_id})\n")
             f.write(f"- **Resultado:** {result_text}\n")

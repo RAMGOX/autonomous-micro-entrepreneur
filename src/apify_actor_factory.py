@@ -22,7 +22,7 @@ OBS_APIFY_MD = BASE_DIR / "memoria" / "MOTOR_2_APIFY_ACTORS.md"
 
 
 def bootstrap_initial_actors():
-    """Crea y mantiene listos los 2 primeros Actors B2B/MCP de alta demanda si no existen."""
+    """Crea y mantiene listos los Actors B2B/MCP de alta demanda y coste operativo cero."""
     # Actor 1: Extractor B2B de Licitaciones Públicas Europeas (TED Europa v3)
     a1 = ACTORS_DIR / "eu-public-tenders-b2b"
     (a1 / ".actor").mkdir(parents=True, exist_ok=True)
@@ -227,6 +227,145 @@ if __name__ == "__main__":
             encoding="utf-8"
         )
 
+    # Actor 3: Verificador Oficial B2B de NIF-IVA Europeo (VIES) + Entidades Legales (GLEIF LEI)
+    a3 = ACTORS_DIR / "eu-vies-gleif-b2b-verifier"
+    (a3 / ".actor").mkdir(parents=True, exist_ok=True)
+    (a3 / "src").mkdir(parents=True, exist_ok=True)
+
+    if not (a3 / ".actor" / "actor.json").exists():
+        (a3 / ".actor" / "actor.json").write_text(json.dumps({
+            "actorSpecification": 1,
+            "name": "eu-vies-vat-gleif-lei-b2b-kyb-verifier",
+            "title": "EU VIES VAT & Global LEI Corporate KYB Verifier (MCP Ready)",
+            "description": "Verifies European VAT numbers via the official EU Commission VIES REST API and enriches corporate legal entities via the Global LEI Foundation (GLEIF) registry. Zero proxy cost, instant KYB/B2B compliance for AI agents and ERP workflows.",
+            "version": "1.0",
+            "dockerfile": "../Dockerfile",
+            "input": "./input_schema.json"
+        }, indent=2), encoding="utf-8")
+
+        (a3 / ".actor" / "input_schema.json").write_text(json.dumps({
+            "title": "EU VAT & Corporate LEI Verification Input",
+            "type": "object",
+            "schemaVersion": 1,
+            "properties": {
+                "vatNumbers": {
+                    "title": "EU VAT Numbers (Country Prefix + Number)",
+                    "type": "array",
+                    "editor": "stringList",
+                    "default": ["IE6388047V", "ESA28015865"],
+                    "description": "Full EU VAT numbers starting with 2-letter ISO country code (e.g. IE6388047V, ESA28015865)"
+                },
+                "companyNames": {
+                    "title": "Company Legal Names for GLEIF LEI Lookup",
+                    "type": "array",
+                    "editor": "stringList",
+                    "default": ["TELEFONICA SA"],
+                    "description": "Company names to enrich with official Global LEI registration data"
+                }
+            }
+        }, indent=2), encoding="utf-8")
+
+        (a3 / "Dockerfile").write_text(
+            "FROM apify/actor-python:3.11\nCOPY requirements.txt ./\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . ./\nCMD [\"python3\", \"-m\", \"src.main\"]\n",
+            encoding="utf-8"
+        )
+        (a3 / "requirements.txt").write_text("apify>=2.0.0\nrequests>=2.31.0\n", encoding="utf-8")
+        (a3 / "src" / "__init__.py").write_text("", encoding="utf-8")
+        (a3 / "src" / "main.py").write_text('''"""
+Apify Actor: EU VIES VAT & Global LEI Corporate KYB Verifier (MCP Ready).
+Monetization: Pay-Per-Event ($0.004 per corporate KYB verification). Zero proxy cost.
+"""
+import re
+import asyncio
+import requests
+
+VIES_URL_TPL = "https://ec.europa.eu/taxation_customs/vies/rest-api/ms/{country}/vat/{number}"
+GLEIF_SEARCH_URL = "https://api.gleif.org/api/v1/lei-records"
+
+
+def verify_eu_vat(full_vat: str) -> dict:
+    clean = re.sub(r"[^A-Za-z0-9]", "", full_vat or "").upper()
+    if len(clean) < 4:
+        return {"query": full_vat, "type": "eu_vies_vat", "is_valid": False, "error": "Invalid VAT format"}
+    country = clean[:2]
+    number = clean[2:]
+    url = VIES_URL_TPL.format(country=country, number=number)
+    r = requests.get(url, headers={"Accept": "application/json"}, timeout=15)
+    if r.status_code != 200:
+        return {"query": clean, "type": "eu_vies_vat", "country": country, "vat_number": number, "is_valid": False, "http_status": r.status_code}
+    data = r.json()
+    return {
+        "query": clean,
+        "type": "eu_vies_vat",
+        "country": country,
+        "vat_number": data.get("vatNumber") or number,
+        "is_valid": bool(data.get("isValid")),
+        "status_code": data.get("userError"),
+        "company_name": None if data.get("name") in (None, "---") else data.get("name"),
+        "registered_address": None if data.get("address") in (None, "---") else data.get("address"),
+        "checked_at": data.get("requestDate")
+    }
+
+
+def search_gleif_lei(company_name: str, limit: int = 3) -> list:
+    q = (company_name or "").strip()
+    if not q:
+        return []
+    r = requests.get(
+        GLEIF_SEARCH_URL,
+        params={"filter[entity.legalName]": q, "page[size]": min(max(1, int(limit)), 10)},
+        headers={"Accept": "application/vnd.api+json"},
+        timeout=15
+    )
+    if r.status_code != 200:
+        return []
+    records = []
+    for item in r.json().get("data", []):
+        attrs = item.get("attributes", {})
+        ent = attrs.get("entity", {})
+        reg = attrs.get("registration", {})
+        hq = ent.get("headquartersAddress", {})
+        records.append({
+            "query": q,
+            "type": "gleif_lei",
+            "lei": attrs.get("lei"),
+            "legal_name": (ent.get("legalName") or {}).get("name"),
+            "jurisdiction": ent.get("jurisdiction"),
+            "entity_status": ent.get("status"),
+            "registration_status": reg.get("status"),
+            "city": hq.get("city"),
+            "country": hq.get("country"),
+            "initial_registration_date": reg.get("initialRegistrationDate"),
+            "next_renewal_date": reg.get("nextRenewalDate")
+        })
+    return records
+
+
+async def main():
+    from apify import Actor
+    async with Actor:
+        inp = await Actor.get_input() or {}
+        vats = inp.get("vatNumbers") or ["IE6388047V"]
+        names = inp.get("companyNames") or ["TELEFONICA SA"]
+        for v in vats[:50]:
+            await Actor.push_data(verify_eu_vat(v))
+        for name in names[:25]:
+            for rec in search_gleif_lei(name, limit=2):
+                await Actor.push_data(rec)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+''', encoding="utf-8")
+        (a3 / "README.md").write_text(
+            "# EU VIES VAT & Global LEI Corporate KYB Verifier (MCP Ready)\n\n"
+            "Official European Commission VIES VAT validation + Global LEI Foundation (GLEIF) corporate entity enrichment.\n"
+            "- **Ideal for:** B2B onboarding, KYB compliance automation, ERP invoicing, and MCP AI Agents.\n"
+            "- **Pricing:** Pay-Per-Event (`$4 / 1,000 verifications`). Zero proxy cost.\n"
+            "- **Deploy command:** `npx apify-cli login && npx apify-cli push`\n",
+            encoding="utf-8"
+        )
+
 
 def _load_actor_module(name: str, file_path: Path):
     import importlib.util
@@ -289,19 +428,44 @@ def run_actor_health_checks() -> List[Dict[str, Any]]:
         "checked_at": time.strftime("%Y-%m-%d %H:%M:%S")
     })
 
+    # Test Actor 3 (EU VIES VAT & GLEIF LEI Verifier)
+    t3_ok = False
+    t3_note = ""
+    try:
+        mod3 = _load_actor_module("actor_vies_gleif_main", ACTORS_DIR / "eu-vies-gleif-b2b-verifier" / "src" / "main.py")
+        vies_res = mod3.verify_eu_vat("IE6388047V")
+        gleif_res = mod3.search_gleif_lei("TELEFONICA SA", limit=1)
+        t3_ok = bool(vies_res.get("is_valid")) and len(gleif_res) > 0 and bool(gleif_res[0].get("lei"))
+        t3_note = f"OK (VIES: {vies_res.get('company_name') or 'Valid'}, LEI: {gleif_res[0].get('lei') if gleif_res else 'N/A'})"
+    except Exception as e:
+        t3_note = f"Aviso API: {e}"
+
+    results.append({
+        "slug": "eu-vies-gleif-b2b-verifier",
+        "title": "EU VIES VAT & Global LEI Corporate KYB Verifier (MCP)",
+        "path": "apify_actors/eu-vies-gleif-b2b-verifier",
+        "healthy": t3_ok,
+        "smoke_ok": t3_ok,
+        "status_note": t3_note,
+        "pricing_model": "$0.004 / verification (Pay-Per-Event)",
+        "monetization": "$0.004 / verification (Pay-Per-Event)",
+        "checked_at": time.strftime("%Y-%m-%d %H:%M:%S")
+    })
+
     STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
     STATE_FILE.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
 
     # Registrar en Bandeja de Revisión si aún no han sido revisados por el usuario
     for r in results:
         if r["healthy"]:
+            public_gh_url = f"https://github.com/RAMGOX/autonomous-micro-entrepreneur/tree/main/{r['path']}"
             push_for_review(
                 category="apify_actor",
                 title=f"Apify Actor Listo: {r['title']}",
-                source_url="https://console.apify.com/actors",
+                source_url=public_gh_url,
                 reward_display="Recurrente (80% MRR USD)",
                 estimated_usd=75.0,
-                summary=f"Actor probado en vivo ({r['status_note']}). Modelo {r['pricing_model']}. Carpeta lista en `{r['path']}` para publicar gratis en Apify Store + MCP.",
+                summary=f"Actor probado en vivo ({r['status_note']}). Modelo {r['pricing_model']}. Código público visible sin registro en el enlace de arriba.",
                 deliverable_path=r["path"],
                 solver="Argon 4 Factory",
                 opp_id=f"apify_{r['slug']}",
