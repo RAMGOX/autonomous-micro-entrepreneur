@@ -22,12 +22,16 @@ __pycache__/
 *.so
 .pytest_cache/
 
-# Logs and runtime databases
+# Logs, archives, and runtime workspaces
 logs/
 *.log
 *.sqlite
 *.sqlite3
 screen.png
+memoria/historico/
+scratch/
+workspace_bounties/
+tools/tokless/
 
 # OS / Editor specific
 .DS_Store
@@ -35,3 +39,6 @@ Thumbs.db
 .vscode/
 .idea/
 .cursor/
+tools/cloudflared.exe
+memoria/estrategias/soluciones_propuestas/*.png
+memoria/estrategias/soluciones_propuestas/*.wav

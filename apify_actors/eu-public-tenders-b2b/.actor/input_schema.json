@@ -1,0 +1,29 @@
+{
+  "title": "EU Tenders Search Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "keyword": {
+      "title": "Keyword",
+      "type": "string",
+      "default": "software",
+      "description": "Sector or keyword (e.g., software, cybersecurity, cloud, AI)"
+    },
+    "country": {
+      "title": "Country ISO-3",
+      "type": "string",
+      "default": "ESP",
+      "description": "3-letter country code (ESP, DEU, FRA, ITA) or empty for all EU"
+    },
+    "maxItems": {
+      "title": "Max Results",
+      "type": "integer",
+      "default": 25,
+      "minimum": 1,
+      "maximum": 200
+    }
+  },
+  "required": [
+    "keyword"
+  ]
+}

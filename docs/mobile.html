@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>AME Mando Móvil 24/7</title>
+  <style>
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: #060911; color: #f1f5f9; font-family: system-ui, -apple-system, sans-serif;
+      text-align: center; padding: 24px;
+    }
+    .card {
+      max-width: 380px; width: 100%; background: #0f172a; border: 1px solid #1e293b;
+      border-radius: 20px; padding: 28px 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .spinner {
+      width: 42px; height: 42px; border: 3px solid #1e293b; border-top-color: #06b6d4;
+      border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 18px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    h1 { font-size: 18px; margin: 0 0 8px; color: #fff; }
+    p { font-size: 13px; color: #94a3b8; margin: 0 0 18px; line-height: 1.5; }
+    a.btn {
+      display: block; padding: 13px 16px; border-radius: 12px; background: #06b6d4;
+      color: #020617; font-weight: 700; text-decoration: none; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner" id="spin"></div>
+    <h1 id="title">Conectando con tu PC 24/7...</h1>
+    <p id="desc">Resolviendo el túnel seguro actual de tu Dashboard Móvil.</p>
+    <a id="manualBtn" class="btn" href="#" style="display:none;">Abrir Panel Ahora</a>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("auth")) {
+      localStorage.setItem("ame_mobile_auth", params.get("auth"));
+    }
+    const savedAuth = params.get("auth") || localStorage.getItem("ame_mobile_auth") || "";
+
+    async function resolveLiveTunnel() {
+      const urls = [
+        "https://raw.githubusercontent.com/RAMGOX/autonomous-micro-entrepreneur/gh-pages/api_gateway.json?t=" + Date.now(),
+        "https://raw.githubusercontent.com/RAMGOX/autonomous-micro-entrepreneur/main/docs/api_gateway.json?t=" + Date.now(),
+        "./api_gateway.json?t=" + Date.now()
+      ];
+      for (const u of urls) {
+        try {
+          const r = await fetch(u, { cache: "no-store" });
+          if (r.ok) {
+            const data = await r.json();
+            if (data.public_url) {
+              const target = savedAuth ? `${data.public_url}/?auth=${encodeURIComponent(savedAuth)}` : data.public_url;
+              const btn = document.getElementById("manualBtn");
+              btn.href = target;
+              btn.style.display = "block";
+              window.location.replace(target);
+              return;
+            }
+          }
+        } catch (e) {}
+      }
+      document.getElementById("spin").style.display = "none";
+      document.getElementById("title").textContent = "Túnel actualizándose";
+      document.getElementById("desc").textContent = "Escribe 'panel' en Discord para recibir el enlace directo al instante.";
+    }
+    resolveLiveTunnel();
+  </script>
+</body>
+</html>

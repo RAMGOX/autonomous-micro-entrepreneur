@@ -1,43 +1,37 @@
 """
-POIDH Bounty Scanner: Escáner oficial del protocolo POIDH (Pics Or It Didn't Happen).
-Consulta el servidor MCP oficial de poidh.xyz y filtra tareas con fondos reales
-bloqueados en los contratos inteligentes de Base y Arbitrum.
+POIDH Bounty Scanner: Escáner selectivo de recompensas técnicas en Base L2.
+Corrige la valoración de tokens ERC-20 (ETH vs USDC vs otros) y filtra estrictamente
+tareas 100% resolubles con software/datos sin gasto de bolsillo.
 """
 import json
 import urllib.request
 import sys
-from pathlib import Path
 
 POIDH_MCP_URL = "https://poidh.xyz/api/mcp"
 POIDH_INDEXER_URL = "https://indexer.poidh.xyz/api/v1"
+USDC_BASE = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"
+ZERO_ADDR = "0x0000000000000000000000000000000000000000"
+
 
 def get_open_poidh_bounties():
-    """Obtiene la lista de bounties activos desde el protocolo POIDH combinando MCP oficial e Indexer REST"""
     bounties = []
     seen_ids = set()
 
-    # 1. MCP Server Oficial (devuelve los bounties mas recientes ordenados)
+    # 1. MCP Server Oficial (incluye valoración USD calculada por POIDH)
     payload = {
         "jsonrpc": "2.0",
         "id": 1,
         "method": "tools/call",
-        "params": {
-            "name": "find_bounties",
-            "arguments": {"limit": 50}
-        }
+        "params": {"name": "find_bounties", "arguments": {"limit": 50}}
     }
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json, text/event-stream",
-        "User-Agent": "AutonomousMicroEntrepreneur-POIDH/1.0"
+        "User-Agent": "Mozilla/5.0"
     }
 
     try:
-        req = urllib.request.Request(
-            POIDH_MCP_URL,
-            data=json.dumps(payload).encode("utf-8"),
-            headers=headers
-        )
+        req = urllib.request.Request(POIDH_MCP_URL, data=json.dumps(payload).encode("utf-8"), headers=headers)
         with urllib.request.urlopen(req, timeout=12) as res:
             raw = res.read().decode("utf-8")
             data = json.loads(raw.split("data: ")[-1] if "data: " in raw else raw)
@@ -45,106 +39,102 @@ def get_open_poidh_bounties():
             bounties_data = json.loads(content_text)
             for b in bounties_data.get("bounties", []):
                 bid = b.get("id")
-                if bid and bid not in seen_ids:
+                chain = (b.get("chain") or "").lower()
+                if bid and chain == "base" and bid not in seen_ids:
                     seen_ids.add(bid)
                     bounties.append(b)
     except Exception as e:
         print(f"[POIDH Scanner Warning MCP]: {e}", file=sys.stderr)
 
-    # 2. Respaldo y expansion via Indexer REST oficial (bounties abiertos no cancelados)
+    # 2. Indexer REST Oficial con detección real de token (evita inflar tokens ERC-20 como ETH)
     try:
-        url = f"{POIDH_INDEXER_URL}/bounties?chainId=8453&inProgress=true&isCanceled=false&limit=100"
-        req = urllib.request.Request(url, headers={"User-Agent": "AutonomousMicroEntrepreneur-Scanner/2.0"})
+        url = f"{POIDH_INDEXER_URL}/bounties?chainId=8453&inProgress=true&isCanceled=false&limit=60"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=8) as res:
             raw_list = json.loads(res.read())
             if isinstance(raw_list, list):
                 for b in raw_list:
                     bid = b.get("id")
-                    if bid and bid not in seen_ids:
-                        seen_ids.add(bid)
-                        amount_wei = int(b.get("amount", 0) or 0)
-                        amount_eth = amount_wei / 1e18 if amount_wei > 0 else 0.0
-                        bounties.append({
-                            "id": bid,
-                            "title": b.get("title", ""),
-                            "description": b.get("description", ""),
-                            "chain": "base",
-                            "status": "open",
-                            "amount": amount_eth,
-                            "reward": f"{amount_eth:.4f} ETH",
-                            "rewardToken": "ETH",
-                            "rewardUsd": round(amount_eth * 2600, 2),
-                            "url": f"https://poidh.xyz/base/bounty/{bid}"
-                        })
+                    if not bid or bid in seen_ids:
+                        continue
+                    seen_ids.add(bid)
+                    token_addr = str(b.get("token") or b.get("tokenAddress") or ZERO_ADDR).lower()
+                    amount_raw = int(b.get("amount", 0) or 0)
+
+                    if token_addr in ("", ZERO_ADDR):
+                        amt = amount_raw / 1e18
+                        rew_str = f"{amt:.4f} ETH"
+                        rew_usd = round(amt * 2450.0, 2)
+                        tok_sym = "ETH"
+                    elif token_addr == USDC_BASE:
+                        amt = amount_raw / 1e6
+                        rew_str = f"{amt:.2f} USDC"
+                        rew_usd = round(amt, 2)
+                        tok_sym = "USDC"
+                    else:
+                        # Token ERC-20 desconocido: no asumir precio de ETH
+                        amt = amount_raw / 1e18
+                        rew_str = f"{amt:.2f} ERC20"
+                        rew_usd = 0.0
+                        tok_sym = "ERC20"
+
+                    bounties.append({
+                        "id": bid,
+                        "title": b.get("title", ""),
+                        "description": b.get("description", ""),
+                        "chain": "base",
+                        "status": "open",
+                        "amount": amt,
+                        "reward": rew_str,
+                        "rewardToken": tok_sym,
+                        "rewardUsd": rew_usd,
+                        "url": f"https://poidh.xyz/base/bounty/{bid}"
+                    })
     except Exception as e:
-        print(f"[POIDH Indexer Scanner Warning]: {e}", file=sys.stderr)
+        print(f"[POIDH Indexer Warning]: {e}", file=sys.stderr)
 
     return bounties
 
+
 def filter_solvable_bounties(bounties):
-    """Filtra y clasifica las tareas que una IA / agente autónomo puede resolver (datos, código, análisis)"""
+    """Filtra estrictamente bounties de programación, datos o dashboards sin gasto ni acciones físicas."""
     solvable = []
     for b in bounties:
-        status = b.get("status", "").lower()
-        if status != "open":
+        if (b.get("status") or "").lower() != "open":
             continue
-            
+        if (b.get("chain") or "").lower() != "base":
+            continue
+
         title = b.get("title", "")
         desc = b.get("description", "")
-        chain = b.get("chain", "").lower()
-        if chain != "base":
+        reward_usd = float(b.get("rewardUsd") or 0.0)
+        if reward_usd < 2.0:
             continue
-            
-        reward = b.get("reward", "0")
-        reward_usd = b.get("rewardUsd", 0)
-        
-        # Palabras clave que indican tareas digitales o de software genuino
-        text_full = (title + " " + desc).lower()
+
+        text_full = f"{title} {desc}".lower()
         is_digital = any(k in text_full for k in [
-            "csv", "data", "code", "contract", "analyze", "analysis",
-            "scraper", "query", "script", "dashboard", "wallet", "indexer",
-            "subgraph", "dataset", "solidity", "python"
+            "csv", "dataset", "code", "smart contract", "solidity", "python",
+            "typescript", "javascript", "scraper", "dashboard", "indexer",
+            "subgraph", "github", "api", "cli", "open source", "script"
         ])
-        
-        # Descartar tareas fisicas, sociales, eventos, arte IRL, video o de referidos
-        is_physical = any(k in text_full for k in [
-            "selfie", "sticker", "irl", "take a pic", "physical", "in seattle", "in person",
-            "art show", "art gallery", "concert", "recruit", "referral", "musemaxxing",
+        is_blocked = any(k in text_full for k in [
+            "selfie", "sticker", "irl", "take a pic", "physical", "in person",
+            "art show", "gallery", "concert", "recruit", "referral", "musemaxxing",
             "muse agent", "street music", "performance", "handwritten", "photo of",
-            "costume", "halloween", "sing", "dance", "eat", "drink", "travel",
-            "video", "audiovisual", "clip", "remix", "podcast", "youtube", "tiktok", "scene from"
+            "costume", "halloween", "sing", "dance", "video", "trailer", "clip",
+            "podcast", "youtube", "tiktok", "post on x", "tweet", "buy and lock",
+            "buy $", "mint ", "raffle", "lottery", "entry fee"
         ])
-        
-        item = {
+
+        solvable.append({
             "id": b.get("id"),
-            "chain": chain,
+            "chain": "base",
             "title": title,
-            "reward": reward,
+            "reward": b.get("reward", "0"),
             "reward_usd": reward_usd,
             "url": b.get("url"),
             "issuer": b.get("issuer"),
-            "is_digital": is_digital and not is_physical,
-            "description": desc[:300] + "..." if len(desc) > 300 else desc
-        }
-        solvable.append(item)
-        
+            "is_digital": bool(is_digital and not is_blocked),
+            "description": desc[:600]
+        })
     return solvable
-
-def safe_print(text: str):
-    try:
-        sys.stdout.buffer.write((text + "\n").encode("utf-8", errors="replace"))
-        sys.stdout.buffer.flush()
-    except Exception:
-        print(text.encode("ascii", errors="replace").decode("ascii"))
-
-if __name__ == "__main__":
-    bounties = get_open_poidh_bounties()
-    safe_print(f"Total bounties activos detectados en POIDH: {len(bounties)}")
-    filtered = filter_solvable_bounties(bounties)
-    
-    safe_print("\n--- Bounties con Recompensa Real en Smart Contract ---")
-    for f in filtered:
-        tag = "[DIGITAL/RESOLUBLE]" if f["is_digital"] else "[REQUIERE ACCION FISICA/IRL]"
-        safe_print(f"{tag} ID #{f['id']} ({f['chain'].upper()}) - {f['reward']} (~${f['reward_usd']})")
-        safe_print(f"  Titulo: {f['title']}")
-        safe_print(f"  URL: {f['url']}\n")

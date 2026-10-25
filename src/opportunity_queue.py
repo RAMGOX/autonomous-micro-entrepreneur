@@ -1,56 +1,138 @@
 """
-Opportunity Queue Manager: Gestor de la cola de oportunidades clasificadas.
-Controla el ciclo de vida, clasificación por dificultad (baja, media, alta)
-y purga automática con TTL de 2 horas (7200s).
+Opportunity Queue Manager: Gestor atómico y normalizado de oportunidades reales.
+Soporta múltiples fuentes: GitHub/Algora Bounties, Apify Ideas, y POIDH filtrado.
+Escritura atómica libre de condiciones de carrera y limpieza de esquemas heredados.
 """
 import os
+import re
 import sys
 import json
 import time
+import tempfile
+import threading
+from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any, Optional
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+QUEUE_FILE = BASE_DIR / "memoria" / "estado" / "cola_oportunidades.json"
+ARCHIVE_FILE = BASE_DIR / "memoria" / "estado" / "oportunidades_archivadas.json"
+
+MAX_AGE_SECONDS = 21600  # 6 horas TTL para dar margen a chats paralelos y revisión móvil
+_queue_lock = threading.Lock()
+
 
 def safe_print(text: str):
     try:
         sys.stdout.buffer.write((text + "\n").encode("utf-8", errors="replace"))
         sys.stdout.buffer.flush()
     except Exception:
+        pass
+
+
+def _parse_timestamp(val: Any, fallback: float) -> float:
+    if isinstance(val, (int, float)):
+        return float(val)
+    if isinstance(val, str):
         try:
-            print(text.encode("ascii", errors="replace").decode("ascii"))
+            clean = val.strip().replace("Z", "+00:00")
+            return datetime.fromisoformat(clean).timestamp()
+        except Exception:
+            try:
+                return float(val)
+            except Exception:
+                return fallback
+    return fallback
+
+
+def _parse_usd(val: Any) -> float:
+    if isinstance(val, (int, float)):
+        return float(val)
+    if isinstance(val, str):
+        m = re.search(r"([0-9]+(?:\.[0-9]+)?)", val.replace(",", ""))
+        if m:
+            return float(m.group(1))
+    return 0.0
+
+
+def _normalize_item(it: Dict[str, Any], now: float) -> Dict[str, Any]:
+    """Normaliza entradas antiguas con claves en español a un único esquema limpio."""
+    if "title" not in it and "titulo" in it:
+        it["title"] = it.pop("titulo")
+    if "description" not in it and "descripcion" in it:
+        it["description"] = it.pop("descripcion")
+    if "difficulty" not in it:
+        it["difficulty"] = str(it.pop("nivel", "media")).lower()
+    if "estimated_value_usd" not in it:
+        raw_rew = it.pop("recompensa_estimada_usd", 0.0)
+        it["estimated_value_usd"] = _parse_usd(raw_rew)
+        if "reward_currency" not in it and isinstance(raw_rew, str):
+            it["reward_currency"] = raw_rew
+    if "url" not in it or not it["url"]:
+        plat = it.get("plataforma", "")
+        chain = it.get("cadena", "base")
+        bid = it.get("bounty_id")
+        if plat == "poidh" and bid:
+            it["url"] = f"https://poidh.xyz/{chain}/bounty/{bid}"
+        else:
+            it["url"] = ""
+    if "solution_path" not in it and "solution_file" in it:
+        it["solution_path"] = it.pop("solution_file")
+    it["created_at"] = _parse_timestamp(it.get("created_at"), now - MAX_AGE_SECONDS - 10)
+    if "source" not in it:
+        url = it.get("url", "")
+        if "github.com" in url or "algora.io" in url:
+            it["source"] = "github_bounty"
+        elif "poidh.xyz" in url:
+            it["source"] = "poidh"
+        else:
+            it["source"] = "other"
+    return it
+
+
+def _atomic_write_json(path: Path, data: Any):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        os.replace(tmp_path, str(path))
+    except Exception:
+        try:
+            os.unlink(tmp_path)
         except Exception:
             pass
+        raise
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-QUEUE_FILE = BASE_DIR / "memoria" / "estado" / "cola_oportunidades.json"
-ARCHIVE_FILE = BASE_DIR / "memoria" / "estado" / "oportunidades_archivadas.json"
-
-MAX_AGE_SECONDS = 7200  # 2 Horas TTL
 
 def load_queue() -> List[Dict[str, Any]]:
     if QUEUE_FILE.exists():
         try:
-            with open(QUEUE_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+            raw = json.loads(QUEUE_FILE.read_text(encoding="utf-8"))
+            if isinstance(raw, list):
+                now = time.time()
+                return [_normalize_item(dict(x), now) for x in raw if isinstance(x, dict)]
         except Exception:
             pass
     return []
 
+
 def save_queue(items: List[Dict[str, Any]]):
-    QUEUE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(QUEUE_FILE, "w", encoding="utf-8") as f:
-        json.dump(items, f, indent=2, ensure_ascii=False)
+    with _queue_lock:
+        _atomic_write_json(QUEUE_FILE, items)
+
 
 def prune_expired_opportunities() -> int:
-    """Purga de la cola activa cualquier tarea que lleve más de 2 horas sin ejecutarse"""
     items = load_queue()
     now = time.time()
     active = []
     expired = []
 
     for it in items:
-        created_at = it.get("created_at", now)
         status = it.get("status", "pending")
-        if status == "pending" and (now - created_at) > MAX_AGE_SECONDS:
+        created_at = float(it.get("created_at", now))
+        ttl = 86400 if it.get("source") == "github_bounty" else MAX_AGE_SECONDS
+        if status == "pending" and (now - created_at) > ttl:
             it["status"] = "expired"
             it["expired_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
             expired.append(it)
@@ -59,44 +141,56 @@ def prune_expired_opportunities() -> int:
 
     if expired:
         save_queue(active)
-        # Guardar en archivo histórico sin saturar la cola activa
         archive = []
         if ARCHIVE_FILE.exists():
             try:
-                with open(ARCHIVE_FILE, "r", encoding="utf-8") as f:
-                    archive = json.load(f)
+                archive = json.loads(ARCHIVE_FILE.read_text(encoding="utf-8"))
+                if not isinstance(archive, list):
+                    archive = []
             except Exception:
-                pass
+                archive = []
         archive.extend(expired)
-        # Mantener archivo histórico recortado a 100 items
-        archive = archive[-100:]
-        with open(ARCHIVE_FILE, "w", encoding="utf-8") as f:
-            json.dump(archive, f, indent=2, ensure_ascii=False)
-        safe_print(f"[Queue] Purgadas {len(expired)} oportunidad(es) expiradas (>2 horas).")
-
+        _atomic_write_json(ARCHIVE_FILE, archive[-150:])
     return len(expired)
 
-def push_opportunity(title: str, url: str, description: str, difficulty: str, estimated_value_usd: float = 0.0, reward_currency: str = "USD", is_escrow_verified: bool = False) -> Dict[str, Any]:
-    """Añade una oportunidad clasificada por Ollama local a la cola"""
+
+def push_opportunity(
+    title: str,
+    url: str,
+    description: str,
+    difficulty: str,
+    estimated_value_usd: float = 0.0,
+    reward_currency: str = "USD",
+    is_escrow_verified: bool = False,
+    source: str = "auto"
+) -> Dict[str, Any]:
     prune_expired_opportunities()
     items = load_queue()
 
-    # Evitar duplicados por URL
     for it in items:
-        if it.get("url") == url:
+        if url and it.get("url") == url:
             return it
 
     difficulty = difficulty.lower().strip()
-    if difficulty not in ["baja", "media", "alta"]:
+    if difficulty not in ("baja", "media", "alta"):
         difficulty = "media"
 
+    if source == "auto":
+        if "github.com" in url or "algora.io" in url:
+            source = "github_bounty"
+        elif "poidh.xyz" in url:
+            source = "poidh"
+        else:
+            source = "other"
+
     opp = {
-        "id": f"opp_{int(time.time())}_{abs(hash(url)) % 10000}",
+        "id": f"opp_{int(time.time())}_{abs(hash(url or title)) % 10000}",
+        "source": source,
         "title": title,
         "url": url,
-        "description": description[:1000],
+        "description": description[:1500],
         "difficulty": difficulty,
-        "estimated_value_usd": float(estimated_value_usd),
+        "estimated_value_usd": round(float(estimated_value_usd), 2),
         "reward_currency": reward_currency,
         "is_escrow_verified": bool(is_escrow_verified),
         "created_at": time.time(),
@@ -107,58 +201,59 @@ def push_opportunity(title: str, url: str, description: str, difficulty: str, es
     }
     items.append(opp)
     save_queue(items)
-    safe_print(f"[Queue] Nueva oportunidad registrada [{difficulty.upper()} | ${estimated_value_usd}]: {title[:40]}...")
+    safe_print(f"[Queue] +Oportunidad [{source} | {difficulty.upper()} | ${estimated_value_usd}]: {title[:55]}")
     return opp
 
-def get_best_pending_opportunity(difficulty_levels: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:
-    """Devuelve la oportunidad pendiente más rentable. Si no se especifican niveles, busca en toda la lista (alta, media, baja)"""
-    top = get_top_pending_opportunities(difficulty_levels=difficulty_levels, limit=1)
-    return top[0] if top else None
 
 def score_opportunity_cost_benefit(opp: Dict[str, Any]) -> float:
-    """Calcula una puntuación estricta de coste-beneficio para la oportunidad"""
     title = (opp.get("title") or "").lower()
     desc = (opp.get("description") or "").lower()
-    text = title + " " + desc
+    text = f"{title} {desc}"
     val_usd = float(opp.get("estimated_value_usd", 0.0))
-    
-    # 1. Descarte inmediato de tareas no viables por IA o que requieran gastos/acciones físicas/sociales
+
     unfeasible = [
-        "wedgie", "selfie", "sticker", "irl", "ticket", "entry is", "human body", 
-        "desert", "in person", "recruit", "musemaxxing", "muse agent", "concert", 
-        "art show", "street music", "referral", "invite"
+        "wedgie", "selfie", "sticker", "irl", "ticket", "entry is", "human body",
+        "desert", "in person", "recruit", "musemaxxing", "muse agent", "concert",
+        "art show", "street music", "referral", "invite", "costume", "halloween",
+        "tattoo", "video trailer", "movie trailer", "post on x", "tweet", "tiktok",
+        "buy and lock", "buy $"
     ]
     if any(k in text for k in unfeasible):
         return -1000.0
-        
+
     score = 0.0
-    
-    # 2. Bonificación por requerimientos técnicos directos de datos/código
-    tech_keywords = ["csv", "data", "contract", "python", "script", "analysis", "basescan", "arbiscan", "query", "schema"]
+    if opp.get("source") == "github_bounty":
+        score += 45.0
+
+    tech_keywords = [
+        "python", "typescript", "javascript", "solidity", "csv", "dataset",
+        "scraper", "api", "bug", "fix", "cli", "sdk", "dashboard", "contract",
+        "query", "indexer", "json", "fastapi", "playwright"
+    ]
     tech_matches = sum(1 for k in tech_keywords if k in text)
-    score += tech_matches * 15.0
-    
-    # 3. Factor de recompensa y escrow
+    if tech_matches == 0 and opp.get("source") == "poidh":
+        return -500.0
+
+    score += tech_matches * 12.0
     if opp.get("is_escrow_verified"):
         score += 20.0
-        
-    # Recompensa razonable
-    if 5.0 <= val_usd <= 200.0:
-        score += min(val_usd, 50.0) * 1.2
-    else:
-        score += val_usd * 0.05
-        
+
+    if 5.0 <= val_usd <= 1500.0:
+        score += min(val_usd, 300.0) * 0.6
+    elif val_usd > 0:
+        score += 5.0
+
     return score
 
-def get_best_cost_benefit_opportunity(difficulty_levels: Optional[List[str]] = None, lock: bool = False, solver: str = "") -> Optional[Dict[str, Any]]:
-    """Selecciona la mejor oportunidad según su relación coste/beneficio y viabilidad técnica"""
+
+def get_best_cost_benefit_opportunity(
+    difficulty_levels: Optional[List[str]] = None,
+    lock: bool = False,
+    solver: str = ""
+) -> Optional[Dict[str, Any]]:
     prune_expired_opportunities()
     items = load_queue()
-
-    if difficulty_levels:
-        levels = [d.lower() for d in difficulty_levels]
-    else:
-        levels = ["alta", "media", "baja"]
+    levels = [d.lower() for d in difficulty_levels] if difficulty_levels else ["alta", "media", "baja"]
 
     candidates = [
         it for it in items
@@ -186,43 +281,28 @@ def get_best_cost_benefit_opportunity(difficulty_levels: Optional[List[str]] = N
 
     return best_opp
 
-def get_cerebro4_opportunities(limit: int = 3, lock: bool = False, solver: str = "Cerebro 4 (Argon)") -> List[Dict[str, Any]]:
-    """
-    Estrategia Cerebro 4:
-    1. Prioridad: nivel 'alta'.
-    2. Fallback: si no hay 'alta', toma lote de nivel 'media' y 'baja' más rentables
-       para evitar inactividad.
-    """
-    alta_items = get_top_pending_opportunities(difficulty_levels=["alta"], limit=limit, lock=lock, solver=solver)
-    if alta_items:
-        return alta_items
-    return get_top_pending_opportunities(difficulty_levels=["media", "baja"], limit=limit, lock=lock, solver=solver)
 
-def get_top_pending_opportunities(difficulty_levels: Optional[List[str]] = None, limit: int = 3, lock: bool = False, solver: str = "") -> List[Dict[str, Any]]:
-    """Devuelve las top N oportunidades pendientes más rentables y opcionalmente las bloquea para evitar colisiones"""
+def get_top_pending_opportunities(
+    difficulty_levels: Optional[List[str]] = None,
+    limit: int = 5,
+    lock: bool = False,
+    solver: str = ""
+) -> List[Dict[str, Any]]:
     prune_expired_opportunities()
     items = load_queue()
-
-    if difficulty_levels:
-        levels = [d.lower() for d in difficulty_levels]
-    else:
-        levels = ["alta", "media", "baja"]
+    levels = [d.lower() for d in difficulty_levels] if difficulty_levels else ["alta", "media", "baja"]
 
     candidates = [
         it for it in items
-        if it.get("status") == "pending" and it.get("difficulty") in levels
+        if it.get("status") == "pending" and it.get("difficulty") in levels and score_opportunity_cost_benefit(it) > 0
     ]
-    if not candidates:
-        return []
-
-    # Ordenar estrictamente por Rentabilidad ($ USD) descendente primero, luego fecha
-    candidates.sort(key=lambda x: (x.get("estimated_value_usd", 0.0), x.get("is_escrow_verified", False), x.get("created_at", 0)), reverse=True)
+    candidates.sort(key=lambda x: score_opportunity_cost_benefit(x), reverse=True)
     selected = candidates[:limit]
 
-    if lock and solver:
-        selected_ids = {s["id"] for s in selected}
+    if lock and solver and selected:
+        sel_ids = {s["id"] for s in selected}
         for it in items:
-            if it.get("id") in selected_ids:
+            if it.get("id") in sel_ids:
                 it["status"] = "in_progress"
                 it["solver"] = solver
                 it["started_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -230,60 +310,71 @@ def get_top_pending_opportunities(difficulty_levels: Optional[List[str]] = None,
 
     return selected
 
-def mark_opportunity_in_progress(opp_id: str, solver: str) -> bool:
+
+def get_best_pending_opportunity(difficulty_levels: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:
+    top = get_top_pending_opportunities(difficulty_levels=difficulty_levels, limit=1)
+    return top[0] if top else None
+
+
+def get_cerebro4_opportunities(limit: int = 3, lock: bool = False, solver: str = "Argon 4 (Pro)") -> List[Dict[str, Any]]:
+    alta = get_top_pending_opportunities(difficulty_levels=["alta"], limit=limit, lock=lock, solver=solver)
+    if alta:
+        return alta
+    return get_top_pending_opportunities(difficulty_levels=["media", "baja"], limit=limit, lock=lock, solver=solver)
+
+
+def update_opportunity_status(opp_id: str, new_status: str, extra: Optional[Dict[str, Any]] = None) -> bool:
     items = load_queue()
     found = False
     for it in items:
         if it.get("id") == opp_id:
-            it["status"] = "in_progress"
-            it["solver"] = solver
-            it["started_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+            it["status"] = new_status
+            it["updated_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+            if extra:
+                it.update(extra)
             found = True
             break
     if found:
         save_queue(items)
     return found
 
-def mark_opportunity_executed(opp_id: str, solver: str, solution_path: str = "") -> bool:
-    items = load_queue()
-    found = False
-    for it in items:
-        if it.get("id") == opp_id:
-            it["status"] = "executed"
-            it["solver"] = solver
-            it["solution_path"] = solution_path
-            it["executed_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
-            found = True
-            break
-    if found:
-        save_queue(items)
-    return found
+
+def mark_opportunity_in_progress(opp_id: str, solver: str) -> bool:
+    return update_opportunity_status(opp_id, "in_progress", {
+        "solver": solver,
+        "started_at": time.strftime("%Y-%m-%d %H:%M:%S")
+    })
+
+
+def mark_opportunity_executed(opp_id: str, solver: str, solution_path: str = "", extra: Optional[Dict[str, Any]] = None) -> bool:
+    data = {
+        "solver": solver,
+        "solution_path": solution_path,
+        "executed_at": time.strftime("%Y-%m-%d %H:%M:%S")
+    }
+    if extra:
+        data.update(extra)
+    return update_opportunity_status(opp_id, "pending_review", data)
+
 
 def get_queue_summary() -> Dict[str, Any]:
-    """Resumen para el Dashboard y telemetría"""
     prune_expired_opportunities()
     items = load_queue()
-    pending = [it for it in items if it.get("status") == "pending"]
-    delivered = [it for it in items if it.get("status") == "delivered"]
-    executed = [it for it in items if it.get("status") == "executed"]
-    escrow_verified = len([it for it in pending if it.get("is_escrow_verified", False)])
-
-    curated_count = 0
-    curated_path = BASE_DIR / "memoria" / "datasets_curados" / "oportunidades_grants_verificados.json"
-    if curated_path.exists():
-        try:
-            with open(curated_path, "r", encoding="utf-8") as f:
-                curated_count = len(json.load(f))
-        except Exception:
-            pass
+    pending = [it for it in items if it.get("status") == "pending" and score_opportunity_cost_benefit(it) > 0]
+    in_review = [it for it in items if it.get("status") == "pending_review"]
+    claimed = [it for it in items if it.get("status") == "claimed_onchain"]
+    paid = [it for it in items if it.get("status") == "payout_received"]
+    lost = [it for it in items if it.get("status") in ("closed_lost", "voting_closed")]
 
     return {
         "total_active": len(pending),
         "alta": len([it for it in pending if it.get("difficulty") == "alta"]),
         "media": len([it for it in pending if it.get("difficulty") == "media"]),
         "baja": len([it for it in pending if it.get("difficulty") == "baja"]),
-        "escrow_verified": escrow_verified,
-        "curated_grants": curated_count,
-        "executed_total": len(executed) + len(delivered),
-        "delivered_total": len(delivered)
+        "github_bounties": len([it for it in pending if it.get("source") == "github_bounty"]),
+        "poidh_bounties": len([it for it in pending if it.get("source") == "poidh"]),
+        "pending_review": len(in_review),
+        "active_claims": len(claimed),
+        "paid_total": len(paid),
+        "lost_total": len(lost)
     }

@@ -1,0 +1,9 @@
+{
+  "actorSpecification": 1,
+  "name": "eu-public-tenders-b2b-leads",
+  "title": "EU Public Tenders & Government Contracts B2B Extractor (MCP Ready)",
+  "description": "Extracts active European & Spanish government software, IT, and B2B procurement tenders from TED API v3 into clean JSON/CSV for sales teams and AI agents.",
+  "version": "1.0",
+  "dockerfile": "../Dockerfile",
+  "input": "./input_schema.json"
+}

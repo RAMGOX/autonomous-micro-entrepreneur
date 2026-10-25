@@ -1,0 +1,19 @@
+{
+  "title": "Base Token Audit Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "tokenAddresses": {
+      "title": "Token Addresses on Base",
+      "type": "array",
+      "editor": "stringList",
+      "default": [
+        "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "0x940181a94A35A4569E4529A3CDfB74e38FD98631"
+      ]
+    }
+  },
+  "required": [
+    "tokenAddresses"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "actorSpecification": 1,
+  "name": "base-l2-token-liquidity-safety-auditor",
+  "title": "Base L2 Token Liquidity & Rug Risk Auditor (MCP Server Tool)",
+  "description": "Audits any Base L2 token contract on-chain (bytecode verification, DEX reserve depth, 24h volume/FDV ratio, honeypot/illiquidity risk score) for AI agents and DeFi workflows.",
+  "version": "1.0",
+  "dockerfile": "../Dockerfile",
+  "input": "./input_schema.json"
+}

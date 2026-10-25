@@ -1,15 +1,21 @@
 """
-Dashboard Server: Panel de Control en Vivo 24/7 (Telemetría de los 4 Cerebros, Cartera Web3 y Equivalente en Euros)
-Puerto local: http://127.0.0.1:8080
+Dashboard Server v3.0 (Mobile-First Command Center & Official x402 Gateway):
+- 100% métricas reales verificadas on-chain y en APIs (cero saldos simulados de Sepolia).
+- Interfaz Mobile-First con 4 pestañas táctiles (Resumen, Revisar, Motores, Prompts/Obsidian).
+- Acceso móvil privado mediante token HMAC (?auth=...) enviado al Discord del propietario;
+  acceso local directo en 127.0.0.1:8080; vista pública segura para clientes x402 externos.
 """
 import os
 import sys
 import json
 import time
+import hmac
+import hashlib
 import threading
 import subprocess
 import urllib.request
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qs
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -18,82 +24,75 @@ sys.path.append(str(BASE_DIR / "src"))
 ENV_PATH = BASE_DIR / "config" / ".env"
 load_dotenv(dotenv_path=ENV_PATH)
 
-from opportunity_queue import get_queue_summary, prune_expired_opportunities
-from deepseek_solver import get_today_spent, DAILY_BUDGET_EUR
-from discord_bridge import notify_user_discord
-from x402_gateway import get_gateway, PRICING_TABLE, USER_PAYOUT_WALLET
-from brain_router import route_task
+from opportunity_queue import get_queue_summary, load_queue, score_opportunity_cost_benefit
+from review_queue import load_reviews, update_review_decision, get_review_by_id
+from brain_router import (
+    get_today_spent,
+    get_deepseek_real_balance,
+    get_gemini_status,
+    DAILY_BUDGET_EUR,
+    route_task
+)
+from x402_gateway import get_gateway, PRICING_TABLE, USER_PAYOUT_WALLET, extract_clean_webpage
 from agentkit_actions import get_agentkit_provider
 from eas_indexer import get_address_attestations, get_address_reputation, get_recent_attestations
 from erc8021_builder import encode_erc8021_suffix, attach_erc8021_attribution, decode_erc8021_attribution, DEFAULT_BUILDER_CODE
 from defillama_engine import get_base_top_yields, get_base_token_prices, get_base_defi_overview
 from dex_scanner import get_base_trending_pools, get_base_new_pools, get_base_token_market_data
 from treasury_yield_manager import get_treasury_status, get_recommended_allocations, simulate_yield_cashflow
+from poidh_claim_submitter import submit_approved_poidh_claim
 
 PORT = 8080
-WALLET_ADDRESS = os.getenv("PUBLIC_ADDRESS_TESTNET", "0x02c1F87F514493F359Afc0B3ff6b587434770361")
-BASE_SEPOLIA_RPC = os.getenv("BASE_SEPOLIA_RPC_URL", "https://sepolia.base.org")
+BOT_WALLET = os.getenv("PUBLIC_ADDRESS_TESTNET", "0x02c1F87F514493F359Afc0B3ff6b587434770361")
 BASE_MAINNET_RPC = "https://mainnet.base.org"
-ETH_SEPOLIA_RPC = "https://ethereum-sepolia-rpc.publicnode.com"
-
 USDC_MAINNET_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
-WDOOM_MAINNET_ADDRESS = "0x623c84A5E04bF715018203334b0eFE41696eBC3E"
 ERC20_BALANCE_ABI = [{"constant": True, "inputs": [{"name": "_owner", "type": "address"}], "name": "balanceOf", "outputs": [{"name": "balance", "type": "uint256"}], "type": "function"}]
 
-# State & history cache for real-time graphs
-telemetry_data = {
-    "hardware_history": [],
-    "gas_history": [],
-    "web3": {
-        "address": WALLET_ADDRESS,
-        "connected": True,
-        "block_number": 48745340,
-        "gas_price_gwei": 0.006,
-        "balance_eth": 0.03993,
-        "balance_eur": 85.90,
-        "l1_balance_eth": 0.01,
-        "real_balance_eth": 0.0,
-        "real_balance_eur": 0.0,
-        "eth_price_eur": 2151.57,
-        "tokens_earned": 150000,
-        "token_symbol": "$ROBIN_MCP",
-        "bridge_status": "Fondos L2 acreditados con Éxito",
-        "nonce": 15,
-        "contract_status": "Desplegado (0x04f4... / 0x7514...)",
-        "contract_address": "0x75145e53B139B86062cdE5098761a28D76578fD4",
-        "last_update": "--"
-    },
-    "gpu": {"vram_used_mb": 0, "vram_total_mb": 6144, "gpu_util_percent": 0, "temp_c": 0},
-    "hardware": {"cpu_percent": 0, "ram_used_gb": 0, "ram_total_gb": 16, "ram_percent": 0},
-    "deepseek": {"balance": "1.95", "currency": "USD", "status": "activo"},
-    "gemini": {"status": "activo", "key_configured": bool(os.getenv("GEMINI_API_KEY")), "daily_limit": "1500 req/dia gratis"},
-    "active_brain": {
-        "current_brain": "Cerebro 1 (Ollama GTX 1660)",
-        "status": "vigilancia 24/7 y atencion",
-        "task_type": "guard",
-        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-    }
-}
 
+def get_mobile_access_token() -> str:
+    """Genera un token determinista de 12 caracteres derivado de las claves privadas para el enlace móvil de Discord."""
+    seed = (os.getenv("DISCORD_BOT_TOKEN", "") + os.getenv("PRIVATE_KEY_TESTNET", "ame_v3")).encode("utf-8")
+    return hmac.new(seed, b"ame_mobile_dashboard_v3", hashlib.sha256).hexdigest()[:12]
+
+
+MOBILE_TOKEN = get_mobile_access_token()
 data_lock = threading.Lock()
 
+telemetry_data = {
+    "finance": {
+        "user_wallet": USER_PAYOUT_WALLET,
+        "user_eth": 0.0,
+        "user_usdc": 0.0,
+        "user_eur": 0.0,
+        "bot_wallet": BOT_WALLET,
+        "bot_eth": 0.0,
+        "bot_usdc": 0.0,
+        "bot_eur": 0.0,
+        "bot_txs_left": 0,
+        "eth_price_eur": 2250.0,
+        "base_block": 0,
+        "gas_gwei": 0.005,
+        "last_update": "--:--:--"
+    },
+    "hardware": {"cpu_percent": 0.0, "ram_used_gb": 0.0, "ram_total_gb": 16.0, "ram_percent": 0.0},
+    "gpu": {"vram_used_mb": 0, "vram_total_mb": 6144, "gpu_util_percent": 0, "temp_c": 0},
+    "active_brain": {"current_brain": "Sistema en Reposo (0W GPU)", "status": "en espera", "task_type": "vigilancia", "timestamp": "--"}
+}
+
+
 def get_eth_eur_price() -> float:
-    """Consulta el precio actual de Ethereum en Euros en Binance / CoinGecko"""
     try:
-        req = urllib.request.Request(
-            "https://api.binance.com/api/v3/ticker/price?symbol=ETHEUR",
-            headers={"User-Agent": "Dashboard/1.0"}
-        )
-        with urllib.request.urlopen(req, timeout=2.5) as r:
-            data = json.loads(r.read().decode())
-            return round(float(data.get("price", 2150.0)), 2)
+        req = urllib.request.Request("https://api.binance.com/api/v3/ticker/price?symbol=ETHEUR", headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=3) as r:
+            return round(float(json.loads(r.read().decode()).get("price", 2250.0)), 2)
     except Exception:
-        return 2151.57
+        return 2250.0
+
 
 def get_gpu_stats():
     try:
         cmd = ["nvidia-smi", "--query-gpu=memory.used,memory.total,utilization.gpu,temperature.gpu", "--format=csv,noheader,nounits"]
-        out = subprocess.check_output(cmd, encoding="utf-8").strip()
+        out = subprocess.check_output(cmd, encoding="utf-8", creationflags=0x08000000).strip()
         parts = [p.strip() for p in out.split(",")]
         return {
             "vram_used_mb": int(parts[0]),
@@ -104,1205 +103,737 @@ def get_gpu_stats():
     except Exception:
         return {"vram_used_mb": 0, "vram_total_mb": 6144, "gpu_util_percent": 0, "temp_c": 0}
 
+
 def get_cpu_ram():
     try:
         import psutil
-        cpu = psutil.cpu_percent(interval=None)
         mem = psutil.virtual_memory()
         return {
-            "cpu_percent": cpu,
-            "ram_used_gb": round(mem.used / (1024**3), 2),
-            "ram_total_gb": round(mem.total / (1024**3), 2),
-            "ram_percent": mem.percent
+            "cpu_percent": round(psutil.cpu_percent(interval=None), 1),
+            "ram_used_gb": round(mem.used / (1024**3), 1),
+            "ram_total_gb": round(mem.total / (1024**3), 1),
+            "ram_percent": round(mem.percent, 1)
         }
     except Exception:
-        return {"cpu_percent": 0, "ram_used_gb": 0, "ram_total_gb": 16, "ram_percent": 0}
+        return {"cpu_percent": 0.0, "ram_used_gb": 0.0, "ram_total_gb": 16.0, "ram_percent": 0.0}
+
 
 def get_active_brain_data():
-    state_file = BASE_DIR / "memoria" / "estado" / "cerebro_activo.json"
-    if state_file.exists():
+    p = BASE_DIR / "memoria" / "estado" / "cerebro_activo.json"
+    if p.exists():
         try:
-            with open(state_file, "r", encoding="utf-8") as f:
-                return json.load(f)
+            return json.loads(p.read_text(encoding="utf-8"))
         except Exception:
             pass
-    return {
-        "current_brain": "Cerebro 1 (Ollama GTX 1660)",
-        "status": "vigilancia 24/7",
-        "task_type": "guard",
-        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-    }
+    return {"current_brain": "Sistema en Reposo (0W GPU)", "status": "en espera", "task_type": "vigilancia", "timestamp": time.strftime("%H:%M:%S")}
 
-def get_obsidian_notes():
-    mem_dir = BASE_DIR / "memoria"
-    notes = []
-    if mem_dir.exists():
-        for p in mem_dir.rglob("*.md"):
-            notes.append({
-                "title": p.name,
-                "folder": p.parent.name,
-                "size_bytes": p.stat().st_size,
-                "modified": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(p.stat().st_mtime))
-            })
-    notes.sort(key=lambda x: x["modified"], reverse=True)
-    return notes
 
-def get_recent_orders():
-    order_file = BASE_DIR / "memoria" / "estado" / "cola_ordenes.json"
-    if order_file.exists():
+def get_watchdog_health():
+    p = BASE_DIR / "memoria" / "estado" / "sistema_salud.json"
+    if p.exists():
         try:
-            with open(order_file, "r", encoding="utf-8") as f:
-                return json.load(f)[-5:]
+            return json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+
+def get_public_tunnel_url() -> str:
+    p = BASE_DIR / "memoria" / "estado" / "public_url.json"
+    if p.exists():
+        try:
+            return json.loads(p.read_text(encoding="utf-8")).get("public_url", "")
+        except Exception:
+            pass
+    return ""
+
+
+def get_apify_actors():
+    p = BASE_DIR / "memoria" / "estado" / "apify_actors_status.json"
+    if p.exists():
+        try:
+            return json.loads(p.read_text(encoding="utf-8"))
         except Exception:
             pass
     return []
 
-def get_rewards_state():
-    rew_file = BASE_DIR / "memoria" / "estado" / "recompensas_cobradas.json"
-    if rew_file.exists():
-        try:
-            with open(rew_file, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
-    return {"total_tokens_pending": 150000, "token_symbol": "$ROBIN_MCP"}
 
-# Background collector thread
 def background_collector():
     from web3 import Web3
-    w3_l2 = Web3(Web3.HTTPProvider(BASE_SEPOLIA_RPC, request_kwargs={"timeout": 3}))
-    w3_l1 = Web3(Web3.HTTPProvider(ETH_SEPOLIA_RPC, request_kwargs={"timeout": 2}))
-    w3_mainnet = Web3(Web3.HTTPProvider(BASE_MAINNET_RPC, request_kwargs={"timeout": 3}))
-    
-    last_web3_check = 0
-    cached_eth_price = 2151.57
-    last_price_check = 0
-    last_known_real_eth = 0.0
-    last_known_real_usdc = 0.0
-    first_payment_check = True
-    
+    w3 = Web3(Web3.HTTPProvider(BASE_MAINNET_RPC, request_kwargs={"timeout": 4}))
+    usdc_ctr = w3.eth.contract(address=Web3.to_checksum_address(USDC_MAINNET_ADDRESS), abi=ERC20_BALANCE_ABI)
+
+    last_web3_ts = 0.0
+    last_price_ts = 0.0
+    eth_eur = 2250.0
+
     while True:
         try:
-            current_time = time.strftime("%H:%M:%S")
             now = time.time()
-            
-            # 1. Update ETH/EUR Price every 30s
-            if now - last_price_check > 30:
-                cached_eth_price = get_eth_eur_price()
-                last_price_check = now
+            if now - last_price_ts > 60:
+                eth_eur = get_eth_eur_price()
+                last_price_ts = now
 
             gpu = get_gpu_stats()
             hw = get_cpu_ram()
             brain = get_active_brain_data()
-            rewards = get_rewards_state()
-            
-            contract_addr = "0x75145e53B139B86062cdE5098761a28D76578fD4"
 
-            vram_pct = round((gpu["vram_used_mb"] / (gpu["vram_total_mb"] or 6144)) * 100, 1)
-
-            # Web3 check every 4 seconds
-            web3_update = None
-            if now - last_web3_check > 4:
-                last_web3_check = now
+            fin_update = None
+            if now - last_web3_ts > 12:
+                last_web3_ts = now
                 try:
-                    conn = w3_l2.is_connected()
-                    if conn:
-                        block = w3_l2.eth.block_number
-                        bal_wei = w3_l2.eth.get_balance(WALLET_ADDRESS)
-                        bal_eth = float(w3_l2.from_wei(bal_wei, "ether"))
-                        bal_eur = round(bal_eth * cached_eth_price, 2)
-                        gas_wei = w3_l2.eth.gas_price
-                        gas_gwei = round(float(w3_l2.from_wei(gas_wei, "gwei")), 4)
-                        nonce = w3_l2.eth.get_transaction_count(WALLET_ADDRESS)
+                    u_addr = Web3.to_checksum_address(USER_PAYOUT_WALLET)
+                    b_addr = Web3.to_checksum_address(BOT_WALLET)
 
-                        # Check L1 balance
-                        l1_bal_eth = 0.01
-                        try:
-                            l1_wei = w3_l1.eth.get_balance(WALLET_ADDRESS)
-                            l1_bal_eth = float(w3_l1.from_wei(l1_wei, "ether"))
-                        except Exception:
-                            pass
+                    blk = w3.eth.block_number
+                    gas_wei = w3.eth.gas_price
+                    gas_gwei = round(float(w3.from_wei(gas_wei, "gwei")), 4)
 
-                        # Check Real Mainnet Balance (ETH & USDC)
-                        real_eth = 0.0
-                        real_usdc = 0.0
-                        try:
-                            real_wei = w3_mainnet.eth.get_balance(WALLET_ADDRESS)
-                            real_eth = float(w3_mainnet.from_wei(real_wei, "ether"))
-                        except Exception:
-                            pass
+                    u_eth = float(w3.from_wei(w3.eth.get_balance(u_addr), "ether"))
+                    u_usdc = float(usdc_ctr.functions.balanceOf(u_addr).call()) / 1e6
+                    b_eth = float(w3.from_wei(w3.eth.get_balance(b_addr), "ether"))
+                    b_usdc = float(usdc_ctr.functions.balanceOf(b_addr).call()) / 1e6
 
-                        try:
-                            usdc_ctr = w3_mainnet.eth.contract(address=w3_mainnet.to_checksum_address(USDC_MAINNET_ADDRESS), abi=ERC20_BALANCE_ABI)
-                            raw_usdc = usdc_ctr.functions.balanceOf(w3_mainnet.to_checksum_address(WALLET_ADDRESS)).call()
-                            real_usdc = float(raw_usdc) / 1e6
-                        except Exception:
-                            pass
+                    u_eur = round((u_eth * eth_eur) + (u_usdc * 0.92), 2)
+                    b_eur = round((b_eth * eth_eur) + (b_usdc * 0.92), 2)
+                    tx_cost_eth = max(0.0000035, float(w3.from_wei(gas_wei * 140000, "ether")))
+                    txs_left = int(b_eth / tx_cost_eth) if b_eth > 0 else 0
 
-                        real_wdoom = 3000.0
-                        try:
-                            wdoom_ctr = w3_mainnet.eth.contract(address=w3_mainnet.to_checksum_address(WDOOM_MAINNET_ADDRESS), abi=ERC20_BALANCE_ABI)
-                            raw_wdoom = wdoom_ctr.functions.balanceOf(w3_mainnet.to_checksum_address(WALLET_ADDRESS)).call()
-                            real_wdoom = float(raw_wdoom) / 1e18
-                        except Exception:
-                            pass
-
-                        # Conversión total a Euros (~0.92 € por 1 USDC/USD)
-                        usd_eur_rate = 0.92
-                        real_eur = round((real_eth * cached_eth_price) + (real_usdc * usd_eur_rate), 2)
-
-                        # Notificación automática a Discord si entra un pago real
-                        if not first_payment_check:
-                            if real_eth > (last_known_real_eth + 0.00001) or real_usdc > (last_known_real_usdc + 0.01):
-                                delta_parts = []
-                                if real_eth > last_known_real_eth:
-                                    delta_parts.append(f"{real_eth - last_known_real_eth:.4f} ETH")
-                                if real_usdc > last_known_real_usdc:
-                                    delta_parts.append(f"{real_usdc - last_known_real_usdc:.2f} USDC")
-                                
-                                notify_user_discord(
-                                    f"🎉 **¡PAGO REAL RECIBIDO EN BASE MAINNET!**\n\n"
-                                    f"- **Activo Recibido:** `+{', '.join(delta_parts)}`\n"
-                                    f"- **Saldo Total Cartera:** `{real_eur:.2f} €` ({real_eth:.4f} ETH + {real_usdc:.2f} USDC)\n"
-                                    f"- **Cartera:** `{WALLET_ADDRESS}`\n"
-                                    f"- **Explorador BaseScan:** [Ver Transacción](https://basescan.org/address/{WALLET_ADDRESS})",
-                                    title="💰 ¡Dinero Real Ingresado en tu Cartera!",
-                                    color=0x2ecc71
-                                )
-                        first_payment_check = False
-                        last_known_real_eth = real_eth
-                        last_known_real_usdc = real_usdc
-
-                        bridge_msg = "Fondos L2 Acreditados con Éxito"
-
-                        web3_update = {
-                            "address": WALLET_ADDRESS,
-                            "connected": True,
-                            "block_number": block,
-                            "gas_price_gwei": gas_gwei,
-                            "balance_eth": bal_eth,
-                            "balance_eur": bal_eur,
-                            "l1_balance_eth": l1_bal_eth,
-                            "real_balance_eth": real_eth,
-                            "real_balance_usdc": real_usdc,
-                            "real_balance_wdoom": real_wdoom,
-                            "real_balance_eur": real_eur,
-                            "eth_price_eur": cached_eth_price,
-                            "tokens_earned": rewards.get("total_tokens_pending", 150000),
-                            "token_symbol": rewards.get("token_symbol", "$ROBIN_MCP"),
-                            "bridge_status": bridge_msg,
-                            "nonce": nonce,
-                            "contract_status": f"Desplegado ({contract_addr[:10]}...)",
-                            "contract_address": contract_addr,
-                            "last_update": current_time
-                        }
-                except Exception as e:
+                    fin_update = {
+                        "user_wallet": USER_PAYOUT_WALLET,
+                        "user_eth": round(u_eth, 6),
+                        "user_usdc": round(u_usdc, 2),
+                        "user_eur": u_eur,
+                        "bot_wallet": BOT_WALLET,
+                        "bot_eth": round(b_eth, 6),
+                        "bot_usdc": round(b_usdc, 2),
+                        "bot_eur": b_eur,
+                        "bot_txs_left": txs_left,
+                        "eth_price_eur": eth_eur,
+                        "base_block": blk,
+                        "gas_gwei": gas_gwei,
+                        "last_update": time.strftime("%H:%M:%S")
+                    }
+                except Exception:
                     pass
 
             with data_lock:
                 telemetry_data["gpu"] = gpu
                 telemetry_data["hardware"] = hw
                 telemetry_data["active_brain"] = brain
-
-                # Hardware history
-                telemetry_data["hardware_history"].append({
-                    "time": current_time,
-                    "cpu": hw["cpu_percent"],
-                    "vram": vram_pct,
-                    "ram": hw["ram_percent"]
-                })
-                if len(telemetry_data["hardware_history"]) > 25:
-                    telemetry_data["hardware_history"].pop(0)
-
-                # Web3 update & Gas history
-                if web3_update:
-                    telemetry_data["web3"] = web3_update
-                    telemetry_data["gas_history"].append({
-                        "time": current_time,
-                        "gas_gwei": web3_update["gas_price_gwei"]
-                    })
-                    if len(telemetry_data["gas_history"]) > 25:
-                        telemetry_data["gas_history"].pop(0)
-
-        except Exception as e:
+                if fin_update:
+                    telemetry_data["finance"] = fin_update
+        except Exception:
             pass
-        
-        time.sleep(2)
+        time.sleep(3)
 
-HTML_PAGE = """<!DOCTYPE html>
+
+MOBILE_APP_HTML = """<!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autonomous Micro-Entrepreneur 24/7 - Command Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>AME v3 • Mando Móvil 24/7</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .animate-pulse-slow { animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #090d16; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    body { background: #060911; color: #f1f5f9; -webkit-tap-highlight-color: transparent; padding-bottom: 84px; }
+    .glass { background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.6); }
+    .tab-active { color: #22d3ee; border-top: 2px solid #22d3ee; background: rgba(8, 145, 178, 0.12); }
   </style>
 </head>
-<body class="bg-[#070b12] text-slate-100 min-h-screen p-4 md:p-6 font-sans antialiased selection:bg-cyan-500 selection:text-black">
-  <div class="max-w-7xl mx-auto space-y-6">
+<body class="font-sans antialiased">
 
-    <!-- TOP HEADER -->
-    <header class="flex flex-col md:flex-row md:items-center justify-between pb-5 border-b border-slate-800/80 gap-4">
-      <div>
-        <div class="flex items-center gap-3">
-          <div class="relative flex h-3.5 w-3.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
-          </div>
-          <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-            AUTONOMOUS MICRO-ENTREPRENEUR
-            <span class="text-xs px-2 py-0.5 rounded font-mono font-bold bg-cyan-950 text-cyan-400 border border-cyan-800">24/7 LIVE</span>
-          </h1>
-        </div>
-        <p class="text-xs md:text-sm text-slate-400 mt-1">Supervisión en Tiempo Real &bull; 4 Cerebros Cooperativos &bull; Auto-Claim &bull; Base Sepolia</p>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-3 text-xs font-mono">
-        <div class="bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
-          <span class="text-slate-500">BLOQUE:</span>
-          <span id="topBlock" class="text-cyan-400 font-bold">#------</span>
-        </div>
-        <div class="bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
-          <span class="text-slate-500">GAS L2:</span>
-          <span id="topGas" class="text-emerald-400 font-bold">-- Gwei</span>
-        </div>
-        <div class="bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
-          <span class="text-slate-500">COTIZACIÓN:</span>
-          <span class="text-emerald-300 font-bold">1 ETH = <span id="topEthPrice">2.151,57</span> €</span>
-        </div>
-        <div class="bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
-          <span class="text-slate-500">RELOJ:</span>
-          <span id="clock" class="text-slate-200">--:--:--</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- ACTIVE BRAIN HERO BANNER -->
-    <section class="bg-gradient-to-r from-slate-900 via-indigo-950/50 to-slate-900 border border-indigo-900/60 rounded-2xl p-5 shadow-2xl relative overflow-hidden">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+  <!-- HEADER COMPACTO MÓVIL + DESKTOP -->
+  <header class="sticky top-0 z-30 glass px-4 py-3 border-b border-slate-800">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <span class="relative flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+        </span>
         <div>
-          <div class="flex items-center gap-2">
-            <span class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-            <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">CEREBRO ACTIVO EN ESTE INSTANTE</span>
-          </div>
-          <h2 id="activeBrainName" class="text-2xl font-black text-white mt-1">Cerebro 1: Ollama Qwen 2.5 Coder 7B (GTX 1660)</h2>
-          <p id="activeBrainStatus" class="text-sm text-slate-300 font-mono mt-0.5">Estado: vigilancia 24/7 y análisis &bull; Tarea: guard</p>
-        </div>
-        <div class="text-right">
-          <span class="text-xs text-slate-400 font-mono">Última acción registrada:</span>
-          <div id="activeBrainTime" class="text-sm font-mono font-bold text-cyan-300">--:--:--</div>
-          <span class="text-[11px] text-emerald-400 font-mono mt-0.5 block">Supervisor Watchdog & Auto-Claim Activo</span>
+          <h1 class="text-sm md:text-base font-extrabold tracking-tight text-white">AME v3 • MANDO 24/7</h1>
+          <p id="subHeader" class="text-[11px] text-slate-400 font-mono">Cargando telemetría real...</p>
         </div>
       </div>
-    </section>
-
-    <!-- SECTION: OPPORTUNITY QUEUE & DEEPSEEK BUDGET (MULTI-BRAIN PIPELINE) -->
-    <section class="grid grid-cols-1 md:grid-cols-12 gap-4">
-      <!-- COLA MULTI-CEREBRO (8 COLS) -->
-      <div class="md:col-span-8 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
-          <div class="flex items-center gap-2">
-            <span class="text-base">🎯</span>
-            <h3 class="text-sm font-bold text-white uppercase tracking-wide">
-              Cola de Oportunidades & Bounties (TTL 2h)
-            </h3>
-          </div>
-          <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950/70 border border-cyan-800/80 px-2 py-0.5 rounded">
-            Auto-Pruning Activo
-          </span>
-        </div>
-        <div class="grid grid-cols-5 gap-2 my-3">
-          <div class="bg-slate-950/80 p-2 rounded-xl border border-rose-900/50 text-center">
-            <span class="text-[10px] text-rose-400 font-bold uppercase tracking-wider block">Nivel Alta</span>
-            <div id="queueAlta" class="text-xl font-black text-rose-300 font-mono mt-0.5">0</div>
-            <span class="text-[9px] text-slate-500 font-mono">C4 (Fallback ON)</span>
-          </div>
-          <div class="bg-slate-950/80 p-2 rounded-xl border border-amber-900/50 text-center">
-            <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider block">Nivel Media</span>
-            <div id="queueMedia" class="text-xl font-black text-amber-300 font-mono mt-0.5">0</div>
-            <span class="text-[9px] text-slate-500 font-mono">C3 DeepSeek</span>
-          </div>
-          <div class="bg-slate-950/80 p-2 rounded-xl border border-emerald-900/50 text-center">
-            <span class="text-[10px] text-emerald-400 font-bold uppercase tracking-wider block">Nivel Baja</span>
-            <div id="queueBaja" class="text-xl font-black text-emerald-300 font-mono mt-0.5">0</div>
-            <span class="text-[9px] text-slate-500 font-mono">C3 DeepSeek</span>
-          </div>
-          <div class="bg-slate-950/80 p-2 rounded-xl border border-blue-900/50 text-center">
-            <span class="text-[10px] text-blue-400 font-bold uppercase tracking-wider block">Grants Intel</span>
-            <div id="queueGrants" class="text-xl font-black text-blue-300 font-mono mt-0.5">0</div>
-            <span class="text-[9px] text-slate-500 font-mono">Base / CDP (0€)</span>
-          </div>
-          <div class="bg-slate-950/80 p-2 rounded-xl border border-cyan-900/50 text-center">
-            <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider block">Entregadas</span>
-            <div id="queueDone" class="text-xl font-black text-cyan-300 font-mono mt-0.5">0</div>
-            <span class="text-[9px] text-slate-500 font-mono">GitHub Soluciones</span>
-          </div>
-        </div>
-        <div class="text-[11px] text-slate-400 flex items-center justify-between font-mono pt-2 border-t border-slate-800/60">
-          <span>Rastreador: Ollama Local (GTX 1660) + Escrow Shield</span>
-          <span class="text-slate-300">Total en cola activa: <span id="queueTotal" class="font-bold text-white">0</span></span>
-        </div>
-      </div>
-
-      <!-- PRESUPUESTO DEEPSEEK (4 COLS) -->
-      <div class="md:col-span-4 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
-          <div class="flex items-center gap-2">
-            <span class="text-base">⚡</span>
-            <h3 class="text-sm font-bold text-white uppercase tracking-wide">
-              Presupuesto DeepSeek
-            </h3>
-          </div>
-          <span class="text-[11px] font-mono text-purple-400 bg-purple-950/70 border border-purple-800/80 px-2 py-0.5 rounded font-bold">
-            0.50 €/día
-          </span>
-        </div>
-        <div class="my-3 space-y-2">
-          <div class="flex justify-between items-baseline">
-            <span class="text-xs text-slate-400">Gasto consumido hoy:</span>
-            <span class="font-mono text-base font-black text-purple-300"><span id="dsSpent">0.0000</span> €</span>
-          </div>
-          <div class="w-full bg-slate-950 rounded-full h-2.5 border border-slate-800 overflow-hidden">
-            <div id="dsProgressBar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
-          </div>
-          <div class="flex justify-between text-[11px] font-mono text-slate-500">
-            <span>Restante: <span id="dsRemaining" class="text-slate-300 font-semibold">0.5000 €</span></span>
-            <span id="dsPct">0%</span>
-          </div>
-        </div>
-        <div class="text-[11px] text-slate-400 font-mono pt-2 border-t border-slate-800/60 flex items-center justify-between">
-          <span>Protección anti-sobrecoste:</span>
-          <span class="text-emerald-400 font-semibold">Activa</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: WALLET, REAL MONEY IN EUROS & BOUNTIES -->
-    <section class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-5 md:p-6 shadow-xl">
-      <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 mb-4 border-b border-slate-800/80 gap-3">
-        <div>
-          <h3 class="text-base font-bold text-white flex items-center gap-2 uppercase tracking-wide">
-            <span>💳</span> CARTERA OPERATIVA Y BENEFICIOS EN EUROS (€)
-          </h3>
-          <p class="text-xs text-slate-400 mt-0.5">Retiros automáticos directos a tu cartera tras cada hito o bounty completada.</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="text-[11px] font-mono text-slate-500">DIRECCIÓN PÚBLICA:</span>
-          <button onclick="copyWallet()" class="text-xs font-mono bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 px-3 py-1 rounded-md border border-cyan-800/80 transition flex items-center gap-1.5">
-            <span id="copyBtnText">Copiar Dirección</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
-        <!-- WALLET BALANCES (5 COLS) -->
-        <div class="lg:col-span-5 space-y-3">
-          <div class="font-mono text-xs text-cyan-300 break-all select-all font-semibold bg-slate-950/90 p-2.5 rounded-lg border border-slate-800" id="walletAddrDisplay">
-            0x02c1F87F514493F359Afc0B3ff6b587434770361
-          </div>
-
-          <!-- REAL MONEY IN EUROS (MAINNET) -->
-          <div class="bg-gradient-to-br from-emerald-950/70 via-slate-950 to-slate-950 p-4 rounded-xl border border-emerald-500/50 shadow-lg">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-emerald-400 uppercase tracking-wide flex items-center gap-1.5">
-                <span>💰</span> Dinero Real Líquido (Mainnet)
-              </span>
-              <span class="text-[10px] bg-emerald-950 text-emerald-300 font-mono px-2 py-0.5 rounded border border-emerald-700/60 font-bold">
-                Euros Reales
-              </span>
-            </div>
-            <div class="mt-2 flex items-baseline gap-2">
-              <span id="realEurBalance" class="text-3xl font-black text-white">0,00</span>
-              <span class="text-lg font-bold text-emerald-400">€</span>
-              <span class="text-xs text-slate-400 font-mono ml-2">(<span id="realEthBalance">0.0000</span> ETH + <span id="realUsdcBalance">0.00</span> USDC + <span id="realWdoomBalance" class="text-cyan-400 font-bold">3.000</span> wDOOM)</span>
-            </div>
-            <div class="mt-2 pt-2 border-t border-emerald-900/40 flex justify-between text-[11px] font-mono text-slate-400">
-              <span>Cotización actual:</span>
-              <span class="text-emerald-300 font-semibold">1 ETH = <span id="ethPriceTag">2.151,57</span> €</span>
-            </div>
-          </div>
-
-          <!-- TESTNET & BOUNTY REWARDS GRID -->
-          <div class="grid grid-cols-2 gap-3 text-xs">
-            <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800/80">
-              <div class="flex items-center justify-between">
-                <span class="text-slate-400 font-medium">Base Sepolia (L2):</span>
-                <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">Testnet</span>
-              </div>
-              <div class="text-xl font-black text-white mt-1 flex items-baseline gap-1 font-mono">
-                <span id="ethBalance">0.0399</span>
-                <span class="text-xs text-cyan-400 font-semibold">ETH</span>
-              </div>
-              <span class="text-[10px] text-slate-400 font-mono mt-0.5 block">
-                Valor nominal: ~<span id="testnetEurBalance">85,80</span> €
-              </span>
-            </div>
-
-            <div class="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800/80">
-              <div class="flex items-center justify-between">
-                <span class="text-slate-400 font-medium">Bounties Listas:</span>
-                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">Ganado</span>
-              </div>
-              <div class="text-xl font-black text-amber-400 mt-1 font-mono">
-                <span id="tokensEarned">150.000</span>
-              </div>
-              <span class="text-[10px] text-emerald-400 font-mono mt-0.5 block flex items-center gap-1">
-                <span>⚡</span> Auto-Claim Activado
-              </span>
-            </div>
-          </div>
-
-          <!-- SMART CONTRACT STATUS BOX -->
-          <div class="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800/80 space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="text-[11px] font-bold text-slate-400 uppercase">AgentMicroServiceOracle & Registry</span>
-              <span id="contractBadge" class="px-2 py-0.5 text-[10px] rounded-full font-mono font-semibold bg-cyan-950 text-cyan-400 border border-cyan-800">
-                0x7514...8fD4
-              </span>
-            </div>
-            <p class="text-xs text-slate-300">
-              Oráculo on-chain con Proof-of-Liveness, SLA y cobro automático de comisiones hacia tu cartera.
-            </p>
-          </div>
-        </div>
-
-        <!-- LIVE GAS CHART (7 COLS) -->
-        <div class="lg:col-span-7 bg-slate-950/80 p-4 rounded-xl border border-slate-800/80 flex flex-col justify-between">
-          <div class="flex items-center justify-between mb-2">
-            <div class="flex items-center gap-2">
-              <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
-              <span class="text-xs font-bold text-slate-300 uppercase tracking-wide">
-                Gráfico de Precio de Gas en Base Sepolia (Gwei)
-              </span>
-            </div>
-            <span id="currentGasTag" class="text-xs font-mono font-bold text-cyan-400 bg-cyan-950/50 px-2 py-0.5 rounded border border-cyan-800/60">
-              -- Gwei
-            </span>
-          </div>
-
-          <div class="relative h-48 w-full">
-            <canvas id="gasChart"></canvas>
-          </div>
-
-          <div class="mt-2 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-            <span>Red L2 ultra económica</span>
-            <span class="text-emerald-400">✓ Conectado a Base Sepolia RPC</span>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- HARDWARE & DISTRIBUTION SECTION -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-
-      <!-- HARDWARE GAUGES (8 COLS) -->
-      <section class="lg:col-span-8 bg-slate-900/90 border border-slate-800/90 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/80">
-            <h3 class="text-sm font-bold text-white uppercase tracking-wide flex items-center gap-2">
-              <span>🖥️</span> HARDWARE DEDICADO 24/7 (TORRE RYZEN 5 + GTX 1660)
-            </h3>
-            <span class="text-xs text-emerald-400 font-mono font-semibold">CERO COSTE MARGINAL</span>
-          </div>
-
-          <div class="grid grid-cols-3 gap-3 mb-4">
-            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
-              <span class="text-xs text-slate-400">NVIDIA GTX 1660 (VRAM):</span>
-              <div class="text-lg font-bold text-emerald-400 mt-1 font-mono" id="vramText">0 / 6144 MB</div>
-              <span class="text-[10px] text-slate-500 font-mono">Modelo Ollama Local</span>
-            </div>
-
-            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
-              <span class="text-xs text-slate-400">Ryzen 5 3600 (CPU):</span>
-              <div class="text-lg font-bold text-cyan-400 mt-1 font-mono" id="cpuText">0%</div>
-              <span class="text-[10px] text-slate-500 font-mono">Scrapers & Daemon</span>
-            </div>
-
-            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
-              <span class="text-xs text-slate-400">Memoria RAM:</span>
-              <div class="text-lg font-bold text-slate-200 mt-1 font-mono" id="ramText">0 / 16 GB</div>
-              <span class="text-[10px] text-slate-500 font-mono">Búfer del Sistema</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="relative h-44 w-full">
-          <canvas id="hardwareChart"></canvas>
-        </div>
-      </section>
-
-      <!-- BRAIN DISTRIBUTION PIE (4 COLS) -->
-      <section class="lg:col-span-4 bg-slate-900/90 border border-slate-800/90 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
-        <div>
-          <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-800/80">
-            <h3 class="text-sm font-bold text-white uppercase tracking-wide">
-              REPARTO DE CARGA
-            </h3>
-            <span class="text-xs text-cyan-400 font-mono">4 Cerebros</span>
-          </div>
-
-          <div class="relative h-40 w-full flex items-center justify-center">
-            <canvas id="brainPieChart"></canvas>
-          </div>
-        </div>
-
-        <div class="space-y-1.5 text-xs pt-3 border-t border-slate-800/80">
-          <div class="flex justify-between items-center text-slate-300">
-            <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-cyan-500"></span> C2 Gemini Flash (Motor Principal)</span>
-            <span class="font-mono text-cyan-400 font-bold">55%</span>
-          </div>
-          <div class="flex justify-between items-center text-slate-300">
-            <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-emerald-500"></span> C1 Obrero Local (Ollama GTX 1660)</span>
-            <span class="font-mono text-emerald-400 font-bold">30%</span>
-          </div>
-          <div class="flex justify-between items-center text-slate-300">
-            <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-purple-500"></span> C3 DeepSeek API ($1.95 USD)</span>
-            <span class="font-mono text-purple-400 font-bold">10%</span>
-          </div>
-          <div class="flex justify-between items-center text-slate-300">
-            <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-rose-500"></span> C4 Argon 4 / Antigravity (Auditoría)</span>
-            <span class="font-mono text-rose-400 font-bold">5%</span>
-          </div>
-        </div>
-      </section>
-
+      <button onclick="refreshAll()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-cyan-300 border border-slate-700 active:scale-95 transition">
+        Actualizar
+      </button>
     </div>
+  </header>
 
-    <!-- RECENT ORDERS / TASKS -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-bold text-white uppercase tracking-wide flex items-center gap-2">
-          <span>📋</span> COLA DE ÓRDENES Y TAREAS (DISCORD / MÓVIL)
-        </h3>
-        <span class="text-xs text-slate-500 font-mono">Canal #general</span>
+  <main class="max-w-5xl mx-auto p-3 md:p-6 space-y-4">
+
+    <!-- TAB 1: RESUMEN EJECUTIVO REAL -->
+    <section id="tab-resumen" class="space-y-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="glass rounded-2xl p-3.5">
+          <div class="text-[11px] text-slate-400 uppercase font-bold">Tu Cartera Coinbase</div>
+          <div id="userEur" class="text-2xl font-black text-emerald-400 mt-1">0.00 €</div>
+          <div id="userCrypto" class="text-[11px] text-slate-400 font-mono mt-0.5">0 USDC • 0 ETH</div>
+        </div>
+        <div class="glass rounded-2xl p-3.5">
+          <div class="text-[11px] text-slate-400 uppercase font-bold">DeepSeek Hoy (Máx 0.50€)</div>
+          <div id="dsSpent" class="text-2xl font-black text-cyan-300 mt-1">0.00 €</div>
+          <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+            <div id="dsBar" class="bg-cyan-400 h-full transition-all" style="width:0%"></div>
+          </div>
+          <div id="dsBalance" class="text-[11px] text-slate-400 font-mono mt-1">Saldo API: $-- USD</div>
+        </div>
+        <div class="glass rounded-2xl p-3.5">
+          <div class="text-[11px] text-slate-400 uppercase font-bold">Para Revisar</div>
+          <div id="pendingRevCount" class="text-2xl font-black text-amber-400 mt-1">0</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Esperando tu OK</div>
+        </div>
+        <div class="glass rounded-2xl p-3.5">
+          <div class="text-[11px] text-slate-400 uppercase font-bold">Gas Operativo Base</div>
+          <div id="botGasEth" class="text-xl font-black text-slate-100 mt-1">0.0004 ETH</div>
+          <div id="botTxsLeft" class="text-[11px] text-emerald-400 font-mono mt-0.5">~110 TXs disp.</div>
+        </div>
       </div>
-      <div class="space-y-2 max-h-48 overflow-y-auto text-xs" id="ordersList">
-        <div class="p-3 bg-slate-950/60 border border-slate-800/80 rounded-lg text-slate-400 italic">
-          No hay órdenes pendientes. Puedes mandar una orden desde Discord con <code>!orden &lt;tarea&gt;</code>.
+
+      <!-- CEREBROS IA -->
+      <div class="glass rounded-2xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold uppercase text-cyan-400">Jerarquía Multi-IA Activa</span>
+          <span id="brainClock" class="text-[11px] font-mono text-slate-400">--:--:--</span>
+        </div>
+        <div id="currentBrainBanner" class="text-sm font-bold text-white bg-slate-900/90 border border-slate-800 rounded-xl p-3 font-mono">
+          Sistema en Reposo (0W GPU)
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3 text-xs">
+          <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800">
+            <div class="font-bold text-purple-300">Argon 4 (Pro)</div>
+            <div class="text-[11px] text-slate-400">Chats paralelos 0€</div>
+          </div>
+          <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800">
+            <div class="font-bold text-cyan-300">DeepSeek V3/R1</div>
+            <div class="text-[11px] text-slate-400">Tope 0.50€/día</div>
+          </div>
+          <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800">
+            <div class="font-bold text-amber-300">Gemini Flash</div>
+            <div id="gemState" class="text-[11px] text-slate-400">Temporal 0€</div>
+          </div>
+          <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800">
+            <div class="font-bold text-emerald-300">Ollama GTX 1660</div>
+            <div id="gpuIdleState" class="text-[11px] text-slate-400">0% Reposo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SALUD SERVIDOR 24/7 -->
+      <div class="glass rounded-2xl p-4 space-y-3">
+        <div class="text-xs font-bold uppercase text-slate-300">Salud del Servidor Casa 24/7</div>
+        <div id="pillarsGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-mono"></div>
+        <div class="grid grid-cols-3 gap-2 pt-1 text-center text-xs font-mono">
+          <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800">CPU: <span id="hwCpu" class="text-white font-bold">0%</span></div>
+          <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800">RAM: <span id="hwRam" class="text-white font-bold">0%</span></div>
+          <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800">GPU: <span id="hwGpu" class="text-emerald-400 font-bold">0%</span></div>
         </div>
       </div>
     </section>
 
-  </div>
+    <!-- TAB 2: BANDEJA DE REVISIÓN MÓVIL -->
+    <section id="tab-revisar" class="hidden space-y-3">
+      <div class="glass rounded-2xl p-4">
+        <h2 class="text-sm font-bold text-white">📱 Bandeja de Aprobación Móvil</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Nada gasta gas ni se publica fuera sin tu OK aquí o en Discord.</p>
+      </div>
+      <div id="reviewsContainer" class="space-y-3"></div>
+    </section>
+
+    <!-- TAB 3: LOS 3 MOTORES DE INGRESOS -->
+    <section id="tab-motores" class="hidden space-y-4">
+      <div class="glass rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-emerald-400">🎯 Motor 1: Bounties Código GitHub / Algora</h2>
+          <span id="ghCount" class="text-xs font-mono bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded">0 activos</span>
+        </div>
+        <div id="ghList" class="space-y-2 text-xs"></div>
+      </div>
+
+      <div class="glass rounded-2xl p-4 space-y-3">
+        <h2 class="text-sm font-bold text-cyan-400">🏭 Motor 2: Actors Apify Store + MCP (80% USD)</h2>
+        <div id="apifyList" class="space-y-2 text-xs"></div>
+      </div>
+
+      <div class="glass rounded-2xl p-4 space-y-2">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-indigo-400">⚡ Motor 3: Pasarela x402 Scraping Residencial</h2>
+          <span id="x402Sales" class="text-xs font-mono bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded">0 ventas</span>
+        </div>
+        <p class="text-xs text-slate-400">Extracción web antibot pagada en USDC/ETH directo a tu Coinbase Wallet.</p>
+        <div id="tunnelBox" class="text-[11px] font-mono bg-slate-900 p-2.5 rounded-xl border border-slate-800 break-all text-cyan-300"></div>
+      </div>
+    </section>
+
+    <!-- TAB 4: PROMPTS CHATS PARALELOS & OBSIDIAN -->
+    <section id="tab-prompts" class="hidden space-y-4">
+      <div class="glass rounded-2xl p-4 space-y-3">
+        <h2 class="text-sm font-bold text-purple-300">🤖 Prompts para tus Chats Paralelos (Gemini Pro)</h2>
+        <p class="text-xs text-slate-400">Copia y pega cualquiera de estos prompts en otro chat de tu cuenta Pro con <code class="text-cyan-300">/schedule</code> o <code class="text-cyan-300">/goal</code> para multiplicar producción a coste 0€:</p>
+
+        <div class="bg-slate-900 rounded-xl p-3 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white">Prompt Chat Obrero A (Solucionador Bounties GitHub)</span>
+            <button onclick="copyText('promptWorkerA')" class="px-2.5 py-1 bg-purple-600 text-white rounded-lg text-[11px] font-bold">Copiar</button>
+          </div>
+          <pre id="promptWorkerA" class="text-[11px] text-slate-300 whitespace-pre-wrap font-mono bg-slate-950 p-2.5 rounded-lg">Trabaja en C:\\Users\\Antonio Ramos\\autonomous-micro-entrepreneur. Lee memoria/estado/cola_oportunidades.json y MOTOR_1_BOUNTIES_GITHUB.md. Selecciona el mejor bounty abierto de código (Python/TS/JS/Web3) que no esté ya en bandeja_revision.json, analiza el repositorio real, desarrolla una solución limpia y verificada con tests locales sin hacer spam ni abrir PR automático, guarda el entregable en memoria/estrategias/soluciones_propuestas/ y regístralo con src/review_queue.py (push_for_review) para mi aprobación móvil en Discord.</pre>
+        </div>
+
+        <div class="bg-slate-900 rounded-xl p-3 border border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-white">Prompt Chat Obrero B (Creador & Mantenimiento Apify Store)</span>
+            <button onclick="copyText('promptWorkerB')" class="px-2.5 py-1 bg-cyan-600 text-white rounded-lg text-[11px] font-bold">Copiar</button>
+          </div>
+          <pre id="promptWorkerB" class="text-[11px] text-slate-300 whitespace-pre-wrap font-mono bg-slate-950 p-2.5 rounded-lg">Trabaja en C:\\Users\\Antonio Ramos\\autonomous-micro-entrepreneur. Ejecuta src/apify_actor_factory.py para verificar la salud de los Actors actuales. Después investiga un nuevo nicho B2B con baja competencia en Apify Store (datos públicos europeos, e-commerce o herramientas MCP para agentes), construye y prueba con datos reales en local un nuevo Actor completo dentro de apify_actors/, y envíalo mediante src/review_queue.py (push_for_review) a mi Discord para aprobar su subida.</pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- NAVEGACIÓN INFERIOR TÁCTIL MÓVIL -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 glass border-t border-slate-800">
+    <div class="max-w-5xl mx-auto grid grid-cols-4 text-center">
+      <button onclick="switchTab('resumen')" id="nav-resumen" class="py-3 text-xs font-bold tab-active">📊 Resumen</button>
+      <button onclick="switchTab('revisar')" id="nav-revisar" class="py-3 text-xs font-bold text-slate-400">✅ Revisar <span id="navBadge" class="ml-0.5 px-1.5 py-0.2 bg-amber-500 text-black rounded-full text-[10px] hidden">0</span></button>
+      <button onclick="switchTab('motores')" id="nav-motores" class="py-3 text-xs font-bold text-slate-400">🎯 Motores</button>
+      <button onclick="switchTab('prompts')" id="nav-prompts" class="py-3 text-xs font-bold text-slate-400">🧠 Prompts</button>
+    </div>
+  </nav>
 
   <script>
-    function updateClock() {
-      const now = new Date();
-      document.getElementById('clock').textContent = now.toLocaleTimeString();
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+    const urlParams = new URLSearchParams(window.location.search);
+    const authKey = urlParams.get("auth") || localStorage.getItem("ame_auth") || "";
+    if (urlParams.get("auth")) localStorage.setItem("ame_auth", urlParams.get("auth"));
 
-    function copyWallet() {
-      const addr = document.getElementById('walletAddrDisplay').innerText.trim();
-      navigator.clipboard.writeText(addr);
-      const btn = document.getElementById('copyBtnText');
-      btn.innerText = '¡Copiado!';
-      setTimeout(() => { btn.innerText = 'Copiar Dirección'; }, 2000);
+    function switchTab(name) {
+      ["resumen", "revisar", "motores", "prompts"].forEach(t => {
+        document.getElementById("tab-" + t).classList.toggle("hidden", t !== name);
+        const btn = document.getElementById("nav-" + t);
+        if (t === name) { btn.classList.add("tab-active"); btn.classList.remove("text-slate-400"); }
+        else { btn.classList.remove("tab-active"); btn.classList.add("text-slate-400"); }
+      });
     }
 
-    // Chart.js Setup
-    const ctxGas = document.getElementById('gasChart').getContext('2d');
-    const gasChart = new Chart(ctxGas, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'Gas Price (Gwei)',
-          data: [],
-          borderColor: '#22d3ee',
-          backgroundColor: 'rgba(34, 211, 238, 0.1)',
-          fill: true,
-          tension: 0.35,
-          borderWidth: 2,
-          pointRadius: 2,
-          pointBackgroundColor: '#22d3ee'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: 'rgba(51, 65, 85, 0.3)' }, ticks: { color: '#64748b', font: { size: 10 } } },
-          y: { grid: { color: 'rgba(51, 65, 85, 0.3)' }, ticks: { color: '#64748b', font: { size: 10 } } }
-        }
-      }
-    });
+    function copyText(id) {
+      navigator.clipboard.writeText(document.getElementById(id).innerText);
+      alert("Prompt copiado al portapapeles");
+    }
 
-    const ctxHw = document.getElementById('hardwareChart').getContext('2d');
-    const hardwareChart = new Chart(ctxHw, {
-      type: 'line',
-      data: {
-        labels: [],
-        datasets: [
-          { label: 'VRAM (%)', data: [], borderColor: '#10b981', borderWidth: 2, pointRadius: 0, tension: 0.3 },
-          { label: 'CPU (%)', data: [], borderColor: '#22d3ee', borderWidth: 2, pointRadius: 0, tension: 0.3 },
-          { label: 'RAM (%)', data: [], borderColor: '#a855f7', borderWidth: 1.5, pointRadius: 0, tension: 0.3 }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#64748b', font: { size: 10 } } },
-          y: { min: 0, max: 100, grid: { color: 'rgba(51, 65, 85, 0.2)' }, ticks: { color: '#64748b', font: { size: 10 } } }
-        }
+    async function decideReview(revId, decision) {
+      let feedback = "";
+      if (decision === "changes_requested") {
+        feedback = prompt("¿Qué cambio quieres que aplique la IA?") || "";
+        if (!feedback) return;
       }
-    });
+      const r = await fetch("/api/v1/reviews/decide?auth=" + encodeURIComponent(authKey), {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ id: revId, decision, feedback })
+      });
+      const res = await r.json();
+      alert(res.message || "Actualizado");
+      refreshAll();
+    }
 
-    const ctxPie = document.getElementById('brainPieChart').getContext('2d');
-    const brainPieChart = new Chart(ctxPie, {
-      type: 'doughnut',
-      data: {
-        labels: ['C2 Gemini Flash', 'C1 Ollama Local', 'C3 DeepSeek', 'C4 Argon 4'],
-        datasets: [{
-          data: [55, 30, 10, 5],
-          backgroundColor: ['#06b6d4', '#10b981', '#a855f7', '#f43f5e'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        cutout: '72%'
-      }
-    });
-
-    async function fetchTelemetry() {
+    async function refreshAll() {
       try {
-        const res = await fetch('/api/status');
-        if (!res.ok) return;
-        const data = await res.json();
+        const r = await fetch("/api/status?auth=" + encodeURIComponent(authKey));
+        const d = await r.json();
 
-        // 1. Active Brain
-        const brain = data.active_brain || {};
-        document.getElementById('activeBrainName').textContent = brain.current_brain || 'Cerebro 1: Ollama Qwen 2.5 Coder 7B (GTX 1660)';
-        document.getElementById('activeBrainStatus').textContent = 'Estado: ' + (brain.status || 'vigilancia 24/7') + ' • Tarea: ' + (brain.task_type || 'operaciones');
-        document.getElementById('activeBrainTime').textContent = brain.timestamp || '--';
+        const fin = d.finance || {};
+        document.getElementById("subHeader").textContent = `Base #${fin.base_block || '--'} • ETH ${fin.eth_price_eur || '--'}€ • ${d.server_time || ''}`;
+        document.getElementById("userEur").textContent = `${(fin.user_eur || 0).toFixed(2)} €`;
+        document.getElementById("userCrypto").textContent = `${fin.user_usdc || 0} USDC • ${fin.user_eth || 0} ETH`;
 
-        // 2. Web3 data & EUR balances
-        const web3 = data.web3 || {};
-        document.getElementById('topBlock').textContent = '#' + (web3.block_number || '------');
-        document.getElementById('topGas').textContent = (web3.gas_price_gwei || '0.00') + ' Gwei';
-        document.getElementById('currentGasTag').textContent = (web3.gas_price_gwei || '0.00') + ' Gwei';
-        
-        // Dinero Real en Euros
-        const realEur = Number(web3.real_balance_eur || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        const realEth = Number(web3.real_balance_eth || 0).toFixed(4);
-        const ethPrice = Number(web3.eth_price_eur || 2151.57).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        
-        document.getElementById('realEurBalance').textContent = realEur;
-        document.getElementById('realEthBalance').textContent = realEth;
-        document.getElementById('realUsdcBalance').textContent = Number(web3.real_balance_usdc || 0).toFixed(2);
-        document.getElementById('realWdoomBalance').textContent = Number(web3.real_balance_wdoom || 3000).toLocaleString('es-ES');
-        document.getElementById('ethPriceTag').textContent = ethPrice;
-        document.getElementById('topEthPrice').textContent = ethPrice;
+        const ds = d.deepseek || {};
+        const spent = ds.spent_today_eur || 0;
+        const lim = ds.daily_limit_eur || 0.5;
+        document.getElementById("dsSpent").textContent = `${spent.toFixed(4)} €`;
+        document.getElementById("dsBar").style.width = `${Math.min(100, (spent / lim) * 100)}%`;
+        document.getElementById("dsBalance").textContent = `Saldo real: $${ds.balance_usd ?? '--'} USD`;
 
-        // Testnet Balances & Bounties
-        document.getElementById('ethBalance').textContent = Number(web3.balance_eth || 0).toFixed(4);
-        document.getElementById('testnetEurBalance').textContent = Number(web3.balance_eur || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        document.getElementById('tokensEarned').textContent = Number(web3.tokens_earned || 150000).toLocaleString('es-ES');
+        document.getElementById("botGasEth").textContent = `${fin.bot_eth || 0} ETH`;
+        document.getElementById("botTxsLeft").textContent = `~${fin.bot_txs_left || 0} TXs disponibles`;
 
-        if (web3.contract_address) {
-          document.getElementById('contractBadge').textContent = 'Oráculo: ' + web3.contract_address.slice(0, 10) + '...';
-        }
+        const br = d.active_brain || {};
+        document.getElementById("currentBrainBanner").textContent = `${br.current_brain || 'En espera'} • ${br.status || ''}`;
+        document.getElementById("brainClock").textContent = br.timestamp || "";
+        document.getElementById("gemState").textContent = (d.gemini || {}).status || "temporal";
 
-        // 3. Hardware readings
-        const hw = data.hardware || {};
-        const gpu = data.gpu || {};
-        const vramUsed = gpu.vram_used_mb || 0;
-        const vramTotal = gpu.vram_total_mb || 6144;
-        const vramPct = Math.round((vramUsed / vramTotal) * 100);
-        document.getElementById('vramText').textContent = vramUsed + ' / ' + vramTotal + ' MB (' + vramPct + '%)';
-        document.getElementById('cpuText').textContent = Math.round(hw.cpu_percent || 0) + '%';
-        document.getElementById('ramText').textContent = (hw.ram_used_gb || 0) + ' / ' + (hw.ram_total_gb || 16) + ' GB';
+        const gpu = d.gpu || {};
+        const hw = d.hardware || {};
+        document.getElementById("gpuIdleState").textContent = `${gpu.gpu_util_percent || 0}% uso • ${gpu.temp_c || 0}°C`;
+        document.getElementById("hwCpu").textContent = `${hw.cpu_percent || 0}%`;
+        document.getElementById("hwRam").textContent = `${hw.ram_percent || 0}%`;
+        document.getElementById("hwGpu").textContent = `${gpu.gpu_util_percent || 0}% (${gpu.temp_c || 0}°C)`;
 
-        // 4. Update Gas Chart
-        const gasHistory = data.gas_history || [];
-        if (gasHistory.length > 0) {
-          gasChart.data.labels = gasHistory.map(g => g.time);
-          gasChart.data.datasets[0].data = gasHistory.map(g => g.gas_gwei);
-          gasChart.update('none');
-        }
+        // Pilares Watchdog
+        const wd = d.watchdog || {};
+        const pillars = [
+          ["Dashboard", true],
+          ["Discord", wd.discord_bot !== false],
+          ["Daemon", wd.autonomous_daemon !== false],
+          ["Túnel Móvil", wd.public_tunnel !== false],
+          ["Ollama Respaldo", wd.ollama !== false]
+        ];
+        document.getElementById("pillarsGrid").innerHTML = pillars.map(([name, ok]) =>
+          `<div class="px-2.5 py-2 rounded-xl border ${ok ? 'bg-emerald-950/40 border-emerald-800/70 text-emerald-300' : 'bg-red-950/50 border-red-800 text-red-300'} flex items-center justify-between"><span>${name}</span><span>${ok ? 'ON' : 'OFF'}</span></div>`
+        ).join("");
 
-        // 5. Update Hardware Chart
-        const hwHistory = data.hardware_history || [];
-        if (hwHistory.length > 0) {
-          hardwareChart.data.labels = hwHistory.map(h => h.time);
-          hardwareChart.data.datasets[0].data = hwHistory.map(h => h.vram);
-          hardwareChart.data.datasets[1].data = hwHistory.map(h => h.cpu);
-          hardwareChart.data.datasets[2].data = hwHistory.map(h => h.ram);
-          hardwareChart.update('none');
-        }
+        // Reviews
+        const revs = d.pending_reviews || [];
+        document.getElementById("pendingRevCount").textContent = revs.length;
+        const badge = document.getElementById("navBadge");
+        badge.textContent = revs.length;
+        badge.classList.toggle("hidden", revs.length === 0);
 
-        // 6. Queue Summary & DeepSeek Budget
-        const qSummary = data.queue_summary || {};
-        document.getElementById('queueAlta').textContent = qSummary.alta || 0;
-        document.getElementById('queueMedia').textContent = qSummary.media || 0;
-        document.getElementById('queueBaja').textContent = qSummary.baja || 0;
-        document.getElementById('queueGrants').textContent = qSummary.curated_grants || 0;
-        document.getElementById('queueDone').textContent = qSummary.delivered_total || qSummary.executed_total || 0;
-        document.getElementById('queueTotal').textContent = qSummary.total_active || 0;
-
-        const dsBudget = data.deepseek_budget || {};
-        const dsSpent = Number(dsBudget.spent_eur || 0);
-        const dsLimit = Number(dsBudget.daily_limit_eur || 0.50);
-        const dsRem = Number(dsBudget.remaining_eur || Math.max(0, dsLimit - dsSpent));
-        const dsPctVal = Math.min(100, Math.round((dsSpent / dsLimit) * 100));
-
-        document.getElementById('dsSpent').textContent = dsSpent.toFixed(4);
-        document.getElementById('dsRemaining').textContent = dsRem.toFixed(4) + ' €';
-        document.getElementById('dsPct').textContent = dsPctVal + '%';
-        document.getElementById('dsProgressBar').style.width = dsPctVal + '%';
-
-        // 7. Recent Orders
-        const orders = data.recent_orders || [];
-        const orderDiv = document.getElementById('ordersList');
-        if (orders.length > 0) {
-          orderDiv.innerHTML = orders.map(o => `
-            <div class="p-2.5 bg-slate-950/70 border border-slate-800 rounded-lg flex items-center justify-between">
-              <div>
-                <span class="font-bold text-slate-200">${o.text || 'Orden'}</span>
-                <span class="text-[10px] text-slate-500 block font-mono">${o.timestamp} • ${o.source || 'discord'}</span>
+        if (revs.length === 0) {
+          document.getElementById("reviewsContainer").innerHTML = `<div class="glass rounded-2xl p-6 text-center text-xs text-slate-400">No hay entregas pendientes de revisión ahora mismo.</div>`;
+        } else {
+          document.getElementById("reviewsContainer").innerHTML = revs.map(rv => `
+            <div class="glass rounded-2xl p-4 space-y-2.5 border border-amber-500/30">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">${rv.category}</span>
+                  <h3 class="text-sm font-bold text-white mt-1">${rv.title}</h3>
+                </div>
+                <span class="text-xs font-extrabold text-emerald-400 shrink-0">${rv.reward_display || ''}</span>
               </div>
-              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${o.status === 'completed' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-cyan-950 text-cyan-400 border border-cyan-800'}">
-                ${o.status.toUpperCase()}
-              </span>
+              <p class="text-xs text-slate-300 whitespace-pre-line">${rv.summary || ''}</p>
+              <div class="text-[11px] font-mono text-slate-400 break-all">Archivo: ${rv.deliverable_path || 'N/A'}</div>
+              ${rv.source_url ? `<a href="${rv.source_url}" target="_blank" class="inline-block text-xs text-cyan-400 underline">Abrir enlace origen ↗</a>` : ''}
+              ${d.authorized ? `
+              <div class="grid grid-cols-3 gap-2 pt-2">
+                <button onclick="decideReview('${rv.id}', 'approved')" class="py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold">✅ Aprobar</button>
+                <button onclick="decideReview('${rv.id}', 'changes_requested')" class="py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold">✏️ Corregir</button>
+                <button onclick="decideReview('${rv.id}', 'rejected')" class="py-2 rounded-xl bg-rose-700 hover:bg-rose-600 text-white text-xs font-bold">🗑️ Descartar</button>
+              </div>` : `<div class="text-[11px] text-amber-300 pt-1">Abre el panel desde el enlace de Discord para habilitar botones de aprobación.</div>`}
             </div>
-          `).join('');
+          `).join("");
         }
-      } catch (err) {
-        console.error('Error fetching telemetry:', err);
+
+        // Motores
+        const opps = d.top_opportunities || [];
+        document.getElementById("ghCount").textContent = `${opps.length} en cola`;
+        document.getElementById("ghList").innerHTML = opps.length ? opps.map(o => `
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="font-bold text-white truncate">${o.title}</div>
+              <div class="text-[11px] text-slate-400 font-mono">${o.source} • Nivel ${o.difficulty}</div>
+            </div>
+            <a href="${o.url}" target="_blank" class="shrink-0 px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold">$${o.estimated_value_usd} ↗</a>
+          </div>
+        `).join("") : `<div class="text-slate-400">Escaneando nuevos bounties...</div>`;
+
+        const actors = d.apify_actors || [];
+        document.getElementById("apifyList").innerHTML = actors.length ? actors.map(a => `
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between gap-2">
+            <div>
+              <div class="font-bold text-white">${a.title}</div>
+              <div class="text-[11px] text-slate-400 font-mono">${a.status_note} • ${a.pricing_model}</div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${a.healthy ? 'bg-emerald-950 text-emerald-300' : 'bg-rose-950 text-rose-300'}">${a.healthy ? 'ONLINE' : 'CHECK'}</span>
+          </div>
+        `).join("") : `<div class="text-slate-400">Inicializando fábrica de Actors...</div>`;
+
+        const x4 = d.x402 || {};
+        document.getElementById("x402Sales").textContent = `${x4.total_calls_paid || 0} ventas ($${x4.total_usd_earned || 0})`;
+        document.getElementById("tunnelBox").textContent = d.public_url ? `${d.public_url}/api/v1/x402/scrape?url=https://example.com` : "Túnel local activo en 127.0.0.1:8080";
+      } catch (e) {
+        console.error(e);
       }
     }
 
-    setInterval(fetchTelemetry, 2000);
-    fetchTelemetry();
+    refreshAll();
+    setInterval(refreshAll, 8000);
   </script>
 </body>
 </html>
 """
 
+
 class DashboardHandler(BaseHTTPRequestHandler):
+    def _is_owner_authorized(self) -> bool:
+        client_ip = self.client_address[0]
+        # Si entra directo sin proxy CF desde localhost, es el propio PC
+        if client_ip in ("127.0.0.1", "::1") and not self.headers.get("CF-Connecting-IP"):
+            return True
+        qs = parse_qs(urlparse(self.path).query)
+        token = qs.get("auth", [""])[0] or self.headers.get("X-AME-Auth", "")
+        return hmac.compare_digest(token, MOBILE_TOKEN)
+
+    def _send_json(self, code: int, payload: dict, extra_headers: dict = None):
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        if extra_headers:
+            for k, v in extra_headers.items():
+                self.send_header(k, v)
+        self.end_headers()
+        self.wfile.write(json.dumps(payload, ensure_ascii=False).encode("utf-8"))
+
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Payment-Tx, Authorization")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-PAYMENT, PAYMENT-SIGNATURE, X-Payment-Tx, X-AME-Auth, Authorization")
         self.end_headers()
 
     def do_GET(self):
-        if self.path == "/" or self.path == "/index.html":
+        parsed = urlparse(self.path)
+        route = parsed.path
+        qs = parse_qs(parsed.query)
+
+        if route in ("/", "/index.html", "/mobile"):
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
-            self.wfile.write(HTML_PAGE.encode("utf-8"))
-        elif self.path == "/poidh-tx-dashboard" or self.path == "/poidh-tx-dashboard.html":
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.end_headers()
-            html_p = BASE_DIR / "docs" / "poidh_txs_dashboard.html"
-            if html_p.exists():
-                self.wfile.write(html_p.read_bytes())
-            else:
-                self.wfile.write(b"Dashboard file not found")
-        elif self.path == "/poidh_daily_txs.json":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            json_p = BASE_DIR / "docs" / "poidh_daily_txs.json"
-            if json_p.exists():
-                self.wfile.write(json_p.read_bytes())
-            else:
-                self.wfile.write(b"{}")
-        elif self.path == "/api/status":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            
-            with data_lock:
-                q_summary = get_queue_summary()
-                spent_today = get_today_spent()
-                status = {
-                    "active_brain": telemetry_data["active_brain"],
-                    "hardware": telemetry_data["hardware"],
-                    "gpu": telemetry_data["gpu"],
-                    "web3": telemetry_data["web3"],
-                    "gas_history": list(telemetry_data["gas_history"]),
-                    "hardware_history": list(telemetry_data["hardware_history"]),
-                    "deepseek": telemetry_data["deepseek"],
-                    "gemini": telemetry_data["gemini"],
-                    "queue_summary": q_summary,
-                    "deepseek_budget": {
-                        "spent_eur": round(spent_today, 4),
-                        "daily_limit_eur": DAILY_BUDGET_EUR,
-                        "remaining_eur": round(max(0.0, DAILY_BUDGET_EUR - spent_today), 4)
-                    },
-                    "obsidian_notes": get_obsidian_notes(),
-                    "recent_orders": get_recent_orders(),
-                    "server_time": time.strftime("%Y-%m-%d %H:%M:%S")
-                }
-            self.wfile.write(json.dumps(status).encode("utf-8"))
-        elif self.path == "/api/v1/x402/pricing":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            resp = {
-                "protocol": "x402",
-                "version": "1.0",
+            self.wfile.write(MOBILE_APP_HTML.encode("utf-8"))
+            return
+
+        if route == "/.well-known/agent.json":
+            pub = get_public_tunnel_url() or f"http://127.0.0.1:{PORT}"
+            self._send_json(200, {
+                "name": "Autonomous Micro-Entrepreneur (AME v3)",
+                "version": "3.0.0",
                 "network": "base",
                 "chainId": 8453,
                 "payee": USER_PAYOUT_WALLET,
-                "pricing": PRICING_TABLE,
-                "docs": "https://x402.org"
-            }
-            self.wfile.write(json.dumps(resp).encode("utf-8"))
-        elif self.path.startswith("/api/v1/x402/intel"):
+                "standards": ["x402", "ERC-8021", "AIP-1"],
+                "endpoints": {
+                    "pricing": f"{pub}/api/v1/x402/pricing",
+                    "scrape": f"{pub}/api/v1/x402/scrape",
+                    "intel": f"{pub}/api/v1/x402/intel",
+                    "solve": f"{pub}/api/v1/x402/solve",
+                    "openapi": f"{pub}/openapi.json"
+                }
+            })
+            return
+
+        if route in ("/openapi.json", "/.well-known/ai-plugin.json"):
+            pub = get_public_tunnel_url() or f"http://127.0.0.1:{PORT}"
+            self._send_json(200, {
+                "openapi": "3.0.1",
+                "info": {"title": "AME v3 Residential Web Extraction & Base L2 x402 API", "version": "3.0.0"},
+                "servers": [{"url": pub}],
+                "paths": {
+                    "/api/v1/x402/scrape": {"get": {"summary": "Clean anti-bot Markdown extraction via residential IP (x402 USDC/ETH)"}},
+                    "/api/v1/x402/intel": {"get": {"summary": "Curated Base L2 DeFi yields & developer bounties (x402 USDC/ETH)"}},
+                    "/api/v1/x402/solve": {"post": {"summary": "Autonomous code & smart contract analysis (x402 USDC/ETH)"}}
+                }
+            })
+            return
+
+        if route in ("/poidh-tx-dashboard", "/poidh-tx-dashboard.html"):
+            html_p = BASE_DIR / "docs" / "poidh_txs_dashboard.html"
+            self.send_response(200 if html_p.exists() else 404)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(html_p.read_bytes() if html_p.exists() else b"Not found")
+            return
+
+        if route == "/poidh_daily_txs.json":
+            json_p = BASE_DIR / "docs" / "poidh_daily_txs.json"
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json_p.read_bytes() if json_p.exists() else b"{}")
+            return
+
+        if route == "/api/status":
+            auth = self._is_owner_authorized()
             gw = get_gateway()
-            tx_hash = self.headers.get("X-Payment-Tx")
+            q_items = load_queue()
+            viable_pending = [
+                {
+                    "id": x.get("id"),
+                    "source": x.get("source"),
+                    "title": x.get("title"),
+                    "url": x.get("url"),
+                    "difficulty": x.get("difficulty"),
+                    "estimated_value_usd": x.get("estimated_value_usd")
+                }
+                for x in q_items if x.get("status") == "pending" and score_opportunity_cost_benefit(x) > 0
+            ][:12]
+
+            pending_revs = [x for x in load_reviews() if x.get("status") == "pending_review"]
+            if not auth:
+                # Ocultar rutas internas si un visitante sin clave consulta /api/status
+                pending_revs = [{"id": r["id"], "category": r["category"], "title": r["title"], "reward_display": r["reward_display"], "summary": "Autentícate desde Discord para revisar detalles."} for r in pending_revs]
+
+            with data_lock:
+                fin = dict(telemetry_data["finance"])
+                hw = dict(telemetry_data["hardware"])
+                gpu = dict(telemetry_data["gpu"])
+                br = dict(telemetry_data["active_brain"])
+
+            self._send_json(200, {
+                "authorized": auth,
+                "finance": fin,
+                "deepseek": get_deepseek_real_balance(),
+                "gemini": get_gemini_status(),
+                "active_brain": br,
+                "hardware": hw,
+                "gpu": gpu,
+                "watchdog": get_watchdog_health(),
+                "queue_summary": get_queue_summary(),
+                "pending_reviews": pending_revs,
+                "top_opportunities": viable_pending,
+                "apify_actors": get_apify_actors(),
+                "x402": gw.get_sales_stats(),
+                "public_url": get_public_tunnel_url(),
+                "server_time": time.strftime("%H:%M:%S")
+            })
+            return
+
+        if route == "/api/v1/x402/pricing":
+            self._send_json(200, {
+                "x402Version": 1,
+                "network": "base",
+                "chainId": 8453,
+                "payee": USER_PAYOUT_WALLET,
+                "pricing": PRICING_TABLE
+            })
+            return
+
+        if route == "/api/v1/x402/scrape":
+            gw = get_gateway()
+            tx_hash = gw.extract_tx_hash_from_headers(self.headers)
+            target_url = qs.get("url", [""])[0]
             if not tx_hash:
-                ch = gw.get_payment_challenge("intel")
-                self.send_response(402)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("WWW-Authenticate", 'x402-v1 network="base"')
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.end_headers()
-                self.wfile.write(json.dumps(ch).encode("utf-8"))
+                ch = gw.get_payment_challenge("scrape", self.path)
+                self._send_json(402, ch, {"WWW-Authenticate": 'x402 network="base"'})
+                return
+            if not target_url:
+                self._send_json(400, {"error": "Parámetro ?url=https://... requerido antes de consumir pago."})
+                return
+            ok_url, reason = extract_clean_webpage(target_url), "OK"
+            if ok_url.get("status") == "error":
+                self._send_json(400, ok_url)
+                return
+            ok, msg, meta = gw.verify_payment_tx(tx_hash, "scrape")
+            if not ok:
+                self._send_json(402, {"error": msg})
+                return
+            self._send_json(200, {"payment": meta, **ok_url})
+            return
+
+        if route == "/api/v1/x402/intel":
+            gw = get_gateway()
+            tx_hash = gw.extract_tx_hash_from_headers(self.headers)
+            if not tx_hash:
+                ch = gw.get_payment_challenge("intel", self.path)
+                self._send_json(402, ch, {"WWW-Authenticate": 'x402 network="base"'})
                 return
             ok, msg, meta = gw.verify_payment_tx(tx_hash, "intel")
             if not ok:
-                self.send_response(400)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": msg}).encode("utf-8"))
+                self._send_json(402, {"error": msg})
                 return
-            opp_file = BASE_DIR / "memoria" / "estado" / "cola_oportunidades.json"
-            opps = []
-            if opp_file.exists():
-                try:
-                    opps = json.loads(opp_file.read_text(encoding="utf-8"))
-                except Exception:
-                    pass
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                "status": "success",
-                "service": "intel",
-                "payment": meta,
-                "bounties_count": len(opps),
-                "data": opps[:20]
-            }).encode("utf-8"))
-        elif self.path.startswith("/api/v1/agentkit/action"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
+            topic = qs.get("topic", ["all"])[0].lower()
+            payload = {"status": "success", "topic": topic, "payment": meta}
+            if topic in ("defi", "yields", "all"):
+                payload["defi_overview"] = get_base_defi_overview()
+            if topic in ("bounties", "all"):
+                payload["bounties"] = [x for x in load_queue() if x.get("status") == "pending"][:15]
+            self._send_json(200, payload)
+            return
+
+        # Rutas auxiliares DeFi / DEX / AgentKit / EAS / Treasury
+        if route == "/api/v1/agentkit/action":
             action = qs.get("action", [""])[0]
             params = {k: v[0] for k, v in qs.items() if k != "action"}
-            provider = get_agentkit_provider()
-            res = provider.dispatch_action(action, params)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps(res).encode("utf-8"))
-        elif self.path.startswith("/api/v1/eas/attestations"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            addr = qs.get("address", [WALLET_ADDRESS])[0]
-            limit = int(qs.get("limit", [10])[0])
-            items = get_address_attestations(addr, limit=limit)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"address": addr, "count": len(items), "attestations": items}).encode("utf-8"))
-        elif self.path.startswith("/api/v1/eas/reputation"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            addr = qs.get("address", [WALLET_ADDRESS])[0]
-            rep = get_address_reputation(addr)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps(rep).encode("utf-8"))
-        elif self.path.startswith("/api/v1/eas/latest"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            limit = int(qs.get("limit", [10])[0])
-            recent = get_recent_attestations(limit=limit)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"network": "base", "count": len(recent), "attestations": recent}).encode("utf-8"))
-        elif self.path == "/api/v1/erc8021/info":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            suffix = encode_erc8021_suffix()
-            resp = {
-                "standard": "ERC-8021",
-                "network": "base",
-                "chainId": 8453,
-                "builder_code": DEFAULT_BUILDER_CODE,
-                "suffix_hex": suffix.hex(),
-                "marker": "80218021802180218021802180218021",
-                "docs": "https://erc8021.com"
-            }
-            self.wfile.write(json.dumps(resp).encode("utf-8"))
-        elif self.path == "/api/v1/defi/overview":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            data = get_base_defi_overview()
-            self.wfile.write(json.dumps(data).encode("utf-8"))
-        elif self.path.startswith("/api/v1/defi/yields"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
+            self._send_json(200, get_agentkit_provider().dispatch_action(action, params))
+            return
+        if route == "/api/v1/defi/overview":
+            self._send_json(200, get_base_defi_overview())
+            return
+        if route == "/api/v1/defi/yields":
             limit = int(qs.get("limit", [10])[0])
             min_tvl = float(qs.get("min_tvl", [500000])[0])
             sym = qs.get("symbol", [None])[0]
             stable = qs.get("stable", ["false"])[0].lower() in ("true", "1")
-            yields = get_base_top_yields(min_tvl=min_tvl, symbol_filter=sym, stable_only=stable, limit=limit)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"count": len(yields), "yields": yields}).encode("utf-8"))
-        elif self.path.startswith("/api/v1/defi/prices"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            tokens_str = qs.get("tokens", ["WETH,USDC,AERO"])[0]
-            tokens_list = [t.strip() for t in tokens_str.split(",") if t.strip()]
-            prices = get_base_token_prices(tokens_list)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"prices": prices}).encode("utf-8"))
-        elif self.path.startswith("/api/v1/dex/trending"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            limit = int(qs.get("limit", [10])[0])
-            min_liq = float(qs.get("min_liquidity", [50000])[0])
-            trending = get_base_trending_pools(min_liquidity_usd=min_liq, limit=limit)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"count": len(trending), "trending_pools": trending}).encode("utf-8"))
-        elif self.path.startswith("/api/v1/dex/new_pools"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            limit = int(qs.get("limit", [10])[0])
-            min_liq = float(qs.get("min_liquidity", [1000])[0])
-            new_pools = get_base_new_pools(min_liquidity_usd=min_liq, limit=limit)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"count": len(new_pools), "new_pools": new_pools}).encode("utf-8"))
-        elif self.path.startswith("/api/v1/dex/token"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            addr = qs.get("address", [""])[0]
-            data = get_base_token_market_data(addr) if addr else None
-            self.send_response(200 if data else 404)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"status": "success" if data else "not_found", "token": data}).encode("utf-8"))
-        elif self.path == "/api/v1/treasury/status":
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            st = get_treasury_status()
-            self.wfile.write(json.dumps(st).encode("utf-8"))
-        elif self.path.startswith("/api/v1/treasury/recommendations"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            min_tvl = float(qs.get("min_tvl", [1000000])[0])
-            recs = get_recommended_allocations(min_tvl=min_tvl)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({"count": len(recs), "recommendations": recs}).encode("utf-8"))
-        elif self.path.startswith("/api/v1/treasury/simulate"):
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(self.path)
-            qs = parse_qs(parsed.query)
-            amt = float(qs.get("amount", [100.0])[0])
-            sim = simulate_yield_cashflow(amt)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps(sim).encode("utf-8"))
-        else:
-            self.send_response(404)
-            self.end_headers()
-            self.wfile.write(b"Not Found")
+            res = get_base_top_yields(min_tvl=min_tvl, symbol_filter=sym, stable_only=stable, limit=limit)
+            self._send_json(200, {"count": len(res), "yields": res})
+            return
+        if route == "/api/v1/dex/trending":
+            res = get_base_trending_pools(min_liquidity_usd=float(qs.get("min_liquidity", [50000])[0]), limit=int(qs.get("limit", [10])[0]))
+            self._send_json(200, {"count": len(res), "trending_pools": res})
+            return
+        if route == "/api/v1/treasury/status":
+            self._send_json(200, get_treasury_status())
+            return
+
+        self._send_json(404, {"error": "Not Found"})
 
     def do_POST(self):
-        if self.path == "/api/v1/x402/solve":
-            gw = get_gateway()
-            tx_hash = self.headers.get("X-Payment-Tx")
-            if not tx_hash:
-                ch = gw.get_payment_challenge("solve")
-                self.send_response(402)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("WWW-Authenticate", 'x402-v1 network="base"')
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.end_headers()
-                self.wfile.write(json.dumps(ch).encode("utf-8"))
+        parsed = urlparse(self.path)
+        route = parsed.path
+        length = int(self.headers.get("Content-Length", 0))
+        raw_body = self.rfile.read(length).decode("utf-8") if length > 0 else "{}"
+        try:
+            body = json.loads(raw_body)
+        except Exception:
+            body = {}
+
+        if route == "/api/v1/reviews/decide":
+            if not self._is_owner_authorized():
+                self._send_json(403, {"error": "No autorizado. Abre el enlace privado desde Discord."})
+                return
+            rev_id = body.get("id", "")
+            decision = body.get("decision", "")
+            feedback = body.get("feedback", "")
+            rev = get_review_by_id(rev_id)
+            if not rev:
+                self._send_json(404, {"error": "Elemento no encontrado"})
                 return
 
+            if decision == "approved" and rev.get("category") == "poidh_claim":
+                ap = rev.get("action_payload") or {}
+                if ap.get("bounty_id") and ap.get("proof_uri"):
+                    ok, note = submit_approved_poidh_claim(
+                        int(ap["bounty_id"]), rev["title"], ap.get("description", rev["summary"]), ap["proof_uri"], rev.get("opp_id", "")
+                    )
+                    update_review_decision(rev_id, "sent" if ok else "pending_review", result_note=note)
+                    self._send_json(200, {"status": "ok" if ok else "error", "message": f"TX Base: {note}" if ok else note})
+                    return
+
+            update_review_decision(rev_id, decision, feedback=feedback)
+            self._send_json(200, {"status": "ok", "message": f"Estado actualizado a: {decision}"})
+            return
+
+        if route == "/api/v1/x402/solve":
+            gw = get_gateway()
+            tx_hash = gw.extract_tx_hash_from_headers(self.headers)
+            if not tx_hash:
+                ch = gw.get_payment_challenge("solve", self.path)
+                self._send_json(402, ch, {"WWW-Authenticate": 'x402 network="base"'})
+                return
             ok, msg, meta = gw.verify_payment_tx(tx_hash, "solve")
             if not ok:
-                self.send_response(400)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": msg}).encode("utf-8"))
+                self._send_json(402, {"error": msg})
                 return
+            prompt = body.get("prompt") or raw_body or "Analizar estado on-chain"
+            res = route_task("code", prompt[:4000], difficulty=5, system_prompt="Agente x402 resolviendo petición comercial.")
+            self._send_json(200, {"status": "success", "payment": meta, "solution": res})
+            return
 
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length).decode('utf-8')
-            prompt = ""
-            try:
-                data = json.loads(body)
-                prompt = data.get("prompt", "")
-            except Exception:
-                prompt = body
-
-            if not prompt:
-                prompt = "Verificar estado y generar resumen de inteligencia"
-
-            res = route_task(
-                task_type="general",
-                prompt=prompt,
-                difficulty=3,
-                system_prompt="Eres un agente de IA autonomo en Base L2 resolviendo una peticion comercial via micropago x402."
-            )
-
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                "status": "success",
-                "service": "solve",
-                "payment": meta,
-                "solution": res
-            }).encode("utf-8"))
-        elif self.path == "/api/v1/agentkit/action":
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length).decode('utf-8')
-            try:
-                data = json.loads(body)
-                action = data.get("action", "")
-                params = data.get("params", {})
-            except Exception:
-                action = ""
-                params = {}
-            provider = get_agentkit_provider()
-            res = provider.dispatch_action(action, params)
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-            self.wfile.write(json.dumps(res).encode("utf-8"))
-        elif self.path == "/api/v1/erc8021/attach":
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length).decode('utf-8')
-            try:
-                data = json.loads(body)
-                raw_data = data.get("data", "")
-                code = data.get("builder_code", DEFAULT_BUILDER_CODE)
-                attributed = attach_erc8021_attribution(raw_data, code)
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.end_headers()
-                self.wfile.write(json.dumps({"status": "success", "attributed_data": attributed, "builder_code": code}).encode("utf-8"))
-            except Exception as e:
-                self.send_response(400)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
-        elif self.path == "/api/v1/erc8021/decode":
-            content_length = int(self.headers.get('Content-Length', 0))
-            body = self.rfile.read(content_length).decode('utf-8')
-            try:
-                data = json.loads(body)
-                raw_data = data.get("data", "")
-                decoded = decode_erc8021_attribution(raw_data)
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.end_headers()
-                self.wfile.write(json.dumps({"status": "success", "result": decoded}).encode("utf-8"))
-            except Exception as e:
-                self.send_response(400)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
-        else:
-            self.send_response(404)
-            self.end_headers()
-            self.wfile.write(b"Not Found")
+        self._send_json(404, {"error": "Not Found"})
 
     def log_message(self, format, *args):
         return
 
+
 def run_server():
-    collector_thread = threading.Thread(target=background_collector, daemon=True)
-    collector_thread.start()
-    
-    server = HTTPServer(("127.0.0.1", PORT), DashboardHandler)
-    print("=" * 60)
-    print(f"  DASHBOARD SERVER 24/7 ACTIVO: http://127.0.0.1:{PORT}")
-    print("  Cotización en vivo: ETH/EUR vía Binance API")
-    print("  Auto-Claim & Telemetría en tiempo real")
-    print("=" * 60)
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        print("\nDeteniendo servidor de dashboard...")
-        server.server_close()
+    threading.Thread(target=background_collector, daemon=True).start()
+    server = ThreadingHTTPServer(("127.0.0.1", PORT), DashboardHandler)
+    print(f"[Dashboard v3] Mobile-First Command Center activo en http://127.0.0.1:{PORT}")
+    server.serve_forever()
+
 
 if __name__ == "__main__":
     run_server()
