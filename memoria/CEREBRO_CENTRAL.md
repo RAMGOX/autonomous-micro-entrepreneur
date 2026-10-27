@@ -25,7 +25,7 @@
    - Regla de oro: Cero comentarios automáticos en GitHub y cero reclamos ciegos en POIDH sin tu aprobación móvil.
 2. **Motor 2 — Actores Apify Store & Servidores MCP (Ingresos Recurrentes / Pay-Per-Event):**
    - Panel Obsidian: [[MOTOR_2_APIFY_ACTORS]]
-   - Código: `src/apify_actor_factory.py` (`apify_actors/eu-public-tenders-b2b` y `apify_actors/base-dex-rug-auditor`)
+   - Código: `src/apify_actor_factory.py` (`apify_actors/eu-public-tenders-b2b`, `apify_actors/base-dex-rug-auditor`, `apify_actors/eu-vies-gleif-b2b-verifier`, `apify_actors/global-natural-events-tracker`, `apify_actors/github-repo-health-auditor` y `apify_actors/github-security-advisory-radar`)
 3. **Motor 3 — Pasarela x402 en Base Mainnet (`USDC` + `ETH`):**
    - Código: `src/x402_gateway.py` + `src/dashboard_server.py` + `src/tunnel_manager.py`
    - Endpoints comerciales:

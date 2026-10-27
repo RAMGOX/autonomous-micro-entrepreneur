@@ -1,0 +1,9 @@
+{
+  "actorSpecification": 1,
+  "name": "github-security-advisory-cve-radar",
+  "title": "Global Software Vulnerability & CVE Radar (GitHub Advisory MCP)",
+  "description": "Extracts real-time security vulnerabilities, CVEs, and GHSA advisories across npm, pip, maven, go, and rust packages from GitHub Advisory Database. Zero proxy cost, ideal for automated SecOps, supply chain security, and AI coding agents.",
+  "version": "1.0",
+  "dockerfile": "../Dockerfile",
+  "input": "./input_schema.json"
+}

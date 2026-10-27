@@ -1,0 +1,20 @@
+{
+  "title": "GitHub Repo Health Audit Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "repositories": {
+      "title": "Target Repositories (owner/repo or full URL)",
+      "type": "array",
+      "editor": "stringList",
+      "default": [
+        "pallets/flask",
+        "fastapi/fastapi"
+      ],
+      "description": "Repositories to analyze in 'owner/repo' format"
+    }
+  },
+  "required": [
+    "repositories"
+  ]
+}

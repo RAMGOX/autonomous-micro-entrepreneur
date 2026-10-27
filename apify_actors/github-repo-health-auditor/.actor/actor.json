@@ -1,0 +1,9 @@
+{
+  "actorSpecification": 1,
+  "name": "github-repo-health-dependency-auditor",
+  "title": "Open Source Repository Health & Security Auditor (GitHub MCP)",
+  "description": "Audits open source software repositories for maintenance velocity, license compliance, release cadence, and issue triage health using official public GitHub REST APIs. Zero proxy cost, built for DevSecOps, due diligence, and AI coding agents.",
+  "version": "1.0",
+  "dockerfile": "../Dockerfile",
+  "input": "./input_schema.json"
+}

@@ -112,6 +112,20 @@ Reglas estrictas:
         category = "github_bounty" if source == "github_bounty" else "poidh_claim"
         mark_opportunity_executed(opp_id, ds_res["brain"], str(sol_path))
 
+        action_payload = {
+            "source": source,
+            "url": url,
+            "solution_path": str(sol_path)
+        }
+        preview_url = ""
+
+        if category == "poidh_claim":
+            b_match = re.search(r"/bounty/(\d+)", url)
+            if b_match:
+                action_payload["bounty_id"] = int(b_match.group(1))
+            action_payload["title"] = title[:50]
+            action_payload["description"] = short_summary[:400]
+
         push_for_review(
             category=category,
             title=title,
@@ -120,13 +134,10 @@ Reglas estrictas:
             estimated_usd=est_val,
             summary=short_summary,
             deliverable_path=str(sol_path.relative_to(BASE_DIR)),
+            preview_url=preview_url,
             solver=ds_res["brain"],
             opp_id=opp_id,
-            action_payload={
-                "source": source,
-                "url": url,
-                "solution_path": str(sol_path)
-            }
+            action_payload=action_payload
         )
         safe_print(f"[DeepSeek Worker] Lista para revisión móvil en Discord: {title} (Coste: {cost_eur:.4f}€)")
         return True

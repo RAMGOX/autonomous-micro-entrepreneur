@@ -1,0 +1,26 @@
+{
+  "title": "EU VAT & Corporate LEI Verification Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "vatNumbers": {
+      "title": "EU VAT Numbers (Country Prefix + Number)",
+      "type": "array",
+      "editor": "stringList",
+      "default": [
+        "IE6388047V",
+        "ESA28015865"
+      ],
+      "description": "Full EU VAT numbers starting with 2-letter ISO country code (e.g. IE6388047V, ESA28015865)"
+    },
+    "companyNames": {
+      "title": "Company Legal Names for GLEIF LEI Lookup",
+      "type": "array",
+      "editor": "stringList",
+      "default": [
+        "TELEFONICA SA"
+      ],
+      "description": "Company names to enrich with official Global LEI registration data"
+    }
+  }
+}

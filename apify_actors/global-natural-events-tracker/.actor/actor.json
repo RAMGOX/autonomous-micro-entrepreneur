@@ -1,0 +1,9 @@
+{
+  "actorSpecification": 1,
+  "name": "global-natural-events-climate-risk-tracker",
+  "title": "Global Natural Disaster & Severe Weather Tracker (NASA EONET v3 MCP)",
+  "description": "Extracts real-time global wildfires, severe storms, volcanoes, and sea ice events directly from the official NASA Earth Observatory Natural Event Tracker (EONET v3). Zero proxy cost, ideal for ESG risk, logistics monitoring, and AI Agents.",
+  "version": "1.0",
+  "dockerfile": "../Dockerfile",
+  "input": "./input_schema.json"
+}

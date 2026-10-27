@@ -1,0 +1,9 @@
+{
+  "actorSpecification": 1,
+  "name": "eu-vies-vat-gleif-lei-b2b-kyb-verifier",
+  "title": "EU VIES VAT & Global LEI Corporate KYB Verifier (MCP Ready)",
+  "description": "Verifies European VAT numbers via the official EU Commission VIES REST API and enriches corporate legal entities via the Global LEI Foundation (GLEIF) registry. Zero proxy cost, instant KYB/B2B compliance for AI agents and ERP workflows.",
+  "version": "1.0",
+  "dockerfile": "../Dockerfile",
+  "input": "./input_schema.json"
+}

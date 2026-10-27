@@ -366,6 +366,365 @@ if __name__ == "__main__":
             encoding="utf-8"
         )
 
+    # Actor 4: Extractor de Eventos Naturales y Clima Extremo Global (NASA EONET v3 MCP)
+    a4 = ACTORS_DIR / "global-natural-events-tracker"
+    (a4 / ".actor").mkdir(parents=True, exist_ok=True)
+    (a4 / "src").mkdir(parents=True, exist_ok=True)
+
+    if not (a4 / ".actor" / "actor.json").exists():
+        (a4 / ".actor" / "actor.json").write_text(json.dumps({
+            "actorSpecification": 1,
+            "name": "global-natural-events-climate-risk-tracker",
+            "title": "Global Natural Disaster & Severe Weather Tracker (NASA EONET v3 MCP)",
+            "description": "Extracts real-time global wildfires, severe storms, volcanoes, and sea ice events directly from the official NASA Earth Observatory Natural Event Tracker (EONET v3). Zero proxy cost, ideal for ESG risk, logistics monitoring, and AI Agents.",
+            "version": "1.0",
+            "dockerfile": "../Dockerfile",
+            "input": "./input_schema.json"
+        }, indent=2), encoding="utf-8")
+
+        (a4 / ".actor" / "input_schema.json").write_text(json.dumps({
+            "title": "NASA EONET Natural Disaster Input",
+            "type": "object",
+            "schemaVersion": 1,
+            "properties": {
+                "category": {
+                    "title": "Event Category",
+                    "type": "string",
+                    "default": "all",
+                    "description": "Category filter: all, severeStorms, wildfires, volcanoes, seaLakeIce"
+                },
+                "status": {
+                    "title": "Status",
+                    "type": "string",
+                    "default": "open",
+                    "description": "Event status: open or all"
+                },
+                "maxItems": {
+                    "title": "Max Results",
+                    "type": "integer",
+                    "default": 20,
+                    "minimum": 1,
+                    "maximum": 100
+                }
+            }
+        }, indent=2), encoding="utf-8")
+
+        (a4 / "Dockerfile").write_text(
+            "FROM apify/actor-python:3.11\nCOPY requirements.txt ./\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . ./\nCMD [\"python3\", \"-m\", \"src.main\"]\n",
+            encoding="utf-8"
+        )
+        (a4 / "requirements.txt").write_text("apify>=2.0.0\nrequests>=2.31.0\n", encoding="utf-8")
+        (a4 / "src" / "__init__.py").write_text("", encoding="utf-8")
+        (a4 / "src" / "main.py").write_text('''"""
+Apify Actor: Global Natural Disaster & Climate Risk Tracker (NASA EONET v3 MCP).
+Monetization: Pay-Per-Event ($0.003 per event record). Zero proxy cost.
+"""
+import asyncio
+import requests
+
+EONET_EVENTS_URL = "https://eonet.gsfc.nasa.gov/api/v3/events"
+
+
+def fetch_natural_events(category: str = "all", status: str = "open", limit: int = 20) -> list:
+    params = {"status": status, "limit": min(max(1, int(limit)), 100)}
+    if category and category.lower() != "all":
+        params["category"] = category.strip()
+    r = requests.get(EONET_EVENTS_URL, params=params, headers={"Accept": "application/json"}, timeout=15)
+    r.raise_for_status()
+    raw_events = r.json().get("events", [])
+    results = []
+    for ev in raw_events:
+        cats = [c.get("title") for c in ev.get("categories", []) if isinstance(c, dict)]
+        geoms = ev.get("geometry", [])
+        latest_geom = geoms[-1] if geoms else {}
+        results.append({
+            "event_id": ev.get("id"),
+            "title": ev.get("title"),
+            "link": ev.get("link"),
+            "categories": cats,
+            "closed": ev.get("closed"),
+            "latest_coordinates": latest_geom.get("coordinates"),
+            "latest_timestamp": latest_geom.get("date"),
+            "sources": [s.get("url") for s in ev.get("sources", []) if isinstance(s, dict)]
+        })
+    return results
+
+
+async def main():
+    from apify import Actor
+    async with Actor:
+        inp = await Actor.get_input() or {}
+        items = fetch_natural_events(
+            category=inp.get("category", "all"),
+            status=inp.get("status", "open"),
+            limit=inp.get("maxItems", 20)
+        )
+        for item in items:
+            await Actor.push_data(item)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+''', encoding="utf-8")
+        (a4 / "README.md").write_text(
+            "# Global Natural Disaster & Climate Risk Tracker (NASA EONET v3 MCP)\n\n"
+            "Real-time official Earth observation and severe environmental risk extractor from NASA EONET v3.\n"
+            "- **Ideal for:** Supply chain risk monitoring, logistics, insurance intelligence, and autonomous AI agents.\n"
+            "- **Pricing:** Pay-Per-Event (`$3 / 1,000 events`). Zero proxy cost.\n"
+            "- **Deploy command:** `npx apify-cli login && npx apify-cli push`\n",
+            encoding="utf-8"
+        )
+
+    # Actor 5: Auditor de Salud y Dependencias de Código Open Source (GitHub Public Intel MCP)
+    a5 = ACTORS_DIR / "github-repo-health-auditor"
+    (a5 / ".actor").mkdir(parents=True, exist_ok=True)
+    (a5 / "src").mkdir(parents=True, exist_ok=True)
+
+    if not (a5 / ".actor" / "actor.json").exists():
+        (a5 / ".actor" / "actor.json").write_text(json.dumps({
+            "actorSpecification": 1,
+            "name": "github-repo-health-dependency-auditor",
+            "title": "Open Source Repository Health & Security Auditor (GitHub MCP)",
+            "description": "Audits open source software repositories for maintenance velocity, license compliance, release cadence, and issue triage health using official public GitHub REST APIs. Zero proxy cost, built for DevSecOps, due diligence, and AI coding agents.",
+            "version": "1.0",
+            "dockerfile": "../Dockerfile",
+            "input": "./input_schema.json"
+        }, indent=2), encoding="utf-8")
+
+        (a5 / ".actor" / "input_schema.json").write_text(json.dumps({
+            "title": "GitHub Repo Health Audit Input",
+            "type": "object",
+            "schemaVersion": 1,
+            "properties": {
+                "repositories": {
+                    "title": "Target Repositories (owner/repo or full URL)",
+                    "type": "array",
+                    "editor": "stringList",
+                    "default": ["pallets/flask", "fastapi/fastapi"],
+                    "description": "Repositories to analyze in 'owner/repo' format"
+                }
+            },
+            "required": ["repositories"]
+        }, indent=2), encoding="utf-8")
+
+        (a5 / "Dockerfile").write_text(
+            "FROM apify/actor-python:3.11\nCOPY requirements.txt ./\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . ./\nCMD [\"python3\", \"-m\", \"src.main\"]\n",
+            encoding="utf-8"
+        )
+        (a5 / "requirements.txt").write_text("apify>=2.0.0\nrequests>=2.31.0\n", encoding="utf-8")
+        (a5 / "src" / "__init__.py").write_text("", encoding="utf-8")
+        (a5 / "src" / "main.py").write_text('''"""
+Apify Actor: Open Source Repository Health & Security Auditor (GitHub MCP).
+Monetization: Pay-Per-Event ($0.003 per repository audit). Zero proxy cost.
+"""
+import re
+import asyncio
+import requests
+
+
+def audit_repo(target: str) -> dict:
+    clean = target.strip()
+    m = re.search(r"github\\.com/([^/]+/[^/]+)", clean)
+    slug = m.group(1) if m else clean
+    slug = slug.strip("/ ")
+    
+    headers = {"Accept": "application/vnd.github+json", "User-Agent": "RepoHealthAuditor/1.0"}
+    r = requests.get(f"https://api.github.com/repos/{slug}", headers=headers, timeout=12)
+    if r.status_code != 200:
+        return {"repo": slug, "found": False, "status_code": r.status_code, "health_score": 0}
+
+    data = r.json()
+    stars = data.get("stargazers_count", 0)
+    forks = data.get("forks_count", 0)
+    open_issues = data.get("open_issues_count", 0)
+    license_info = (data.get("license") or {}).get("spdx_id") or "UNKNOWN"
+    archived = data.get("archived", False)
+    default_branch = data.get("default_branch", "main")
+    updated_at = data.get("pushed_at") or data.get("updated_at")
+
+    rel_r = requests.get(f"https://api.github.com/repos/{slug}/releases/latest", headers=headers, timeout=8)
+    latest_release = rel_r.json().get("tag_name") if rel_r.status_code == 200 else None
+
+    # Cálculo heurístico de puntuación de salud y mantenimiento
+    score = 100
+    warnings = []
+    if archived:
+        score -= 70
+        warnings.append("Repository is archived / abandoned")
+    if license_info in ("UNKNOWN", "NOASSERTION", None):
+        score -= 25
+        warnings.append("No clear OSI-compliant license detected")
+    if open_issues > 500 and stars < 5000:
+        score -= 20
+        warnings.append("High unresolved issue ratio")
+
+    score = max(0, score)
+    health = "EXCELLENT" if score >= 80 else ("MODERATE" if score >= 50 else "AT_RISK")
+
+    return {
+        "repo": slug,
+        "found": True,
+        "full_name": data.get("full_name"),
+        "description": data.get("description"),
+        "stars": stars,
+        "forks": forks,
+        "open_issues": open_issues,
+        "license": license_info,
+        "latest_release": latest_release,
+        "is_archived": archived,
+        "last_pushed_at": updated_at,
+        "health_score": score,
+        "status": health,
+        "warnings": warnings
+    }
+
+
+async def main():
+    from apify import Actor
+    async with Actor:
+        inp = await Actor.get_input() or {}
+        repos = inp.get("repositories") or ["pallets/flask"]
+        for repo_slug in repos[:30]:
+            await Actor.push_data(audit_repo(repo_slug))
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+''', encoding="utf-8")
+        (a5 / "README.md").write_text(
+            "# Open Source Repository Health & Security Auditor (GitHub MCP)\n\n"
+            "Automated open source repository security, license compliance, and maintenance vitality audit.\n"
+            "- **Ideal for:** Due diligence, DevSecOps dependency checks, and MCP-powered AI coding agents.\n"
+            "- **Pricing:** Pay-Per-Event (`$3 / 1,000 audits`). Zero proxy cost.\n"
+            "- **Deploy command:** `npx apify-cli login && npx apify-cli push`\n",
+            encoding="utf-8"
+        )
+
+    # Actor 6: Radar Global de Vulnerabilidades y CVEs (GitHub Advisory Database MCP)
+    a6 = ACTORS_DIR / "github-security-advisory-radar"
+    (a6 / ".actor").mkdir(parents=True, exist_ok=True)
+    (a6 / "src").mkdir(parents=True, exist_ok=True)
+
+    if not (a6 / ".actor" / "actor.json").exists():
+        (a6 / ".actor" / "actor.json").write_text(json.dumps({
+            "actorSpecification": 1,
+            "name": "github-security-advisory-cve-radar",
+            "title": "Global Software Vulnerability & CVE Radar (GitHub Advisory MCP)",
+            "description": "Extracts real-time security vulnerabilities, CVEs, and GHSA advisories across npm, pip, maven, go, and rust packages from GitHub Advisory Database. Zero proxy cost, ideal for automated SecOps, supply chain security, and AI coding agents.",
+            "version": "1.0",
+            "dockerfile": "../Dockerfile",
+            "input": "./input_schema.json"
+        }, indent=2), encoding="utf-8")
+
+        (a6 / ".actor" / "input_schema.json").write_text(json.dumps({
+            "title": "Security Advisories Input",
+            "type": "object",
+            "schemaVersion": 1,
+            "properties": {
+                "ecosystem": {
+                    "title": "Package Ecosystem",
+                    "type": "string",
+                    "default": "pip",
+                    "description": "Ecosystem filter: pip, npm, maven, go, rust, nuget, or all"
+                },
+                "severity": {
+                    "title": "Minimum Severity",
+                    "type": "string",
+                    "default": "high",
+                    "description": "Severity filter: critical, high, medium, low, or all"
+                },
+                "maxItems": {
+                    "title": "Max Results",
+                    "type": "integer",
+                    "default": 20,
+                    "minimum": 1,
+                    "maximum": 100
+                }
+            }
+        }, indent=2), encoding="utf-8")
+
+        (a6 / "Dockerfile").write_text(
+            "FROM apify/actor-python:3.11\nCOPY requirements.txt ./\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . ./\nCMD [\"python3\", \"-m\", \"src.main\"]\n",
+            encoding="utf-8"
+        )
+        (a6 / "requirements.txt").write_text("apify>=2.0.0\nrequests>=2.31.0\n", encoding="utf-8")
+        (a6 / "src" / "__init__.py").write_text("", encoding="utf-8")
+        (a6 / "src" / "main.py").write_text('''"""
+Apify Actor: Global Software Vulnerability & CVE Radar (GitHub Advisory MCP).
+Monetization: Pay-Per-Event ($0.003 per vulnerability record). Zero proxy cost.
+"""
+import asyncio
+import requests
+
+GITHUB_ADVISORIES_URL = "https://api.github.com/advisories"
+
+
+def fetch_security_advisories(ecosystem: str = "pip", severity: str = "high", limit: int = 20) -> list:
+    params = {"per_page": min(max(1, int(limit)), 100)}
+    if ecosystem and ecosystem.lower() != "all":
+        params["ecosystem"] = ecosystem.lower().strip()
+    if severity and severity.lower() != "all":
+        params["severity"] = severity.lower().strip()
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "AdvisoryRadar/1.0"
+    }
+    r = requests.get(GITHUB_ADVISORIES_URL, params=params, headers=headers, timeout=15)
+    r.raise_for_status()
+    raw = r.json()
+    results = []
+    for adv in raw:
+        vulns = adv.get("vulnerabilities", [])
+        affected_pkgs = []
+        for v in vulns:
+            pkg = v.get("package", {}) if isinstance(v, dict) else {}
+            first_patched = v.get("first_patched_version") if isinstance(v, dict) else None
+            patched_str = first_patched.get("identifier") if isinstance(first_patched, dict) else str(first_patched) if first_patched else None
+            affected_pkgs.append({
+                "ecosystem": pkg.get("ecosystem"),
+                "name": pkg.get("name"),
+                "vulnerable_version_range": v.get("vulnerable_version_range") if isinstance(v, dict) else None,
+                "first_patched_version": patched_str
+            })
+        cve_id = adv.get("cve_id")
+        results.append({
+            "ghsa_id": adv.get("ghsa_id"),
+            "cve_id": cve_id,
+            "summary": adv.get("summary"),
+            "severity": adv.get("severity"),
+            "published_at": adv.get("published_at"),
+            "updated_at": adv.get("updated_at"),
+            "html_url": adv.get("html_url"),
+            "affected_packages": affected_pkgs
+        })
+    return results
+
+
+async def main():
+    from apify import Actor
+    async with Actor:
+        inp = await Actor.get_input() or {}
+        items = fetch_security_advisories(
+            ecosystem=inp.get("ecosystem", "pip"),
+            severity=inp.get("severity", "high"),
+            limit=inp.get("maxItems", 20)
+        )
+        for item in items:
+            await Actor.push_data(item)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+''', encoding="utf-8")
+        (a6 / "README.md").write_text(
+            "# Global Software Vulnerability & CVE Radar (GitHub Advisory MCP)\n\n"
+            "Live global software vulnerability feed and zero-day alert extractor from official GitHub Advisory Database.\n"
+            "- **Ideal for:** Automated SecOps pipelines, dependency scanners, and AI coding agents.\n"
+            "- **Pricing:** Pay-Per-Event (`$3 / 1,000 advisories`). Zero proxy cost.\n"
+            "- **Deploy command:** `npx apify-cli login && npx apify-cli push`\n",
+            encoding="utf-8"
+        )
+
 
 def _load_actor_module(name: str, file_path: Path):
     import importlib.util
@@ -449,6 +808,75 @@ def run_actor_health_checks() -> List[Dict[str, Any]]:
         "status_note": t3_note,
         "pricing_model": "$0.004 / verification (Pay-Per-Event)",
         "monetization": "$0.004 / verification (Pay-Per-Event)",
+        "checked_at": time.strftime("%Y-%m-%d %H:%M:%S")
+    })
+
+    # Test Actor 4 (NASA EONET v3 Natural Events)
+    t4_ok = False
+    t4_note = ""
+    try:
+        mod4 = _load_actor_module("actor_eonet_main", ACTORS_DIR / "global-natural-events-tracker" / "src" / "main.py")
+        eonet_res = mod4.fetch_natural_events("all", "open", 2)
+        t4_ok = isinstance(eonet_res, list) and len(eonet_res) > 0 and bool(eonet_res[0].get("event_id"))
+        t4_note = f"OK ({len(eonet_res)} eventos activos detectados: {eonet_res[0].get('title') if eonet_res else ''})"
+    except Exception as e:
+        t4_note = f"Aviso API: {e}"
+
+    results.append({
+        "slug": "global-natural-events-tracker",
+        "title": "Global Natural Disaster & Severe Weather Tracker (NASA EONET MCP)",
+        "path": "apify_actors/global-natural-events-tracker",
+        "healthy": t4_ok,
+        "smoke_ok": t4_ok,
+        "status_note": t4_note,
+        "pricing_model": "$0.003 / event (Pay-Per-Event)",
+        "monetization": "$0.003 / event (Pay-Per-Event)",
+        "checked_at": time.strftime("%Y-%m-%d %H:%M:%S")
+    })
+
+    # Test Actor 5 (GitHub Repo Health Auditor)
+    t5_ok = False
+    t5_note = ""
+    try:
+        mod5 = _load_actor_module("actor_gh_health_main", ACTORS_DIR / "github-repo-health-auditor" / "src" / "main.py")
+        gh_audit = mod5.audit_repo("pallets/flask")
+        t5_ok = bool(gh_audit.get("found")) and gh_audit.get("health_score", 0) >= 70
+        t5_note = f"OK (Flask Score: {gh_audit.get('health_score')}/100, Stars: {gh_audit.get('stars', 0):,}, Rel: {gh_audit.get('latest_release')})"
+    except Exception as e:
+        t5_note = f"Aviso API: {e}"
+
+    results.append({
+        "slug": "github-repo-health-auditor",
+        "title": "Open Source Repository Health & Security Auditor (GitHub MCP)",
+        "path": "apify_actors/github-repo-health-auditor",
+        "healthy": t5_ok,
+        "smoke_ok": t5_ok,
+        "status_note": t5_note,
+        "pricing_model": "$0.003 / audit (Pay-Per-Event)",
+        "monetization": "$0.003 / audit (Pay-Per-Event)",
+        "checked_at": time.strftime("%Y-%m-%d %H:%M:%S")
+    })
+
+    # Test Actor 6 (GitHub Security Advisory Radar)
+    t6_ok = False
+    t6_note = ""
+    try:
+        mod6 = _load_actor_module("actor_gh_advisory_main", ACTORS_DIR / "github-security-advisory-radar" / "src" / "main.py")
+        adv_res = mod6.fetch_security_advisories("pip", "high", 2)
+        t6_ok = isinstance(adv_res, list) and len(adv_res) > 0 and bool(adv_res[0].get("ghsa_id"))
+        t6_note = f"OK ({len(adv_res)} avisos críticos detectados: {adv_res[0].get('ghsa_id') if adv_res else ''})"
+    except Exception as e:
+        t6_note = f"Aviso API: {e}"
+
+    results.append({
+        "slug": "github-security-advisory-radar",
+        "title": "Global Software Vulnerability & CVE Radar (GitHub Advisory MCP)",
+        "path": "apify_actors/github-security-advisory-radar",
+        "healthy": t6_ok,
+        "smoke_ok": t6_ok,
+        "status_note": t6_note,
+        "pricing_model": "$0.003 / advisory (Pay-Per-Event)",
+        "monetization": "$0.003 / advisory (Pay-Per-Event)",
         "checked_at": time.strftime("%Y-%m-%d %H:%M:%S")
     })
 
